@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="Ace.exe"/>
+    <OBJFILES value="Ace.obj FmAceConverter.obj FmSetupOptions.obj FmLayerProperties.obj 
+      FmConvertOptions.obj FmPriorityProperties.obj VerInfo.obj FmAboutBox.obj 
+      FmDXFViewer.obj DXFLib\dl_dxf.obj DXFLib\dl_writer_ascii.obj"/>
+    <RESFILES value="Ace.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) FmAceConverter.dfm FmSetupOptions.dfm FmLayerProperties.dfm 
+      FmConvertOptions.dfm FmPriorityProperties.dfm FmAboutBox.dfm FmDXFViewer.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="madDisAsm_.lib madBasic_.lib CustomComponents_CBC6.lib AbkStdCB6.lib 
+      XStringGrid_BC6.lib freerep6.lib B304_r35.lib E111_R61.lib A406_R61.lib 
+      o406_r61.lib rxbde6.lib rxdb6.lib rxctl6.lib bcb2kaxserver.lib indy.lib 
+      dbxcds.lib dclocx.lib soaprtl.lib bcbie.lib nmfast.lib dbexpress.lib 
+      inetdbxpress.lib inetdbbde.lib bcbsmp.lib dsnapcon.lib dsnapcrba.lib 
+      visualdbclx.lib teeqr.lib dss.lib tee.lib teedb.lib teeui.lib qrpt.lib 
+      bdecds.lib cds.lib ibxpress.lib vcldbx.lib bdertl.lib adortl.lib vcldb.lib 
+      lmdcore8rt_60.lib lmdrtlx8rt_60.lib lmdrtl8rt_60.lib vclx.lib rtl.lib 
+      vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib vclx.lib lmdrtl8rt_60.lib lmdrtlx8rt_60.lib 
+      lmdcore8rt_60.lib vcldb.lib adortl.lib bdertl.lib vcldbx.lib ibxpress.lib 
+      cds.lib bdecds.lib qrpt.lib teeui.lib teedb.lib tee.lib dss.lib teeqr.lib 
+      visualdbclx.lib dsnapcrba.lib dsnapcon.lib bcbsmp.lib inetdbbde.lib 
+      inetdbxpress.lib dbexpress.lib nmfast.lib bcbie.lib soaprtl.lib dclocx.lib 
+      dbxcds.lib indy.lib bcb2kaxserver.lib rxctl6.lib rxdb6.lib rxbde6.lib 
+      o406_r61.lib A406_R61.lib E111_R61.lib B304_r35.lib freerep6.lib 
+      XStringGrid_BC6.lib AbkStdCB6.lib CustomComponents_CBC6.lib madBasic_.lib 
+      madDisAsm_.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
+      vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi teeui.bpi 
+      teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi 
+      dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi vclie.bpi xmlrtl.bpi inet.bpi 
+      inetdbbde.bpi inetdbxpress.bpi inetdb.bpi nmfast.bpi webdsnap.bpi 
+      bcbie.bpi websnap.bpi soaprtl.bpi dclocx.bpi dbexpress.bpi dbxcds.bpi 
+      indy.bpi bcb2kaxserver.bpi ProLib60.bpi ProLibDB60.bpi rxctl6.bpi 
+      rxdb6.bpi rxbde6.bpi o406_r61.bpi A406_R61.bpi E111_R61.bpi E111BR61.bpi 
+      CustomComponents_CBC6.bpi B304_r35.bpi freerep6.bpi AbkStdCB6.bpi 
+      AbkDBStdCB6.bpi Vcwb6.bpi XStringGrid_BC6.bpi AdvSpinEditPkgC6.bpi 
+      elpackB6.bpi madBasic_.bpi madDisAsm_.bpi madExcept_.bpi"/>
+    <PATHCPP value=".;DXFLib"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="_DEBUG"/>
+    <SYSDEFINES value="_RTLDLL;NO_STRICT"/>
+    <MAINSOURCE value="Ace.cpp"/>
+    <INCLUDEPATH value="DXFLib;dxflib-2.2.0.0-1.src\src;..\..\..\DelphiComponents\RxLib\BCB6;..\..\..\delphicomponents\dialogs;&quot;C:\Program Files\LMD2007\lib\b6&quot;;$(BCB)\Projects;D:\Projects\CNC\Converter\CBuilder;$(BCB)\LIB\lmd70;$(BCB)\include;$(BCB)\include\vcl;&quot;C:\Program Files\madCollection\madBasic\BCB6&quot;;&quot;C:\Program Files\madCollection\madDisAsm\BCB6&quot;;&quot;C:\Program Files\madCollection\madExcept\BCB6&quot;;D:\Projects\DelphiComponents\Version"/>
+    <LIBPATH value="DXFLib;&quot;dxflib-2.2.0.0-1.src\src&quot;;..\..\..\DelphiComponents\RxLib\BCB6;..\..\..\delphicomponents\dialogs;&quot;C:\Program Files\LMD2007\lib\b6&quot;;&quot;..\..\..\DelphiComponents\Abakus VCL\CB6&quot;;&quot;C:\Program Files\madCollection\madExcept\BCB6&quot;;&quot;C:\Program Files\madCollection\madDisAsm\BCB6&quot;;&quot;C:\Program Files\madCollection\madBasic\BCB6&quot;;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;..\lib\release;D:\Projects\CNC\Converter\CBuilder;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\LIB\LMDEl40SE;$(BCB)\Projects\Lib;$(BCB)\LIB\lmd70;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-IDXFLib -Idxflib-2.2.0.0-1.src\src -I..\..\..\DelphiComponents\RxLib\BCB6 
+      -I..\..\..\delphicomponents\dialogs -I&quot;C:\Program Files\LMD2007\lib\b6&quot; 
+      -I$(BCB)\Projects -ID:\Projects\CNC\Converter\CBuilder -I$(BCB)\LIB\lmd70 
+      -I$(BCB)\include -I$(BCB)\include\vcl 
+      -I&quot;C:\Program Files\madCollection\madBasic\BCB6&quot; 
+      -I&quot;C:\Program Files\madCollection\madDisAsm\BCB6&quot; 
+      -I&quot;C:\Program Files\madCollection\madExcept\BCB6&quot; 
+      -ID:\Projects\DelphiComponents\Version -src_suffix cpp -D_DEBUG -boa"/>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -c 
+      -tW -tWM"/>
+    <PFLAGS value="-$YD -$W -$R -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj Memmgr.Lib sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="Ace.res" FORMNAME="" UNITNAME="Ace.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Ace.cpp" FORMNAME="" UNITNAME="Ace" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FmAceConverter.cpp" FORMNAME="Fm_AceConverter" UNITNAME="FmAceConverter" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FmSetupOptions.cpp" FORMNAME="Fm_SetupOptions" UNITNAME="FmSetupOptions" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FmLayerProperties.cpp" FORMNAME="Fm_LayerProperties" UNITNAME="FmLayerProperties" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FmConvertOptions.cpp" FORMNAME="Fm_ConvertionOptions" UNITNAME="FmConvertOptions" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FmPriorityProperties.cpp" FORMNAME="Fm_PriorityProperties" UNITNAME="FmPriorityProperties" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VerInfo.cpp" FORMNAME="" UNITNAME="VerInfo" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FmAboutBox.cpp" FORMNAME="Fm_AboutBox" UNITNAME="FmAboutBox" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FmDXFViewer.cpp" FORMNAME="Fm_DXFViewer" UNITNAME="FmDXFViewer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DXFLib\dl_dxf.cpp" FORMNAME="" UNITNAME="dl_dxf" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DXFLib\dl_writer_ascii.cpp" FORMNAME="" UNITNAME="dl_writer_ascii" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=4
+MinorVer=0
+Release=0
+Build=2
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=Unknown
+FileDescription=Convert DXF files to GCode Files
+FileVersion=4.0.0.2
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=Ace.exe
+ProductName=Ace Converter
+ProductVersion=1.0.0.0
+Comments=Converted to C++Builder V6 by Ray Abram 2008
+
+[Excluded Packages]
+C:\Program Files\Borland\CBuilder6\LIB\LMDEL40SE\dclelpB6.BPL=LMD ElPack 4.0 SE
+
+[HistoryLists\hlIncludePath]
+Count=5
+Item0=DXFLib;dxflib-2.2.0.0-1.src\src;..\..\..\DelphiComponents\RxLib\BCB6;..\..\..\delphicomponents\dialogs;C:\Program Files\LMD2007\lib\b6;$(BCB)\Projects;D:\Projects\CNC\Converter\CBuilder;$(BCB)\LIB\lmd70;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;D:\Projects\DelphiComponents\Version
+Item1=..\..\..\DelphiComponents\RxLib\BCB6;..\..\..\delphicomponents\dialogs;C:\Program Files\LMD2007\lib\b6;$(BCB)\Projects;D:\Projects\CNC\Converter\CBuilder;$(BCB)\LIB\lmd70;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;D:\Projects\DelphiComponents\Version
+Item2=..\..\..\delphicomponents\dialogs;C:\Program Files\LMD2007\lib\b6;$(BCB)\Projects;D:\Projects\CNC\Converter\CBuilder;$(BCB)\LIB\lmd70;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;D:\Projects\DelphiComponents\Version
+Item3=..\..\..\delphicomponents\dialogs;C:\Program Files\LMD2007\lib\b6;$(BCB)\Projects;D:\Projects\CNC\Converter\CBuilder;$(BCB)\LIB\lmd70;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6
+Item4=..\..\..\delphicomponents\dialogs;C:\Program Files\LMD2007\lib\b6;$(BCB)\Projects;D:\Projects\CNC\Converter\CBuilder;$(BCB)\LIB\lmd70;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;D:\Projects\DelphiComponents\Dialogs
+
+[HistoryLists\hlLibraryPath]
+Count=3
+Item0=DXFLib;dxflib-2.2.0.0-1.src\src;..\..\..\DelphiComponents\RxLib\BCB6;..\..\..\delphicomponents\dialogs;C:\Program Files\LMD2007\lib\b6;..\..\..\DelphiComponents\Abakus VCL\CB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\Borland\CBuilder6\Projects;..\lib\release;D:\Projects\CNC\Converter\CBuilder;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\LIB\LMDEl40SE;$(BCB)\Projects\Lib;$(BCB)\LIB\lmd70;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..\..\..\DelphiComponents\RxLib\BCB6;..\..\..\delphicomponents\dialogs;C:\Program Files\LMD2007\lib\b6;..\..\..\DelphiComponents\Abakus VCL\CB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\Borland\CBuilder6\Projects;..\lib\release;D:\Projects\CNC\Converter\CBuilder;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\LIB\LMDEl40SE;$(BCB)\Projects\Lib;$(BCB)\LIB\lmd70;$(BCB)\lib\obj;$(BCB)\lib
+Item2=..\..\..\delphicomponents\dialogs;C:\Program Files\LMD2007\lib\b6;..\..\..\DelphiComponents\Abakus VCL\CB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\Borland\CBuilder6\Projects;..\lib\release;D:\Projects\CNC\Converter\CBuilder;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\LIB\LMDEl40SE;$(BCB)\Projects\Lib;$(BCB)\LIB\lmd70;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

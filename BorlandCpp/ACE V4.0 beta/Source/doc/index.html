@@ -1,0 +1,279 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Ace Converter version 3.10  User's Manual</title>
+<style>
+<!--
+code         {  }
+-->
+</style>
+</head>
+
+<body>
+
+<p align="left"><u><font face="Arial"><b>ACE Converter version 3.20</b>&nbsp;&nbsp;&nbsp;&nbsp; Users
+Manual</font></u></p>
+
+<p><font face="Arial">Last revised <b>July 14, 2006</b></font></p>
+<hr>
+<p><b><font face="Arial"><a name="TOC"></a>Table of Contents</font></b></p>
+<ol>
+  <li><a href="#legal"><font face="Arial">Legal notice</font></a> </li>
+  <li><a href="#Intro"><font face="Arial">Introduction</font></a> </li>
+  <li><a href="#Reqs"><font face="Arial">System requirements</font></a> </li>
+  <li><a href="#Install"><font face="Arial">Installation</font></a> </li>
+  <li><a href="#Start"><font face="Arial">Getting started with ACE</font></a></li>
+  <li><a href="#Using"><font face="Arial">Tips</font></a> </li>
+  <li><a href="#Trouble"><font face="Arial">Troubleshooting</font></a> </li>
+  <li><a href="#Change"><font face="Arial">Planned future changes</font></a> </li>
+  <li><a href="#Credits"><font face="Arial">Credits</font></a> </li>
+  <li><a href="#Contact"><font face="Arial">Contact info</font></a></li>
+</ol>
+<hr>
+<p><b><font face="Arial"><a name="legal"></a>1. Legal Notice</font></b></p>
+<p><font face="Arial">&nbsp; This program is free software; you can redistribute it and/or modify it under the terms of:<br>
+<br>
+    a) the GNU General Public License as published by the Free Software Foundation; either version 1, or (at your option) and<br>
+    later version<br>
+<br>
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See&nbsp;<br>
+the GNU General Public License for more details.</font></p>
+<p>
+<font face="Arial">
+<br>
+Ace Converter is copyrighted to Doug Yeager of <a href="http://www.yeagerautomation.com">Yeager
+Automation</a>, who reserves all rights to the program and the name &quot;ACE
+Converter&quot; and is the original author of this work.&nbsp; This version is a
+re-release by <a href="http://www.dakeng.com">DAK Engineering</a> under the
+terms of the GNU General Public License.</font></p>
+<p><font face="Arial">See the <b>changes.txt</b> and <b>gpl.txt</b> files for a list of the
+changes and for the text of the GNU-GPL software license
+respectively.</font></p>
+<p><font face="Arial">Source code is in the directory \SRC from the install, and is complete to
+build an executable in Borland C++ version 5.02.&nbsp; Added in this version is
+a batch file and instructions to compile using the free version of the borland
+C++ 5.5.1 compiler (command line only)</font></p>
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+<hr>
+<p><b><font face="Arial"><a name="Intro"></a>2. Introduction</font></b></p>
+<p><font face="Arial">&nbsp; Ace converter is an application that translates CAD (Computer Aided
+Design) files into tool path files.&nbsp;&nbsp;</font></p>
+<p><font face="Arial">&nbsp; Most CAD applications today allow the user to export drawing files in
+various different formats.&nbsp; One of those formats is DXF (Drawing Exchange
+Format).&nbsp; This is done so that the same drawing can be read into any CAD
+application, no matter which one was used to create it.&nbsp; Ace converter
+reads DXF files and and converts the entities to g-code that you can run on your
+machine.</font></p>
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+<hr>
+<p><b><font face="Arial"><a name="Reqs"></a>3. System Requirements</font></b></p>
+<ul>
+  <li><font face="Arial">PC compatible computer running any Windows version from Win95 onward.</font></li>
+  <li><font face="Arial">Approximately 500kb free disk space (3M for source code and development tools).&nbsp;&nbsp;</font></li>
+  <li><font face="Arial">A 66 Mhz or faster clock speed is recommended for satisfactory
+    performance.</font></li>
+</ul>
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+<hr>
+<p><b><font face="Arial"><a name="Install"></a>4. Installation</font></b></p>
+<p><font face="Arial">Here's how to get ACE Converter on your computer.&nbsp; Future versions will
+feature an installer utility, but for now you have to do this manually.</font></p>
+<ol>
+  <li><font face="Arial"><a href="http://www.dakeng.com/ace.html">Download a copy of the
+    program from the web</a>, and save the file somewhere on your machine.</font></li>
+  <li><font face="Arial">Obtain a de-archiving utility that will handle .ZIP files.&nbsp; My
+    recommendation is <a href="http://www.winzip.com">WinZip</a>, which has a 30
+    day demo and integrates well with Windows.&nbsp; DOS users can use their
+    beloved PKZIP from PKWare or similar.</font></li>
+  <li><font face="Arial">Extract the contents of the archive to a convenient folder like <b>C:\ACE\</b> or similar.</font></li>
+  <li><font face="Arial">All the program files, including this manual, will be found in the new folder.&nbsp;
+    Run <b>ACE.EXE</b> by double-clicking from Windows to start using the
+    software.</font></li>
+  <li><font face="Arial">If you want to install Ace on a different machine, copy the contents
+    of the folder to a diskette or transfer it over a network to the new
+    machine.&nbsp; No registry settings, hidden data, or system file changes are
+    used.</font></li>
+</ol>
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+<hr>
+<p><b><font face="Arial"><a name="Start"></a>5. Getting started with ACE</font></b></p>
+<p><font face="Arial">When you first start Ace converter you'll be presented with this screen.</font></p>
+<p><font face="Arial"><img border="0" src="main.jpg" width="427" height="283"></font></p>
+<p><font face="Arial">Open a .dxf file with your toolpath data in it. For this exercise you can use
+the <b>sample.dxf</b> file included in the download.</font></p>
+<p><font face="Arial">Ace converter will cut one layer at a time in order according to the
+priority assigned to it.&nbsp;</font></p>
+<p><font face="Arial">
+Priority one is first. When a DXF file is open, a list of the layers and the
+priority for each appears in the left-hand box.</font></p>
+<p><img border="0" src="main_open.jpg" width="424" height="279"></p>
+<p><font face="Arial">Double click on a layer name to specify the cutting options for that
+layer.&nbsp;&nbsp;</font></p>
+<p><font face="Arial"><img border="0" src="layrprop.jpg" width="230" height="392"></font></p>
+<p><font face="Arial">Turning the layer off means that no cutting action will occur for this layer.&nbsp;
+By default, all layers are &quot;on&quot;.</font></p>
+<p><font face="Arial">Ace converter will cut any arcs that are present in a direction that you
+choose using the arc direction buttons.</font></p>
+<p><font face="Arial">The Z offset sets the depth that each line in the layer will be machined to.
+Set the max Z depth for each pass using the text box, and the special character
+(if necessary) to address the Z axis on your machine.&nbsp; For example, a
+1/2&quot; deep machined pocket would use a Z offset of -0.500, and a Z per pass
+of .200 or so.</font></p>
+<p><font face="Arial">Lastly set the priority number for the layer. Priority one will be cut first
+then priority two, etc. You are only permitted to select the priority number one
+higher than the maximum already established so far, so work in order of priority
+from first to last.&nbsp; Hit OK or Cancel to make the layer properties box go
+away.</font></p>
+<p><font face="Arial">By double-clicking on the priority numbers on the right hand side you can set
+special options for each machining sequence.</font></p>
+<p><font face="Arial"><img border="0" src="priority.jpg" width="230" height="313"></font></p>
+<p><font face="Arial">The pre-and post priority code buttons allow you to output special code
+before the regular g-code output. Use these to produce special comments or
+control codes to turn on spindles, coolants, etc.</font></p>
+<p><font face="Arial">The release plane establishes how high in Z the tool be retracted to between
+passes.</font></p>
+<p><font face="Arial">Ordinarily Ace converter will program a retraction to the release plane after
+each entity is cut. By checking &quot;optimize&quot;, you are asking for
+entities to be joined together whenever possible. The value for close enough
+establishes a boundary condition on exactly how close entity endpoints need to
+be together in order to be considered joined.</font></p>
+<p><font face="Arial">When you're finished establishing layers and priority you are ready to make
+the conversion. Press the convert button and the output G-code file will be
+generated. You have a few final options here:</font></p>
+<p><font face="Arial"><img border="0" src="convert.jpg" width="395" height="189"></font></p>
+<p><font face="Arial">For most Fanuc-style g-code interpreter programs such as TurboCNC, EMC and
+Mach3, you'll want to
+generate I and J as relative coordinates.&nbsp;</font></p>
+<p><font face="Arial">Some interpreters will require I and J to be produced at the start of the
+line. You also have the option to generate block numbers (N0010, N0020). For
+most interpreters neither of these will be necessary.</font></p>
+<p><font face="Arial">The final conversion option allows you to generate Z coordinates only when
+the Z axis is required to move. This conserves memory and allows easy hand
+editing for the depths.</font></p>
+<p><font face="Arial">The &quot;Setup&quot; button in the main window allows you
+to set default values for the Z offset, max Z per pass, &quot;close enough&quot;
+value, and the number of decimal points of precision to output in the g-code.</font></p>
+<p><font face="Arial">NOTE:&nbsp; At present Ace converter does not automatically output feed rates
+in the Gcode file, so you'll have to edit the file manually and insert
+them.&nbsp; Here is the raw g-code output for the file <b>sample.dxf.</b></font></p>
+<blockquote>
+  <pre><font face="Arial">G00 Z0.1000
+G00 X2.8726 Y2.7200
+G01 Z-0.2500
+G01 X4.6544 Y1.2560
+G03 X6.4695 Y1.5222 I0.8076 J0.8144
+G01 X6.4695 Y1.5222 Z-0.5000
+G02 X4.6544 Y1.2560 I-1.0075 J0.5483
+G01 X2.8726 Y2.7200
+G01 X2.8726 Y2.7200 Z-0.2500
+G01 X4.1215 Y4.0009
+G01 X6.1698 Y3.5185
+G01 X7.7518 Y5.4649
+G01 X8.4012 Y3.8013
+G02 X5.0541 Y4.5000 I-1.7409 J0.0268
+G03 X1.8734 Y3.5684 I-1.2070 J-1.7744
+G01 X1.8734 Y3.5684 Z-0.5000
+G02 X5.0541 Y4.5000 I1.9736 J-0.8428
+G03 X8.4012 Y3.8013 I1.6063 J-0.6719
+G01 X7.7518 Y5.4649
+G01 X6.1698 Y3.5185
+G01 X4.1215 Y4.0009
+G01 X2.8726 Y2.7200
+G00 Z0.1000</font></pre>
+</blockquote>
+<p><font face="Arial">&nbsp; It's just a series of line and arcs designed to test ACE maximally by
+providing line-line, line-arc, and arc-arc junctions at various angles.</font></p>
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+<hr>
+<p><b><font face="Arial"><a name="Using"></a>6. Tips</font></b></p>
+<p><font face="Arial">Here are some tips to allow you to get the most out of Ace Converter:</font></p>
+<ul>
+  <li><font face="Arial">Draw the DXF geometry with the origin in the same place it will be on the
+    machine.</font></li>
+  <li><font face="Arial">Use the <b>offset</b> command in AutoCAD (or similarly for your drawing
+    program) to cut the edge of a profile based on half the tool diameter.</font></li>
+  <li><font face="Arial">Save your data as AutoCAD version 12 DXF files.</font></li>
+  <li><font face="Arial">Avoid using polylines or spline curves, as these may not be converted
+    correctly.&nbsp;</font></li>
+  <li><font face="Arial">Generally, entities will be cut in the order in which they were drawn. You
+    can take advantage of this to optimize your machining process.&nbsp;</font></li>
+  <li><font face="Arial">Always double-check your code using a visualization tool before
+    machining.&nbsp; I recommend that you use the <a href="http://www.cncsimulator.com">free
+    version of CNC-Simulator</a>.</font></li>
+</ul>
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+<hr>
+<p><b><font face="Arial"><a name="Trouble"></a>7. Troubleshooting</font></b></p>
+<p><font face="Arial">Known bugs:</font></p>
+<ul>
+  <li><font face="Arial">Ace will crash if the only entity on a layer is a single arc or circle</font></li>
+  <li><font face="Arial">Ace does not recognize poly-lines all the time</font></li>
+  <li><font face="Arial">Ace does not correctly process &quot;type 42&quot; bulge notation output
+    from Visio</font></li>
+</ul>
+<p><font face="Arial">&nbsp; The most common problem is that the generated code file will be
+blank.&nbsp; Be sure that the DXF file that you're working with is a
+&quot;version 12&quot; compatible type and that the layer(s) contain basic
+straight lines and arcs only.&nbsp; Later versions have been known to cause
+issues.</font></p>
+<p><font face="Arial">&nbsp; Ace does not automatically insert a feed rate for you.&nbsp; Edit the
+generated code file with any text editor and add it on the first line that G01
+or G02/03 appear:</font></p>
+<blockquote>
+  <pre><font face="Arial">G00 Z0.1000
+G00 X2.8726 Y2.7200
+G01 Z-0.2500 <font color="#FF0000"><b>F10.0</b></font>
+G01 X4.6544 Y1.2560</font></pre>
+</blockquote>
+<p><font face="Arial">&nbsp; If you're still struggling, send me an email at <a href="mailto:dkowalcz@dakeng.com">dkowalcz@dakeng.com</a>.&nbsp;
+I'll help in whatever ways that I can.</font></p>
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+<hr>
+<p><font face="Arial"><a name="Change"></a><b>8. Planned changes</b></font></p>
+<p><font face="Arial">&nbsp; Here are the changes planned for ACE converter in the future.&nbsp;
+Most of these have to do with usability.</font></p>
+<ul>
+  <li><font face="Arial">Provision to save the priority settings per dxf file to allow commonly
+    used files and settings to be revisited in the future.&nbsp;</font></li>
+  <li><font face="Arial">Improved user interface which allows immediate visibility of the layers,
+    depths, feeds and so forth.&nbsp;</font></li>
+  <li><font face="Arial">Better optimization algorithm.&nbsp;</font></li>
+  <li><font face="Arial">Rudimentary toolpath visualization tool.</font></li>
+</ul>
+<p><font face="Arial">&nbsp; Lastly, the multi-threading model that ACE is based on seems to induce
+instability in the application.&nbsp; It is planned to port the code to VB while
+making the interface improvements listed above.</font></p>
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+<hr>
+<p><b><font face="Arial"><a name="Credits"></a>9. Credits</font></b></p>
+<p><font face="Arial"><i>Doug Yeager</i> - Programming, original author, documentation.</font></p>
+<p><font face="Arial"><i>Dave Kowalczyk - </i>Programming, documentation.</font></p>
+<p><font face="Arial"><u><i>Marcin Dawidowicz</i></u> - Programming for v3.2
+changes</font></p>
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+<hr>
+<p><b><font face="Arial"><a name="Contact"></a>10. Contact info</font></b></p>
+<p><font face="Arial">&nbsp; The best way to contact me is via email:</font></p>
+<p><a href="mailto:dkowalcz@dakeng.com"><font face="Arial">dkowalcz@dakeng.com</font></a></p>
+<p><font face="Arial">&nbsp; Or if you prefer the normal mail:</font></p>
+<address>
+  <font face="Arial">Dave Kowalczyk</font>
+</address>
+<address>
+  <font face="Arial">11032 SE 224 PL</font>
+</address>
+<address>
+  <font face="Arial">Kent, WA 98031 USA</font>
+</address>
+<p><font face="Arial">&nbsp; For bug reporting, please send the problem code and perhaps a
+screenshot or two as a courtesy if appropriate to the issue.&nbsp; It helps enormously in analyzing problems.</font></p>
+
+<p><a href="#TOC"><font face="Arial">Back to Table of Contents</font></a></p>
+
+</body>
+
+</html>

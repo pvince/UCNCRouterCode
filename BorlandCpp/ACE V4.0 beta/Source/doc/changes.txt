@@ -1,0 +1,106 @@
+Changes from the 3.1 release:
+
+- Release plane, depth per pass, decimal precision, and Z offset defaults are now stored in ACE.ini for convenience.
+
+- Fixed background color issue on Windows XP systems.
+
+- Output file now defaults to *.NC (was *.TXT)
+
+- Added build notes for the free command line version of Borland C++ 5.5.1
+
+  Changes were programmed by Marcin Dawidowicz [marcin@4am.pl].  
+
+  Thank you, Marcin, for donating your changes to the ACE community.
+
+NOTE:
+
+  Yeager Automation (www.yeagerautomation.com) and Doug Yeager, the original author of ACE converter, have had nothing to do with this release except to give permission to modify and distribute it as per the GNU GPL.  A copy of the license agreement should accompany this software as "license.txt"
+
+  Refer support questions or comments to:
+
+Dave Kowalczyk
+11032 SE 224 PL
+Kent, WA 98031 USA
+
+email --> dkowalcz@dakeng.com
+
+www.dakeng.com
+
+========================================================
+
+File list from version 3.00
+
+ 05-03-00  4:52p about.htm
+ 03-27-01  7:17p ace.exe
+ 03-27-01  7:16p ace.c
+ 09-15-99  5:29p ace.h
+ 03-27-01  7:25p ACE_lic.txt
+ 08-09-99  8:28a code.jpg
+ 05-03-00  6:31a converter.c
+ 09-19-99  3:06p converter.h
+ 03-27-01  7:26p Copying
+ 03-25-97  5:02a cw3230mt.dll
+ 06-10-00 11:34p index.html
+ 08-10-99  4:55p layer.htm
+ 08-09-99  8:27a layer.jpg
+ 08-06-99  1:57p logo.gif
+ 08-06-99  1:59p logo2.gif
+ 05-18-00  6:49a priority.htm
+ 08-11-99  8:57a priority.jpg
+ 08-06-99  1:57p train.jpg
+ 09-14-99  5:34p what.htm
+
+========================================================
+
+File list for version 3.10
+
+09/21/2003  11:25 PM            34,816 ace.exe
+09/21/2003  11:32 PM                19 ace.ini
+03/25/1997  05:02 AM           319,488 cw3230mt.dll
+09/21/2003  10:53 PM             1,645 changes.txt
+09/21/2003  07:25 PM             8,303 convert.jpg
+09/21/2003  08:23 PM            18,009 gpl.txt
+09/21/2003  10:59 PM            12,929 index.html
+09/21/2003  07:18 PM             9,997 layrprop.jpg
+09/21/2003  07:14 PM             6,167 main.jpg
+08/11/1999  08:57 AM            14,771 priority.jpg
+07/01/2003  11:39 AM            10,272 sample.dxf
+09/21/2003  11:29 PM               412 sample.txt
+09/21/2003  11:20 PM            28,555 ace.c
+06/26/2003  12:00 AM             1,712 ace.h
+09/21/2003  11:32 PM            42,670 ACE.ide
+08/21/2003  08:03 AM             6,839 ace.rc
+09/21/2003  11:25 PM             3,312 ace.res
+09/21/2003  10:55 PM               435 build notes.txt
+07/01/2003  11:33 AM            26,348 converter.c
+09/19/1999  03:06 PM                28 converter.h
+
+
+========================================================
+
+File list for version 3.20
+
+ Directory of E:\Webace32
+
+07/14/2006  09:59 PM            36,864 ace.exe
+07/14/2006  10:43 PM                84 ace.ini
+03/25/1997  05:02 AM           319,488 cw3230mt.dll
+07/14/2006  10:53 PM             1,645 changes.txt
+07/14/2006  10:47 PM            15,083 convert.jpg
+09/21/2003  08:23 PM            18,009 gpl.txt
+07/14/2006  10:48 PM            16,279 index.html
+07/14/2006  10:45 PM            17,547 layrprop.jpg
+07/14/2006  10:33 PM            13,081 main.jpg
+07/14/2006  10:45 PM            18,148 main_open.jpg
+07/14/2006  10:47 PM            13,682 priority.jpg
+07/01/2003  11:39 AM            10,272 sample.dxf
+09/21/2003  11:29 PM               412 sample.nc
+07/14/2006  09:59 PM            31,751 ace.c
+07/14/2006  09:52 PM             1,941 ace.h
+07/14/2006  10:01 PM            48,966 ACE.ide
+07/14/2006  09:53 PM             7,978 ace.rc
+07/14/2006  09:59 PM             4,048 ace.res
+07/14/2006  10:22 PM             1,323 build notes.txt
+07/14/2006  09:52 PM            26,920 converter.c
+07/14/2006  09:52 PM                28 converter.h
+07/14/2006  10:22 PM               162 make.bat

@@ -1,0 +1,699 @@
+[Closed Files]
+File_0=SourceModule,'Z:\Graphics\GCode\DXF2BMP\vec2web\qcadlib\vec2web-2.0.4.7-1.src\qcadlib\src\filters\rs_filterdxf.cpp',0,1,46,29,77,0,0
+File_1=SourceModule,'D:\Projects\CNC\vec2web\src\main.cpp',0,1,19,46,57,0,0
+File_2=SourceModule,'D:\Projects\CNC\vec2web-2.0.4.7-1.src\vec2web\src\vec2web.cpp',0,1,201,12,210,0,0
+File_3=SourceModule,'D:\Projects\CNC\vec2web-2.0.4.7-1.src\vec2web\src\vec2web.pro',0,1,7,20,12,0,0
+File_4=SourceModule,'D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_creationadapter.h',0,1,22,38,43,0,0
+File_5=SourceModule,'D:\Projects\CNC\Ace Converter\CBuilder\dxflib-2.2.0.0-1.src\test\test_creationclass.cpp',0,1,57,47,116,0,0
+File_6=SourceModule,'D:\Projects\CNC\Ace Converter\CBuilder\FmDXFViewer.dfm',0,1,1,1,1,0,0
+File_7=SourceModule,'C:\Program Files\Trita\examples\Ray-style-suite\example.cpp',0,1,232,24,230,0,0
+File_8=SourceModule,'D:\Projects\CNC\Ace Converter\CBuilder\ace.ini',0,1,1,1,37,0,0
+
+[Modules]
+Module0=D:\Projects\CNC\Ace Converter\CBuilder\FmAceConverter.cpp
+Module1=D:\Projects\CNC\Ace Converter\CBuilder\DXFLib\dl_dxf.cpp
+Module2=c:\program files\borland\cbuilder6\include\commdlg.h
+Module3=c:\program files\borland\cbuilder6\include\math.h
+Module4=D:\Projects\CNC\Ace Converter\CBuilder\FmPriorityProperties.cpp
+Module5=D:\Projects\CNC\Ace Converter\CBuilder\FmConvertOptions.cpp
+Module6=Z:\Graphics\GCode\DXF2BMP\vec2web\qcadlib\vec2web-2.0.4.7-1.src\qcadlib\src\engine\rs_image.cpp
+Module7=D:\Projects\CNC\vec2web-2.0.4.7-1.src\build_vec2web.sh
+Module8=D:\Projects\CNC\vec2web-2.0.4.7-1.src\qcadlib\src\engine\rs_polyline.cpp
+Module9=D:\Projects\CNC\vec2web-2.0.4.7-1.src\qcadlib\src\filters\rs_filterdxf.cpp
+Module10=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_writer_ascii.h
+Module11=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_dxf.h
+Module12=D:\Projects\CNC\Ace Converter\CBuilder\DXFLib\dl_writer_ascii.cpp
+Module13=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_attributes.h
+Module14=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_creationinterface.h
+Module15=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_entities.h
+Module16=D:\Projects\CNC\Old DXF and CAM\cirlinearc4.dxf
+Module17=D:\Projects\CNC\Ace Converter\CBuilder\Ace.bpr
+Module18=D:\Projects\CNC\arc_45.dxf
+Module19=D:\Projects\CNC\Ace Converter\CBuilder\FmDXFViewer.cpp
+Module20=D:\Projects\CNC\Ace Converter\CBuilder\FmLayerProperties.cpp
+Module21=D:\Projects\CNC\Ace Converter\CBuilder\FmSetupOptions.cpp
+Module22=D:\Projects\CNC\Ace Converter\CBuilder\FmAboutBox.cpp
+Module23=c:\program files\borland\cbuilder6\include\vcl\dstring.h
+Module24=c:\program files\borland\cbuilder6\include\stdio.h
+Module25=D:\Projects\CNC\Ace Converter\src\converter.c
+Module26=D:\Projects\CNC\Ace Converter\src\ace.c
+Module27=c:\program files\borland\cbuilder6\include\vcl\SysUtils.hpp
+Count=28
+EditWindowCount=1
+
+[D:\Projects\CNC\Ace Converter\CBuilder\FmAceConverter.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\DXFLib\dl_dxf.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[c:\program files\borland\cbuilder6\include\commdlg.h]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[c:\program files\borland\cbuilder6\include\math.h]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\FmPriorityProperties.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\FmConvertOptions.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[Z:\Graphics\GCode\DXF2BMP\vec2web\qcadlib\vec2web-2.0.4.7-1.src\qcadlib\src\engine\rs_image.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\vec2web-2.0.4.7-1.src\build_vec2web.sh]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\vec2web-2.0.4.7-1.src\qcadlib\src\engine\rs_polyline.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\vec2web-2.0.4.7-1.src\qcadlib\src\filters\rs_filterdxf.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_writer_ascii.h]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_dxf.h]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\DXFLib\dl_writer_ascii.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_attributes.h]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_creationinterface.h]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_entities.h]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Old DXF and CAM\cirlinearc4.dxf]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\Ace.bpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\arc_45.dxf]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\FmDXFViewer.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\FmLayerProperties.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\FmSetupOptions.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\CBuilder\FmAboutBox.cpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[c:\program files\borland\cbuilder6\include\vcl\dstring.h]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[c:\program files\borland\cbuilder6\include\stdio.h]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\src\converter.c]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[D:\Projects\CNC\Ace Converter\src\ace.c]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[c:\program files\borland\cbuilder6\include\vcl\SysUtils.hpp]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Program Files\Borland\CBuilder6\Projects\ProjectGroup1.bpg]
+FormState=0
+FormOnTop=0
+
+[EditWindow0]
+ViewCount=28
+CurrentView=23
+View0=0
+View1=1
+View2=2
+View3=3
+View4=4
+View5=5
+View6=6
+View7=7
+View8=8
+View9=9
+View10=10
+View11=11
+View12=12
+View13=13
+View14=14
+View15=15
+View16=16
+View17=17
+View18=18
+View19=19
+View20=20
+View21=21
+View22=22
+View23=23
+View24=24
+View25=25
+View26=26
+View27=27
+CodeExplorer=CodeExplorer@EditWindow0
+MessageView=MessageView@EditWindow0
+ClassHierarchy=ClassHierarchy@EditWindow0
+Create=1
+Visible=1
+State=0
+Left=226
+Top=128
+Width=1371
+Height=1042
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1363
+ClientHeight=1015
+LeftPanelSize=199
+LeftPanelClients=CodeExplorer@EditWindow0,ProjectManager
+LeftPanelData=00000400010000000C000000436F64654578706C6F726572C70000000000000002F703000000000000010000000000000000000000000100000000C70000001200000050726F6A6563744D616E61676572466F726DFFFFFFFF
+RightPanelSize=0
+BottomPanelSize=0
+BottomPanelClients=MessageView@EditWindow0
+BottomPanelData=00000400010000000B0000004D65737361676556696577530500000000000002E20000000000000001000000000000000000000000010000000028040000000000000100000000530500000000000001000000005305000000000000010000000053050000000000000100000000530500000000000001000000005305000000000000010000000053050000000000000100000000530500000000000001000000005305000000000000010000000053050000000000000100000000530500000000000001000000005305000000000000010000000053050000000000000100000000530500000B0000004D65737361676556696577FFFFFFFF
+
+[View0]
+Module=c:\program files\borland\cbuilder6\include\vcl\SysUtils.hpp
+CursorX=132
+CursorY=1883
+TopLine=1868
+LeftCol=1
+
+[View1]
+Module=D:\Projects\CNC\Ace Converter\src\ace.c
+CursorX=64
+CursorY=48
+TopLine=688
+LeftCol=1
+
+[View2]
+Module=D:\Projects\CNC\Ace Converter\src\converter.c
+CursorX=23
+CursorY=508
+TopLine=479
+LeftCol=1
+
+[View3]
+Module=c:\program files\borland\cbuilder6\include\stdio.h
+CursorX=1
+CursorY=66
+TopLine=39
+LeftCol=1
+
+[View4]
+Module=c:\program files\borland\cbuilder6\include\vcl\dstring.h
+CursorX=1
+CursorY=68
+TopLine=41
+LeftCol=1
+
+[View5]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\FmAboutBox.cpp
+CursorX=10
+CursorY=12
+TopLine=2
+LeftCol=1
+
+[View6]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\FmSetupOptions.cpp
+CursorX=14
+CursorY=9
+TopLine=1
+LeftCol=1
+
+[View7]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\FmLayerProperties.cpp
+CursorX=8
+CursorY=12
+TopLine=28
+LeftCol=1
+
+[View8]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\FmDXFViewer.cpp
+CursorX=43
+CursorY=145
+TopLine=115
+LeftCol=1
+
+[View9]
+Module=D:\Projects\CNC\arc_45.dxf
+CursorX=7
+CursorY=138
+TopLine=169
+LeftCol=1
+
+[View10]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\Ace.cpp
+CursorX=1
+CursorY=14
+TopLine=1
+LeftCol=1
+
+[View11]
+Module=D:\Projects\CNC\Old DXF and CAM\cirlinearc4.dxf
+CursorX=14
+CursorY=201
+TopLine=182
+LeftCol=1
+
+[View12]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_entities.h
+CursorX=1
+CursorY=288
+TopLine=280
+LeftCol=1
+
+[View13]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_creationinterface.h
+CursorX=12
+CursorY=262
+TopLine=240
+LeftCol=1
+
+[View14]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_attributes.h
+CursorX=20
+CursorY=92
+TopLine=76
+LeftCol=1
+
+[View15]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\DXFLib\dl_writer_ascii.cpp
+CursorX=1
+CursorY=1
+TopLine=1
+LeftCol=1
+
+[View16]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\DXFLib\dl_dxf.cpp
+CursorX=58
+CursorY=918
+TopLine=918
+LeftCol=1
+
+[View17]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_dxf.h
+CursorX=11
+CursorY=40
+TopLine=1
+LeftCol=1
+
+[View18]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\dxflib\dl_writer_ascii.h
+CursorX=64
+CursorY=31
+TopLine=40
+LeftCol=1
+
+[View19]
+Module=D:\Projects\CNC\vec2web-2.0.4.7-1.src\qcadlib\src\filters\rs_filterdxf.cpp
+CursorX=51
+CursorY=1687
+TopLine=1679
+LeftCol=1
+
+[View20]
+Module=D:\Projects\CNC\vec2web-2.0.4.7-1.src\qcadlib\src\engine\rs_polyline.cpp
+CursorX=59
+CursorY=202
+TopLine=166
+LeftCol=1
+
+[View21]
+Module=D:\Projects\CNC\vec2web-2.0.4.7-1.src\build_vec2web.sh
+CursorX=55
+CursorY=8
+TopLine=1
+LeftCol=1
+
+[View22]
+Module=Z:\Graphics\GCode\DXF2BMP\vec2web\qcadlib\vec2web-2.0.4.7-1.src\qcadlib\src\engine\rs_image.cpp
+CursorX=85
+CursorY=354
+TopLine=283
+LeftCol=1
+
+[View23]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\FmAceConverter.cpp
+CursorX=44
+CursorY=1325
+TopLine=1306
+LeftCol=1
+
+[View24]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\FmConvertOptions.cpp
+CursorX=4
+CursorY=8
+TopLine=1
+LeftCol=1
+
+[View25]
+Module=D:\Projects\CNC\Ace Converter\CBuilder\FmPriorityProperties.cpp
+CursorX=1
+CursorY=10
+TopLine=1
+LeftCol=1
+
+[View26]
+Module=c:\program files\borland\cbuilder6\include\commdlg.h
+CursorX=1
+CursorY=228
+TopLine=204
+LeftCol=1
+
+[View27]
+Module=c:\program files\borland\cbuilder6\include\math.h
+CursorX=10
+CursorY=36
+TopLine=21
+LeftCol=1
+
+[Watches]
+Count=1
+Watch0='(*ent).radius',256,0,18,1,0,'Watches'
+
+[Breakpoints]
+Count=0
+
+[AddressBreakpoints]
+Count=0
+
+[Main Window]
+Create=1
+Visible=1
+State=0
+Left=1
+Top=41
+Width=1598
+Height=151
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1590
+ClientHeight=124
+
+[ProjectManager]
+Create=1
+Visible=1
+State=0
+Left=0
+Top=12
+Width=199
+Height=1003
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=199
+ClientHeight=1003
+TBDockHeight=1003
+LRDockWidth=224
+Dockable=1
+
+[CPUWindow]
+Create=1
+Visible=0
+State=0
+Left=515
+Top=771
+Width=827
+Height=429
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=819
+ClientHeight=402
+DumpPane=79
+DisassemblyPane=187
+RegisterPane=231
+FlagPane=64
+
+[WatchWindow]
+Create=1
+Visible=0
+State=0
+Left=42
+Top=427
+Width=417
+Height=269
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=409
+ClientHeight=245
+TBDockHeight=149
+LRDockWidth=419
+Dockable=1
+
+[CallStackWindow]
+Create=1
+Visible=0
+State=0
+Left=12
+Top=288
+Width=359
+Height=1053
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=351
+ClientHeight=1029
+TBDockHeight=261
+LRDockWidth=693
+Dockable=1
+
+[AlignmentPalette]
+Create=1
+Visible=0
+State=0
+Left=200
+Top=137
+Width=156
+Height=82
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=150
+ClientHeight=60
+
+[PropertyInspector]
+Create=1
+Visible=1
+State=0
+Left=0
+Top=147
+Width=220
+Height=1053
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=212
+ClientHeight=1029
+TBDockHeight=1079
+LRDockWidth=190
+Dockable=1
+SplitPos=133
+ArrangeBy=Name
+SelectedItem=OnDblClick
+ExpandedItems=Anchors,Attributes,BorderIcons,Buttons,Dataset,DialogOptions,EdgeBorders,Flags,LabelInfo,Options,OptionsEx,PreviewButtons,SmallBar,SystemOptions,VisibleButtons
+HiddenCategories=
+
+[BreakpointWindow]
+Create=1
+Visible=0
+State=0
+Left=75
+Top=521
+Width=735
+Height=195
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=727
+ClientHeight=171
+TBDockHeight=197
+LRDockWidth=737
+Dockable=1
+Column0Width=100
+Column1Width=75
+Column2Width=200
+Column3Width=200
+Column4Width=75
+Column5Width=75
+
+[ObjectTree]
+Create=1
+Visible=0
+State=0
+Left=226
+Top=149
+Width=122
+Height=905
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=114
+ClientHeight=881
+TBDockHeight=883
+LRDockWidth=116
+Dockable=1
+
+[fmGrepResults]
+Create=1
+Visible=0
+State=0
+Left=541
+Top=382
+Width=517
+Height=436
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=509
+ClientHeight=412
+TBDockHeight=438
+LRDockWidth=519
+Dockable=1
+
+[fmProjOptionSets]
+Create=1
+Visible=0
+State=0
+Left=702
+Top=422
+Width=196
+Height=355
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=188
+ClientHeight=331
+TBDockHeight=357
+LRDockWidth=198
+Dockable=1
+
+[CodeguardLog]
+Create=1
+Visible=0
+State=0
+Left=90
+Top=110
+Width=1071
+Height=583
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1063
+ClientHeight=559
+TBDockHeight=190
+LRDockWidth=448
+Dockable=1
+
+[ClassHierarchy@EditWindow0]
+Create=1
+Visible=0
+State=0
+Left=219
+Top=114
+Width=401
+Height=282
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=393
+ClientHeight=258
+TBDockHeight=284
+LRDockWidth=403
+Dockable=1
+TreeWidth=121
+Col1Width=120
+Col2Width=120
+
+[CodeExplorer@EditWindow0]
+Create=1
+Visible=0
+State=0
+Left=0
+Top=12
+Width=170
+Height=967
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=170
+ClientHeight=967
+TBDockHeight=388
+LRDockWidth=170
+Dockable=1
+ClassViewDisplayMode=0
+
+[MessageView@EditWindow0]
+Create=1
+Visible=0
+State=0
+Left=12
+Top=0
+Width=1351
+Height=226
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1351
+ClientHeight=226
+TBDockHeight=226
+LRDockWidth=443
+Dockable=1
+
+[DockHosts]
+DockHostCount=0
+
