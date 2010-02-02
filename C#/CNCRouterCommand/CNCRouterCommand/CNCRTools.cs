@@ -20,7 +20,8 @@ namespace CNCRouterCommand
         {
             List<string> results = new List<string>();
             string[] temp = SerialPort.GetPortNames();
-            // "Ping" each port and save the ones that "Acknowledge" to the array.
+            // "Ping" each port and save the ones that "Acknowledge" 
+            //    w/ a supported FW version to the "results" list.
 
             return results.ToArray();
         }
