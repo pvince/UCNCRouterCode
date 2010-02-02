@@ -29,5 +29,13 @@ namespace CNCRouterCommand
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            label1.Text = "";
+            string[] bob = CNCRTools.GetCommPortList();
+            for (int i = 0; i < bob.Length; i++)
+                label1.Text += bob[i] + '\n';
+        }
     }
 }

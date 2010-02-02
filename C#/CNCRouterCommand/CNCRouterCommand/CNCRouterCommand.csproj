@@ -48,12 +48,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CNCRConstants.cs" />
     <Compile Include="CNCRouterCommand.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CNCRouterCommand.Designer.cs">
       <DependentUpon>CNCRouterCommand.cs</DependentUpon>
     </Compile>
+    <Compile Include="CNCRTools.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="CNCRouterCommand.resx">
