@@ -1,0 +1,14 @@
+/*
+1. Try to establish serial connection with computer.
+
+2. Send firmware version back to computer.
+3. Wait for instructions from computer.
+
+4. Check message (E-stop, Start, Ping, [Set speed, Move, ToolCmd])
+	E-stop:stop everything
+	Start: Start executing queue
+	ping: send back an acknowladge message
+	Set speed: Add to queue
+	Move: Add to queue
+	ToolCmd: Add to queue
+/*
