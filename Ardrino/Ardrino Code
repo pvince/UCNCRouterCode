@@ -7,8 +7,31 @@
 4. Check message (E-stop, Start, Ping, [Set speed, Move, ToolCmd])
 	E-stop:stop everything
 	Start: Start executing queue
-	ping: send back an acknowladge message
+	ping: send back an acknowledge message
 	Set speed: Add to queue
 	Move: Add to queue
 	ToolCmd: Add to queue
+
+Queue Control Module
+	create a buffer of around 500 instructions
+	store an initial 250 commands.
+	when start is executed start processing the queue
+	before poping each instruction off the queue check for queue flag.
+	during normal motor delay time listen for computer commands without requesting anything.
+	after 10 instructions have been processed during motor delay...
+		prompt the computer for instruction
+		read the instruction
+		error check the instruction
+		send message (received ok and send another, received ok hold off for now, send again)
+	when motor is slow timer runs out return to executing the queue.
+	
+
+Needed Flags
+	Process queue
+	Ping, process at next convenience
+	start queue
+
+Needed Interrupts
+	E-Stop, clear queue flag
+		
 /*
