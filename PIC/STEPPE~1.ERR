@@ -1,0 +1,4 @@
+Message[302] C:\USERS\SPIDER\DOCUME~1\SRDESIGN\SENIOR~1\TRUNK\DOCS\STEPPE~1.ASM 30 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\SPIDER\DOCUME~1\SRDESIGN\SENIOR~1\TRUNK\DOCS\STEPPE~1.ASM 32 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] C:\USERS\SPIDER\DOCUME~1\SRDESIGN\SENIOR~1\TRUNK\DOCS\STEPPE~1.ASM 34 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Warning[205] C:\USERS\SPIDER\DOCUME~1\SRDESIGN\SENIOR~1\TRUNK\DOCS\STEPPE~1.ASM 111 : Found directive in column 1. (END)
