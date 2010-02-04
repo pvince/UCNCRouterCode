@@ -34,4 +34,20 @@ Needed Flags
 Needed Interrupts
 	E-Stop, clear queue flag
 		
+
+
+Messages:
+-32 bits to work with
+-|type| information |type|
+Ping: 0000
+Acknowladge: 0001 |error 0 or 1 (one bit) | (8 bits) Firmware | (open) | type (4 bits)
+EStop:	0010 | open | type
+Request Commands:	0011 |
+Start Queue: 0100
+SetSpeed: 0101 |
+ToolCMD: 0110 |
+
+MoveX: 	
+
+
 /*
