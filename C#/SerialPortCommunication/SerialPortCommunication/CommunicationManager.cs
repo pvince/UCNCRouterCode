@@ -268,13 +268,13 @@ namespace PCComm
         private void DisplayData(MessageType type, string msg)
         {
             _displayWindow.Invoke(new EventHandler(delegate
-        {
-            _displayWindow.SelectedText = string.Empty;
-            _displayWindow.SelectionFont = new Font(_displayWindow.SelectionFont, FontStyle.Bold);
-            _displayWindow.SelectionColor = MessageColor[(int)type];
-            _displayWindow.AppendText(msg);
-            _displayWindow.ScrollToCaret();
-        }));
+            {
+                _displayWindow.SelectedText = string.Empty;
+                _displayWindow.SelectionFont = new Font(_displayWindow.SelectionFont, FontStyle.Bold);
+                _displayWindow.SelectionColor = MessageColor[(int)type];
+                _displayWindow.AppendText(msg);
+                _displayWindow.ScrollToCaret();
+            }));
         }
         #endregion
 
