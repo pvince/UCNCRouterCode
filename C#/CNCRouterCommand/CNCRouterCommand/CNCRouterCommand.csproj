@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CNCRCommCommand.cs" />
     <Compile Include="CNCRConstants.cs" />
     <Compile Include="CNCRouterCommand.cs">
       <SubType>Form</SubType>
