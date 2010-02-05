@@ -1,8 +1,7 @@
-#ifndef _Main_h
-#define _Main_h
-#endif
 
-//#include "Main.h"
+
+
+#include "Main.h"
 #include "Comm.h"
 #include "Queue.h"
 
@@ -33,7 +32,8 @@ void loop()
   }
   else if(Serial.available()>0) //get message on serial buffer if one exists
   {
-    MessageFilter((long*) Serial.read());
+//    ErrorCheck((long*) Serial.read(),int Serial.available());
+     MessageFilter((long*) Serial.read());
   }
   else if(QueueLength<250)
   {
@@ -41,3 +41,4 @@ void loop()
   }
   
 }
+
