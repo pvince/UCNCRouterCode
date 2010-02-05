@@ -35,17 +35,36 @@ Needed Interrupts
 	E-Stop, clear queue flag
 		
 
+Datatype	RAM usage
+void keyword	N/A
+boolean		1 byte
+char		1 byte
+unsigned char	1 byte
+int		2 byte
+unsigned int	2 byte
+word		2 byte
+long		4 byte
+unsigned long	4 byte
+float		4 byte
+double		4 byte
+string		1 byte + x
+array		1 byte + x
+enum		N/A
+struct		N/A
+pointer		N/A
+
 
 Messages:
 -32 bits to work with
 -|type| information |type|
-Ping: 0000
-Acknowladge: 0001 |error 0 or 1 (one bit) | (8 bits) Firmware | (open) | type (4 bits)
-EStop:	0010 | open | type
-Request Commands:	0011 |
-Start Queue: 0100
-SetSpeed: 0101 |
-ToolCMD: 0110 |
+
+0 Ping: 0000
+1 Acknowledge: 0001 |error 0 or 1 (one bit) | (8 bits) Firmware | (open) | type (4 bits)
+2 EStop:	0010 | open | type
+3 Request Commands:	0011 |
+4 Start Queue: 0100
+5 SetSpeed: 0101 |
+6 ToolCMD: 0110 |
 
 MoveX: 	
 

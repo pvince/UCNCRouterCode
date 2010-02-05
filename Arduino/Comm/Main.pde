@@ -33,7 +33,7 @@ void loop()
   else if(Serial.available()>0) //get message on serial buffer if one exists
   {
 //    ErrorCheck((long*) Serial.read(),int Serial.available());
-     MessageFilter((long*) Serial.read());
+     MessageFilter( &Serial.read());
   }
   else if(QueueLength<250)
   {

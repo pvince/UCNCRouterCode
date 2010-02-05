@@ -3,6 +3,7 @@
 
 #include "Main.h"
 #include "Queue.h"
+#include "Comm.h"
 
 //int ErrorCheck(long* Message,int len)
 //{
@@ -25,13 +26,12 @@
 //
 //}
 
-int MessageFilter(long* Message)
+int MessageFilter(void &Message)
 {
   switch(*Message & 15)
   {
     case (0):  //Ping
-      FlagEStop = 1;    
-      return(0);
+          
       break;
     case (1):  //Acknowledge
       Serial.print(Firmware);
@@ -43,9 +43,14 @@ int MessageFilter(long* Message)
     case(4):  //Start Queue
       break;
     case(5):  //SetSpeed
+      MessageSetSpeed Packet;
+      //Packet = (void) *Message;
       break;
     case(6):  //ToolCMD
-      
+      MessageToolCMD Packet2;
+      break;
+    case(7):  //Move
+      MessageMove Packet3;
       break;
    }
   

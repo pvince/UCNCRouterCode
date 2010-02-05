@@ -4,37 +4,45 @@
 int MessageRate = 9600;
 
 struct MessageAck{
-  boolean Error;// = (Message & 15);
-  int  Firmware;
-  int Checksum;
+  int Type[4];
+  int Error[1];// = (Message & 15);
+  int  Firmware[8];
+  int Checksum[2];
 };
 
 struct MessageEStop{
-    int Checksum;  
+  int Type[4];
+  int Checksum[2];  
 };
 
 struct MessageComReq{
-    int Checksum;
+  int Type[4];
+  int Checksum[2];
 };
 
 struct MessageStart{
-   int Checksum;
+  int Type[4];
+  int Checksum[2];
 };
 
 struct MessageSetSpeed{
-  int XSpeed;
-  int YSpeed;
-  int ZSpeed;
-  int Checksum;
+  int Type[4];
+  int XSpeed[8];
+  int YSpeed[8];
+  int ZSpeed[8];
+  int Checksum[2];
 };
 
 struct MessageToolCMD{
-  boolean Power;
-  int Checksum;
+  int Type[4];
+  int Power[1];
+  int Checksum[2];
 };
 
 struct MessageMove{
-   int Checksum;
+  int Type[4];
+  //I have no clue how we are going to do this so I'm skipping it for now. :P
+  int Checksum[2];
 };
-
+#endif
 
