@@ -22,7 +22,7 @@ TRISA	equ 85h
 TRISB	equ 86h
 STATE	equ 0Ch
 
-;Startup	18 cycles = 3.6 u seconds
+;Startup	18 cycles = 4.6 u seconds
 STARTUP	BCF STATUS,RP0	;Bank 0
 		CLRF PORTA		;Init PORTA
 		CLRF PORTB		;Init PORTB
@@ -38,6 +38,7 @@ STARTUP	BCF STATUS,RP0	;Bank 0
 		
 		GOTO STEP1		;Start the system at STEP1
 
+;Worst case step takes 5 u seconds
 ;Listen for step instruction
 LISTEN
 		BTFSC PORTA,1	;If PORTA, bit 1 is 0 skip next line
@@ -47,8 +48,8 @@ LISTEN
 STEP
 		BSF PORTA,3		;Set PORTA, bit 3 to signal busy to controller
 		BTFSC PORTA,0	;If PORTA, bit 0 is 0 skip next line
-		CALL FORWARD	;Step Forward
-		CALL REVERSE	;Step in Reverse
+		GOTO FORWARD	;Step Forward
+		GOTO REVERSE	;Step in Reverse
 		BCF PORTA,3		;Clear PORTA bit 3 to signal ready for next step
 		GOTO LISTEN
 

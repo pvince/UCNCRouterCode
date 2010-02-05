@@ -1,4 +1,4 @@
-MPASM 02.70 Released         STEPPE~1.ASM   2-4-2010  0:30:42         PAGE  1
+MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:16:55         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -28,7 +28,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
   00000086            00022 TRISB   equ 86h
   0000000C            00023 STATE   equ 0Ch
                       00024 
-                      00025 ;Startup        18 cycles = 3.6 u seconds
+                      00025 ;Startup        18 cycles = 4.6 u seconds
 0000   1283           00026 STARTUP BCF STATUS,RP0  ;Bank 0
 0001   0185           00027                 CLRF PORTA              ;Init PORTA
 0002   0186           00028                 CLRF PORTB              ;Init PORTB
@@ -47,91 +47,92 @@ Message[302]: Register in operand not in bank 0.  Ensure that bank bits are corr
                       00038                 
 000C   282A           00039                 GOTO STEP1              ;Start the system at STEP1
                       00040 
-                      00041 ;Listen for step instruction
-000D                  00042 LISTEN
-000D   1885           00043                 BTFSC PORTA,1   ;If PORTA, bit 1 is 0 skip next line
-000E   2810           00044                 GOTO STEP               ;Call STEP subroutine
-000F   280D           00045                 GOTO LISTEN             ;Continue listening
-                      00046 
-0010                  00047 STEP
-0010   1585           00048                 BSF PORTA,3             ;Set PORTA, bit 3 to signal busy to controller
-0011   1805           00049                 BTFSC PORTA,0   ;If PORTA, bit 0 is 0 skip next line
-0012   2016           00050                 CALL FORWARD    ;Step Forward
-MPASM 02.70 Released         STEPPE~1.ASM   2-4-2010  0:30:42         PAGE  2
+                      00041 ;Worst case step takes 5 u seconds
+                      00042 ;Listen for step instruction
+000D                  00043 LISTEN
+000D   1885           00044                 BTFSC PORTA,1   ;If PORTA, bit 1 is 0 skip next line
+000E   2810           00045                 GOTO STEP               ;Call STEP subroutine
+000F   280D           00046                 GOTO LISTEN             ;Continue listening
+                      00047 
+0010                  00048 STEP
+0010   1585           00049                 BSF PORTA,3             ;Set PORTA, bit 3 to signal busy to controller
+0011   1805           00050                 BTFSC PORTA,0   ;If PORTA, bit 0 is 0 skip next line
+MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:16:55         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0013   2020           00051                 CALL REVERSE    ;Step in Reverse
-0014   1185           00052                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
-0015   280D           00053                 GOTO LISTEN
-                      00054 
-0016                  00055 FORWARD
-0016   188C           00056                 BTFSC STATE,1           ;If W, bit 0 is 0 skip next line
-0017   2831           00057                 GOTO STEP2              ;Next step(2)
-0018   190C           00058                 BTFSC STATE,2           ;If STATE, bit 1 is 0 skip next line
-0019   2838           00059                 GOTO STEP3              ;Next step(3)
-001A   198C           00060                 BTFSC STATE,3           ;If STATE, bit 2 is 0 skip next line
-001B   283F           00061                 GOTO STEP4              ;Next step(4)
-001C   1A0C           00062                 BTFSC STATE,4           ;If STATE, bit 3 is 0 skip next line
-001D   282A           00063                 GOTO STEP1              ;Next step(1)
-001E   1185           00064                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
-001F   280D           00065                 GOTO LISTEN
-                      00066 
-0020                  00067 REVERSE
-0020   1A0C           00068                 BTFSC STATE,4           ;If STATE, bit 3 is 0 skip next line
-0021   2838           00069                 GOTO STEP3              ;Next step(3)
-0022   198C           00070                 BTFSC STATE,3           ;If STATE, bit 2 is 0 skip next line
-0023   2831           00071                 GOTO STEP2              ;Next step(2)
-0024   190C           00072                 BTFSC STATE,2           ;If STATE, bit 1 is 0 skip next line
-0025   282A           00073                 GOTO STEP1              ;Next step(1)
-0026   188C           00074                 BTFSC STATE,1           ;If STATE, bit 0 is 0 skip next line
-0027   283F           00075                 GOTO STEP4              ;Next step(4)
-0028   1185           00076                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
-0029   280D           00077                 GOTO LISTEN
-                      00078                 
-                      00079 ;Power to Step 1
-002A   302B           00080 STEP1   MOVLW 2Bh               ;Setup Step1 output(101011)
-002B   0086           00081                 MOVWF PORTB             ;Output Step1 to PORTB
-002C   120C           00082                 BCF STATE,4             ;Reset STATE
-002D   148C           00083                 BSF STATE,1             ;Set STATE to 0001 to track steps
-002E   110C           00084                 BCF STATE,2             ;Reset STATE
-002F   1185           00085                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
-0030   280D           00086                 GOTO LISTEN
-                      00087 ;Power to Step 2
-0031   3027           00088 STEP2   MOVLW 27h               ;Setup Step1 output(100111)
-0032   0086           00089                 MOVWF PORTB             ;Output Step2 to PORTB
-0033   108C           00090                 BCF STATE,1             ;Reset STATE
-0034   150C           00091                 BSF STATE,2             ;Set W to 0010 to track steps
-0035   118C           00092                 BCF STATE,3             ;Reset STATE
-0036   1185           00093                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
-0037   280D           00094                 GOTO LISTEN
-                      00095 ;Power to Step 3
-0038   3017           00096 STEP3   MOVLW 17h               ;Setup Step1 output(010111)
-0039   0086           00097                 MOVWF PORTB             ;Output Step2 to PORTB
-003A   110C           00098                 BCF STATE,2             ;Reset STATE
-003B   158C           00099                 BSF STATE,3             ;Set W to 0100 to track steps
-003C   120C           00100                 BCF STATE,4             ;Reset STATE
-003D   1185           00101                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
-003E   280D           00102                 GOTO LISTEN
-                      00103 ;Power to Step 4
-MPASM 02.70 Released         STEPPE~1.ASM   2-4-2010  0:30:42         PAGE  3
+0012   2816           00051                 GOTO FORWARD    ;Step Forward
+0013   2820           00052                 GOTO REVERSE    ;Step in Reverse
+0014   1185           00053                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
+0015   280D           00054                 GOTO LISTEN
+                      00055 
+0016                  00056 FORWARD
+0016   188C           00057                 BTFSC STATE,1           ;If W, bit 0 is 0 skip next line
+0017   2831           00058                 GOTO STEP2              ;Next step(2)
+0018   190C           00059                 BTFSC STATE,2           ;If STATE, bit 1 is 0 skip next line
+0019   2838           00060                 GOTO STEP3              ;Next step(3)
+001A   198C           00061                 BTFSC STATE,3           ;If STATE, bit 2 is 0 skip next line
+001B   283F           00062                 GOTO STEP4              ;Next step(4)
+001C   1A0C           00063                 BTFSC STATE,4           ;If STATE, bit 3 is 0 skip next line
+001D   282A           00064                 GOTO STEP1              ;Next step(1)
+001E   1185           00065                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
+001F   280D           00066                 GOTO LISTEN
+                      00067 
+0020                  00068 REVERSE
+0020   1A0C           00069                 BTFSC STATE,4           ;If STATE, bit 3 is 0 skip next line
+0021   2838           00070                 GOTO STEP3              ;Next step(3)
+0022   198C           00071                 BTFSC STATE,3           ;If STATE, bit 2 is 0 skip next line
+0023   2831           00072                 GOTO STEP2              ;Next step(2)
+0024   190C           00073                 BTFSC STATE,2           ;If STATE, bit 1 is 0 skip next line
+0025   282A           00074                 GOTO STEP1              ;Next step(1)
+0026   188C           00075                 BTFSC STATE,1           ;If STATE, bit 0 is 0 skip next line
+0027   283F           00076                 GOTO STEP4              ;Next step(4)
+0028   1185           00077                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
+0029   280D           00078                 GOTO LISTEN
+                      00079                 
+                      00080 ;Power to Step 1
+002A   302B           00081 STEP1   MOVLW 2Bh               ;Setup Step1 output(101011)
+002B   0086           00082                 MOVWF PORTB             ;Output Step1 to PORTB
+002C   120C           00083                 BCF STATE,4             ;Reset STATE
+002D   148C           00084                 BSF STATE,1             ;Set STATE to 0001 to track steps
+002E   110C           00085                 BCF STATE,2             ;Reset STATE
+002F   1185           00086                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
+0030   280D           00087                 GOTO LISTEN
+                      00088 ;Power to Step 2
+0031   3027           00089 STEP2   MOVLW 27h               ;Setup Step1 output(100111)
+0032   0086           00090                 MOVWF PORTB             ;Output Step2 to PORTB
+0033   108C           00091                 BCF STATE,1             ;Reset STATE
+0034   150C           00092                 BSF STATE,2             ;Set W to 0010 to track steps
+0035   118C           00093                 BCF STATE,3             ;Reset STATE
+0036   1185           00094                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
+0037   280D           00095                 GOTO LISTEN
+                      00096 ;Power to Step 3
+0038   3017           00097 STEP3   MOVLW 17h               ;Setup Step1 output(010111)
+0039   0086           00098                 MOVWF PORTB             ;Output Step2 to PORTB
+003A   110C           00099                 BCF STATE,2             ;Reset STATE
+003B   158C           00100                 BSF STATE,3             ;Set W to 0100 to track steps
+003C   120C           00101                 BCF STATE,4             ;Reset STATE
+003D   1185           00102                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
+003E   280D           00103                 GOTO LISTEN
+MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:16:55         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-003F   301B           00104 STEP4   MOVLW 1Bh               ;Setup Step1 output(011011)
-0040   0086           00105                 MOVWF PORTB             ;Output Step2 to PORTB
-0041   118C           00106                 BCF STATE,3             ;Reset STATE
-0042   160C           00107                 BSF STATE,4             ;Set W to 1000 to track steps
-0043   108C           00108                 BCF STATE,1             ;Reset STATE
-0044   1185           00109                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
-0045   280D           00110                 GOTO LISTEN
+                      00104 ;Power to Step 4
+003F   301B           00105 STEP4   MOVLW 1Bh               ;Setup Step1 output(011011)
+0040   0086           00106                 MOVWF PORTB             ;Output Step2 to PORTB
+0041   118C           00107                 BCF STATE,3             ;Reset STATE
+0042   160C           00108                 BSF STATE,4             ;Set W to 1000 to track steps
+0043   108C           00109                 BCF STATE,1             ;Reset STATE
+0044   1185           00110                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
+0045   280D           00111                 GOTO LISTEN
 Warning[205]: Found directive in column 1. (END)
-                      00111 END
-MPASM 02.70 Released         STEPPE~1.ASM   2-4-2010  0:30:42         PAGE  4
+                      00112 END
+MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:16:55         PAGE  4
 
 
 SYMBOL TABLE
