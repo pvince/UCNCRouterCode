@@ -26,6 +26,7 @@ namespace PCComm
 
         private void cmdOpen_Click(object sender, EventArgs e)
         {
+            comm.PortName = cboPort.SelectedItem.ToString();
             comm.Parity = cboParity.Text;
             comm.StopBits = cboStop.Text;
             comm.DataBits = cboData.Text;
@@ -33,8 +34,6 @@ namespace PCComm
             comm.DisplayWindow = rtbDisplay;
             comm.OpenPort();
 
-            cmdOpen.Enabled = false;
-            cmdClose.Enabled = true;
             cmdSend.Enabled = true;
         }
 
@@ -88,6 +87,11 @@ namespace PCComm
             {
                 comm.CurrentTransmissionType = PCComm.CommunicationManager.TransmissionType.Text;
             }
+        }
+
+        private void cmdClose_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
