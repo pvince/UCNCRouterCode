@@ -2,7 +2,7 @@
 #define Queue_h
 
 
-int QueueLength;
+const int QueueLength = 0;
 
 
 #endif

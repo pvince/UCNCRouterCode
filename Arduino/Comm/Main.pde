@@ -17,11 +17,12 @@ void loop()
   long Message = 0;  
   if(FlagEStop)
   {
+    FlagStart = 0;  //Stop proccessing the queue
     //**************************
     //Stop Everything
     //**************************
   }
-  else if(!FlagMotorDelay) //if the motors are not doing anything and are ready to move again.
+  else if(!FlagMotorDelay &&  FlagStart) //if the motors are not doing anything and are ready to move again.
   {
     FlagMotorDelay=1;  //set the motor flag as not being ready.
     //********************************
@@ -30,14 +31,14 @@ void loop()
     //FlagMotorDelay=0;
     //********************************
   }
-  else if(Serial.available()>0) //get message on serial buffer if one exists
+  else if(Serial.available()) //get message on serial buffer if one exists
   {
 //    ErrorCheck((long*) Serial.read(),int Serial.available());
-     MessageFilter( &Serial.read());
+     MessageFilter((long*) Serial.read());
   }
   else if(QueueLength<250)
   {
-    Serial.print("MoreMessages");  //Ask computer for more messages.
+    //Serial.print("MoreMessages");  //Ask computer for more messages.
   }
   
 }

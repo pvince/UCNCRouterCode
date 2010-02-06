@@ -26,21 +26,28 @@
 //
 //}
 
-int MessageFilter(void &Message)
+int MessageFilter(long* Message)
 {
+  long* packet;
   switch(*Message & 15)
   {
     case (0):  //Ping
-          
+      MessageAck Acknowledge;
+      *packet = long(&Acknowledge);
+      Serial.print((long*) packet);
       break;
     case (1):  //Acknowledge
       Serial.print(Firmware);
       break;
     case(2):  //EStop
+      FlagEStop = 1;
+      FlagStart = 0;
       break;
     case(3):  //Request Commands
       break;
     case(4):  //Start Queue
+      FlagEStop = 0;
+      FlagStart = 1;
       break;
     case(5):  //SetSpeed
       MessageSetSpeed Packet;
@@ -53,6 +60,5 @@ int MessageFilter(void &Message)
       MessageMove Packet3;
       break;
    }
-  
 }
 
