@@ -1,4 +1,4 @@
-MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:16:55         PAGE  1
+MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:29:20         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -9,13 +9,13 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00003 ;PIN 18 => RA1 => Step Pulse                            ;
                       00004 ;PIN 17 => RA0 => Forward/Reverse signal        ;
                       00005 ;OUTPUTS:                                                                       ;
-                      00006 ;PIN 12 => RB6 => A Coil                                        ;
-                      00007 ;PIN 11 => RB5 => A* Coil                                       ;
-                      00008 ;PIN 10 => RB4 => B Coil                                        ;
-                      00009 ;PIN 9  => RB3 => B* Coil                                       ;
-                      00010 ;PIN 8  => RB2 => Enable A Coil                         ;
-                      00011 ;PIN 7  => RB1 => Enable B Coil                         ;
-                      00012 ;PIN 13 => RB7 => Busy                                          ;
+                      00006 ;PIN 11 => RB5 => A Coil                                        ;
+                      00007 ;PIN 10 => RB4 => A* Coil                                       ;
+                      00008 ;PIN 9  => RB3 => B Coil                                        ;
+                      00009 ;PIN 8  => RB2 => B* Coil                                       ;
+                      00010 ;PIN 7  => RB1 => Enable A Coil                         ;
+                      00011 ;PIN 6  => RB0 => Enable B Coil                         ;
+                      00012 ;PIN 2  => RA3 => Busy                                          ;
                       00013 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                       00014 
                       00015 ;Constants
@@ -57,7 +57,7 @@ Message[302]: Register in operand not in bank 0.  Ensure that bank bits are corr
 0010                  00048 STEP
 0010   1585           00049                 BSF PORTA,3             ;Set PORTA, bit 3 to signal busy to controller
 0011   1805           00050                 BTFSC PORTA,0   ;If PORTA, bit 0 is 0 skip next line
-MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:16:55         PAGE  2
+MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:29:20         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -116,7 +116,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 003C   120C           00101                 BCF STATE,4             ;Reset STATE
 003D   1185           00102                 BCF PORTA,3             ;Clear PORTA bit 3 to signal ready for next step
 003E   280D           00103                 GOTO LISTEN
-MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:16:55         PAGE  3
+MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:29:20         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -132,7 +132,7 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
 0045   280D           00111                 GOTO LISTEN
 Warning[205]: Found directive in column 1. (END)
                       00112 END
-MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:16:55         PAGE  4
+MPASM 02.70 Released         STEPPE~1.ASM   2-5-2010  12:29:20         PAGE  4
 
 
 SYMBOL TABLE
