@@ -26,7 +26,6 @@ STATE	equ 0Ch
 OPT		equ 81h
 TRISA	equ 85h
 TRISB	equ 86h
-ANSEL	equ 91h
 
 ORG 0000h
 GOTO STARTUP	;Skip interrupt
@@ -35,14 +34,11 @@ CALL STEP		;Call STEP subroutine
 BCF INTCON,1	;Clear Interrupt
 RETFIE			;Return from interrupt
 
-;Startup	18 cycles = 4.6 u seconds
+;Startup	4.8 u seconds
 STARTUP	BCF STATUS,RP0	;Bank 0
 		CLRF PORTA		;Init PORTA
 		CLRF PORTB		;Init PORTB
 		BSF STATUS,RP0	;Bank 1
-		CLRF ANSEL		;digital I/O
-		;MOVLW 03h		;Set RA0-1 as inputs
-		;MOVWF TRISA	;Setup RA0-1 as inputs and 2-5 as outputs
 		BSF OPT,6		;Enable Interrupt on rising edge
 		MOVLW 03h		;Set RB0-1 as inputs, RB2-7 as outputs
 		MOVWF TRISB		;Setup RC0-5 as outputs
@@ -57,17 +53,13 @@ STARTUP	BCF STATUS,RP0	;Bank 0
 ;Worst case step takes 5 u seconds
 ;Listen for step instruction
 LISTEN
-		;BTFSC PORTA,1	;If PORTA, bit 1 is 0 skip next line
-		;GOTO STEP		;Call STEP subroutine
 		GOTO LISTEN		;Continue listening until interrupt
 
 STEP
-		BSF PORTA,3		;Set PORTA, bit 3 to signal busy to controller
 		BTFSC PORTB,1	;If PORTB, bit 1 is 0 skip next line
 		CALL FORWARD	;Step Forward
 		BTFSS PORTB,1	;If PORTB, bit 1 is 1 skip next line
 		CALL REVERSE	;Step in Reverse
-		BCF PORTA,2		;Clear PORTA bit 2 to signal ready for next step
 		RETURN			;GOTO LISTEN
 
 FORWARD
@@ -79,7 +71,6 @@ FORWARD
 		GOTO STEP4		;Next step(4)
 		BTFSC STATE,4	;If STATE, bit 3 is 0 skip next line
 		GOTO STEP1		;Next step(1)
-		BCF PORTA,2		;Clear PORTA bit 2 to signal ready for next step
 		RETURN			;GOTO LISTEN
 
 REVERSE
@@ -91,7 +82,6 @@ REVERSE
 		GOTO STEP1		;Next step(1)
 		BTFSC STATE,1		;If STATE, bit 0 is 0 skip next line
 		GOTO STEP4		;Next step(4)
-		BCF PORTA,2		;Clear PORTA bit 2 to signal ready for next step
 		RETURN			;GOTO LISTEN
 		
 ;Power to Step 1
@@ -100,7 +90,6 @@ STEP1	MOVLW 0xE8		;Setup Step1 output(1110 1000)
 		BCF STATE,4		;Reset STATE
 		BSF STATE,1		;Set STATE to 0001 to track steps
 		BCF STATE,2		;Reset STATE
-		BCF PORTA,2		;Clear PORTA bit 2 to signal ready for next step
 		RETURN			;GOTO LISTEN
 ;Power to Step 2
 STEP2	MOVLW 0xE4		;Setup Step1 output(1110 0100)
@@ -108,7 +97,6 @@ STEP2	MOVLW 0xE4		;Setup Step1 output(1110 0100)
 		BCF STATE,1		;Reset STATE
 		BSF STATE,2		;Set W to 0010 to track steps
 		BCF STATE,3		;Reset STATE
-		BCF PORTA,2		;Clear PORTA bit 2 to signal ready for next step
 		RETURN			;GOTO LISTEN
 ;Power to Step 3
 STEP3	MOVLW 0xD4		;Setup Step1 output(1101 0100)
@@ -116,7 +104,6 @@ STEP3	MOVLW 0xD4		;Setup Step1 output(1101 0100)
 		BCF STATE,2		;Reset STATE
 		BSF STATE,3		;Set W to 0100 to track steps
 		BCF STATE,4		;Reset STATE
-		BCF PORTA,2		;Clear PORTA bit 2 to signal ready for next step
 		RETURN			;GOTO LISTEN
 ;Power to Step 4
 STEP4	MOVLW 0xD8		;Setup Step1 output(1101 1000)
@@ -124,6 +111,5 @@ STEP4	MOVLW 0xD8		;Setup Step1 output(1101 1000)
 		BCF STATE,3		;Reset STATE
 		BSF STATE,4		;Set W to 1000 to track steps
 		BCF STATE,1		;Reset STATE
-		BCF PORTA,2		;Clear PORTA bit 2 to signal ready for next step
 		RETURN			;GOTO LISTEN
 END
