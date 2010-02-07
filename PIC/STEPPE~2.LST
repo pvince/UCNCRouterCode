@@ -1,4 +1,4 @@
-MPASM 02.70 Released         STEPPE~2.ASM   2-7-2010  12:57:44         PAGE  1
+MPASM 02.70 Released         STEPPE~2.ASM   2-7-2010  13:20:18         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
@@ -19,128 +19,126 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00013 ;                                                                                       ;
                       00014 ;Program waits for the rising edge of a         ;
                       00015 ; signal on RB0 to trigger an interrupt         ;
-                      00016 ; and initiate a step.                                          ;
-                      00017 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                      00018 
-                      00019 ;Constants
-  00000003            00020 STATUS  equ 03h
-  00000005            00021 RP0             equ 05h
-  00000005            00022 PORTA   equ 05h
-  00000006            00023 PORTB   equ 06h
-  0000000B            00024 INTCON  equ 0Bh
-  0000000C            00025 STATE   equ 0Ch
-  00000081            00026 OPT             equ 81h
-  00000085            00027 TRISA   equ 85h
-  00000086            00028 TRISB   equ 86h
-                      00029 
+                      00016 ; and initiate a step.  I think a 20 us         ;
+                      00017 ; pulse is required to trigger the                      ;
+                      00018 ; interrupt.                                                            ;
+                      00019 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      00020 
+                      00021 ;Constants
+  00000003            00022 STATUS  equ 03h
+  00000005            00023 RP0             equ 05h
+  00000005            00024 PORTA   equ 05h
+  00000006            00025 PORTB   equ 06h
+  0000000B            00026 INTCON  equ 0Bh
+  0000000C            00027 STATE   equ 0Ch
+  00000081            00028 OPT             equ 81h
+  00000085            00029 TRISA   equ 85h
+  00000086            00030 TRISB   equ 86h
+                      00031 
 Warning[205]: Found directive in column 1. (ORG)
-0000                  00030 ORG 0000h
+0000                  00032 ORG 0000h
 Warning[203]: Found opcode in column 1. (GOTO)
-0000   2807           00031 GOTO STARTUP    ;Skip interrupt
+0000   2807           00033 GOTO STARTUP    ;Skip interrupt
 Warning[205]: Found directive in column 1. (ORG)
-0004                  00032 ORG 0004h               ;Interrupt memory location
+0004                  00034 ORG 0004h               ;Interrupt memory location
 Warning[203]: Found opcode in column 1. (CALL)
-0004   2015           00033 CALL STEP               ;Call STEP subroutine
+0004   2015           00035 CALL STEP               ;Call STEP subroutine
 Warning[203]: Found opcode in column 1. (BCF)
-0005   108B           00034 BCF INTCON,1    ;Clear Interrupt
+0005   108B           00036 BCF INTCON,1    ;Clear Interrupt
 Warning[203]: Found opcode in column 1. (RETFIE)
-0006   0009           00035 RETFIE                  ;Return from interrupt
-                      00036 
-                      00037 ;Startup        5.2 u seconds
-0007   1283           00038 STARTUP BCF STATUS,RP0  ;Bank 0
-0008   0185           00039                 CLRF PORTA              ;Init PORTA
-0009   0186           00040                 CLRF PORTB              ;Init PORTB
-000A   1683           00041                 BSF STATUS,RP0  ;Bank 1
+0006   0009           00037 RETFIE                  ;Return from interrupt
+                      00038 
+                      00039 ;Startup        4.6 u seconds
+0007   1283           00040 STARTUP BCF STATUS,RP0  ;Bank 0
+0008   0185           00041                 CLRF PORTA              ;Init PORTA
+0009   0186           00042                 CLRF PORTB              ;Init PORTB
+000A   1683           00043                 BSF STATUS,RP0  ;Bank 1
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000B   1701           00042                 BSF OPT,6               ;Enable Interrupt on rising edge
-000C   3003           00043                 MOVLW 03h               ;Set RB0-1 as inputs, RB2-7 as outputs
+000B   1701           00044                 BSF OPT,6               ;Enable Interrupt on rising edge
+000C   3003           00045                 MOVLW 03h               ;Set RB0-1 as inputs, RB2-7 as outputs
 Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
-000D   0086           00044                 MOVWF TRISB             ;Setup RC0-5 as outputs
-000E   1283           00045                 BCF STATUS,RP0  ;Bank 0
-MPASM 02.70 Released         STEPPE~2.ASM   2-7-2010  12:57:44         PAGE  2
+MPASM 02.70 Released         STEPPE~2.ASM   2-7-2010  13:20:18         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-000F   178B           00046                 BSF     INTCON,7        ;Enable Global Interrupts
-0010   160B           00047                 BSF     INTCON,4        ;Enable RB0 Interrupt
-0011   30C0           00048                 MOVLW 0xC0              ;Set Enable outputs (RB6-7)
-0012   0086           00049                 MOVWF PORTB             ;Output Enable bits for H-Bridge
-                      00050                 
-0013   202C           00051                 CALL STEP1              ;Start the system at STEP1
-                      00052 
-                      00053 ;Worst case step takes 5 u seconds
-                      00054 ;Listen for step instruction
-0014                  00055 LISTEN
-0014   2814           00056                 GOTO LISTEN             ;Continue listening until interrupt
-                      00057 
-0015                  00058 STEP
-0015   1886           00059                 BTFSC PORTB,1   ;If PORTB, bit 1 is 0 skip next line
-0016   201A           00060                 CALL FORWARD    ;Step Forward
-0017   1C86           00061                 BTFSS PORTB,1   ;If PORTB, bit 1 is 1 skip next line
-0018   2023           00062                 CALL REVERSE    ;Step in Reverse
-0019   0008           00063                 RETURN                  ;GOTO LISTEN
-                      00064 
-001A                  00065 FORWARD
-001A   188C           00066                 BTFSC STATE,1   ;If W, bit 0 is 0 skip next line
-001B   2832           00067                 GOTO STEP2              ;Next step(2)
-001C   190C           00068                 BTFSC STATE,2   ;If STATE, bit 1 is 0 skip next line
-001D   2838           00069                 GOTO STEP3              ;Next step(3)
-001E   198C           00070                 BTFSC STATE,3   ;If STATE, bit 2 is 0 skip next line
-001F   283E           00071                 GOTO STEP4              ;Next step(4)
-0020   1A0C           00072                 BTFSC STATE,4   ;If STATE, bit 3 is 0 skip next line
-0021   282C           00073                 GOTO STEP1              ;Next step(1)
-0022   0008           00074                 RETURN                  ;GOTO LISTEN
-                      00075 
-0023                  00076 REVERSE
-0023   1A0C           00077                 BTFSC STATE,4           ;If STATE, bit 3 is 0 skip next line
-0024   2838           00078                 GOTO STEP3              ;Next step(3)
-0025   198C           00079                 BTFSC STATE,3           ;If STATE, bit 2 is 0 skip next line
-0026   2832           00080                 GOTO STEP2              ;Next step(2)
-0027   190C           00081                 BTFSC STATE,2           ;If STATE, bit 1 is 0 skip next line
-0028   282C           00082                 GOTO STEP1              ;Next step(1)
-0029   188C           00083                 BTFSC STATE,1           ;If STATE, bit 0 is 0 skip next line
-002A   283E           00084                 GOTO STEP4              ;Next step(4)
-002B   0008           00085                 RETURN                  ;GOTO LISTEN
-                      00086                 
-                      00087 ;Power to Step 1
-002C   30E8           00088 STEP1   MOVLW 0xE8              ;Setup Step1 output(1110 1000)
-002D   0086           00089                 MOVWF PORTB             ;Output Step1 to PORTB
-002E   120C           00090                 BCF STATE,4             ;Reset STATE
-002F   148C           00091                 BSF STATE,1             ;Set STATE to 0001 to track steps
-0030   110C           00092                 BCF STATE,2             ;Reset STATE
-0031   0008           00093                 RETURN                  ;GOTO LISTEN
-                      00094 ;Power to Step 2
-0032   30E4           00095 STEP2   MOVLW 0xE4              ;Setup Step1 output(1110 0100)
-0033   0086           00096                 MOVWF PORTB             ;Output Step2 to PORTB
-0034   108C           00097                 BCF STATE,1             ;Reset STATE
-0035   150C           00098                 BSF STATE,2             ;Set W to 0010 to track steps
-MPASM 02.70 Released         STEPPE~2.ASM   2-7-2010  12:57:44         PAGE  3
+000D   0086           00046                 MOVWF TRISB             ;Setup RC0-5 as outputs
+000E   1283           00047                 BCF STATUS,RP0  ;Bank 0
+000F   178B           00048                 BSF     INTCON,7        ;Enable Global Interrupts
+0010   160B           00049                 BSF     INTCON,4        ;Enable RB0 Interrupt
+0011   30C0           00050                 MOVLW 0xC0              ;Set Enable outputs (RB6-7)
+0012   0086           00051                 MOVWF PORTB             ;Output Enable bits for H-Bridge
+                      00052                 
+0013   202C           00053                 CALL STEP1              ;Start the system at STEP1
+                      00054 
+                      00055 ;Worst case step takes 5.4 u seconds
+                      00056 ;Listen for step instruction
+0014                  00057 LISTEN
+0014   2814           00058                 GOTO LISTEN             ;Continue listening until interrupt
+                      00059 
+0015                  00060 STEP
+0015   1886           00061                 BTFSC PORTB,1   ;If PORTB, bit 1 is 0 skip next line
+0016   201A           00062                 CALL FORWARD    ;Step Forward
+0017   1C86           00063                 BTFSS PORTB,1   ;If PORTB, bit 1 is 1 skip next line
+0018   2023           00064                 CALL REVERSE    ;Step in Reverse
+0019   0008           00065                 RETURN                  ;GOTO LISTEN
+                      00066 
+001A                  00067 FORWARD
+001A   188C           00068                 BTFSC STATE,1   ;If W, bit 0 is 0 skip next line
+001B   2831           00069                 GOTO STEP2              ;Next step(2)
+001C   190C           00070                 BTFSC STATE,2   ;If STATE, bit 1 is 0 skip next line
+001D   2836           00071                 GOTO STEP3              ;Next step(3)
+001E   198C           00072                 BTFSC STATE,3   ;If STATE, bit 2 is 0 skip next line
+001F   283B           00073                 GOTO STEP4              ;Next step(4)
+0020   1A0C           00074                 BTFSC STATE,4   ;If STATE, bit 3 is 0 skip next line
+0021   282C           00075                 GOTO STEP1              ;Next step(1)
+0022   0008           00076                 RETURN                  ;GOTO LISTEN
+                      00077 
+0023                  00078 REVERSE
+0023   1A0C           00079                 BTFSC STATE,4           ;If STATE, bit 3 is 0 skip next line
+0024   2836           00080                 GOTO STEP3              ;Next step(3)
+0025   198C           00081                 BTFSC STATE,3           ;If STATE, bit 2 is 0 skip next line
+0026   2831           00082                 GOTO STEP2              ;Next step(2)
+0027   190C           00083                 BTFSC STATE,2           ;If STATE, bit 1 is 0 skip next line
+0028   282C           00084                 GOTO STEP1              ;Next step(1)
+0029   188C           00085                 BTFSC STATE,1           ;If STATE, bit 0 is 0 skip next line
+002A   283B           00086                 GOTO STEP4              ;Next step(4)
+002B   0008           00087                 RETURN                  ;GOTO LISTEN
+                      00088                 
+                      00089 ;Power to Step 1
+002C   30E8           00090 STEP1   MOVLW 0xE8              ;Setup Step1 output(1110 1000)
+002D   0086           00091                 MOVWF PORTB             ;Output Step1 to PORTB
+002E   018C           00092                 CLRF STATE              ;Reset STATE
+002F   148C           00093                 BSF STATE,1             ;Set STATE to 0001 to track steps
+0030   0008           00094                 RETURN                  ;GOTO LISTEN
+                      00095 ;Power to Step 2
+0031   30E4           00096 STEP2   MOVLW 0xE4              ;Setup Step1 output(1110 0100)
+0032   0086           00097                 MOVWF PORTB             ;Output Step2 to PORTB
+0033   018C           00098                 CLRF STATE              ;Reset STATE
+MPASM 02.70 Released         STEPPE~2.ASM   2-7-2010  13:20:18         PAGE  3
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0036   118C           00099                 BCF STATE,3             ;Reset STATE
-0037   0008           00100                 RETURN                  ;GOTO LISTEN
+0034   150C           00099                 BSF STATE,2             ;Set W to 0010 to track steps
+0035   0008           00100                 RETURN                  ;GOTO LISTEN
                       00101 ;Power to Step 3
-0038   30D4           00102 STEP3   MOVLW 0xD4              ;Setup Step1 output(1101 0100)
-0039   0086           00103                 MOVWF PORTB             ;Output Step2 to PORTB
-003A   110C           00104                 BCF STATE,2             ;Reset STATE
-003B   158C           00105                 BSF STATE,3             ;Set W to 0100 to track steps
-003C   120C           00106                 BCF STATE,4             ;Reset STATE
-003D   0008           00107                 RETURN                  ;GOTO LISTEN
-                      00108 ;Power to Step 4
-003E   30D8           00109 STEP4   MOVLW 0xD8              ;Setup Step1 output(1101 1000)
-003F   0086           00110                 MOVWF PORTB             ;Output Step2 to PORTB
-0040   118C           00111                 BCF STATE,3             ;Reset STATE
-0041   160C           00112                 BSF STATE,4             ;Set W to 1000 to track steps
-0042   108C           00113                 BCF STATE,1             ;Reset STATE
-0043   0008           00114                 RETURN                  ;GOTO LISTEN
+0036   30D4           00102 STEP3   MOVLW 0xD4              ;Setup Step1 output(1101 0100)
+0037   0086           00103                 MOVWF PORTB             ;Output Step2 to PORTB
+0038   018C           00104                 CLRF STATE              ;Reset STATE
+0039   158C           00105                 BSF STATE,3             ;Set W to 0100 to track steps
+003A   0008           00106                 RETURN                  ;GOTO LISTEN
+                      00107 ;Power to Step 4
+003B   30D8           00108 STEP4   MOVLW 0xD8              ;Setup Step1 output(1101 1000)
+003C   0086           00109                 MOVWF PORTB             ;Output Step2 to PORTB
+003D   018C           00110                 CLRF STATE              ;Reset STATE
+003E   160C           00111                 BSF STATE,4             ;Set W to 1000 to track steps
+003F   0008           00112                 RETURN                  ;GOTO LISTEN
 Warning[205]: Found directive in column 1. (END)
-                      00115 END
-MPASM 02.70 Released         STEPPE~2.ASM   2-7-2010  12:57:44         PAGE  4
+                      00113 END
+MPASM 02.70 Released         STEPPE~2.ASM   2-7-2010  13:20:18         PAGE  4
 
 
 SYMBOL TABLE
@@ -159,9 +157,9 @@ STATE                             0000000C
 STATUS                            00000003
 STEP                              00000015
 STEP1                             0000002C
-STEP2                             00000032
-STEP3                             00000038
-STEP4                             0000003E
+STEP2                             00000031
+STEP3                             00000036
+STEP4                             0000003B
 TRISA                             00000085
 TRISB                             00000086
 __16F84A                          00000001
@@ -170,12 +168,11 @@ __16F84A                          00000001
 MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
 
 0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
-0040 : XXXX------------ ---------------- ---------------- ----------------
 
 All other memory blocks unused.
 
-Program Memory Words Used:    65
-Program Memory Words Free:   959
+Program Memory Words Used:    61
+Program Memory Words Free:   963
 
 
 Errors   :     0

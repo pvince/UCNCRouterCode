@@ -13,7 +13,9 @@
 ;											;
 ;Program waits for the rising edge of a 	;
 ; signal on RB0 to trigger an interrupt		;
-; and initiate a step.						;
+; and initiate a step.  I think a 20 us		;
+; pulse is required to trigger the 			;
+; interrupt.								;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;Constants
@@ -34,7 +36,7 @@ CALL STEP		;Call STEP subroutine
 BCF INTCON,1	;Clear Interrupt
 RETFIE			;Return from interrupt
 
-;Startup	4.8 u seconds
+;Startup	4.6 u seconds
 STARTUP	BCF STATUS,RP0	;Bank 0
 		CLRF PORTA		;Init PORTA
 		CLRF PORTB		;Init PORTB
@@ -50,7 +52,7 @@ STARTUP	BCF STATUS,RP0	;Bank 0
 		
 		CALL STEP1		;Start the system at STEP1
 
-;Worst case step takes 5 u seconds
+;Worst case step takes 5.4 u seconds
 ;Listen for step instruction
 LISTEN
 		GOTO LISTEN		;Continue listening until interrupt
@@ -87,29 +89,25 @@ REVERSE
 ;Power to Step 1
 STEP1	MOVLW 0xE8		;Setup Step1 output(1110 1000)
 		MOVWF PORTB		;Output Step1 to PORTB
-		BCF STATE,4		;Reset STATE
+		CLRF STATE		;Reset STATE
 		BSF STATE,1		;Set STATE to 0001 to track steps
-		BCF STATE,2		;Reset STATE
 		RETURN			;GOTO LISTEN
 ;Power to Step 2
 STEP2	MOVLW 0xE4		;Setup Step1 output(1110 0100)
 		MOVWF PORTB		;Output Step2 to PORTB
-		BCF STATE,1		;Reset STATE
+		CLRF STATE		;Reset STATE
 		BSF STATE,2		;Set W to 0010 to track steps
-		BCF STATE,3		;Reset STATE
 		RETURN			;GOTO LISTEN
 ;Power to Step 3
 STEP3	MOVLW 0xD4		;Setup Step1 output(1101 0100)
 		MOVWF PORTB		;Output Step2 to PORTB
-		BCF STATE,2		;Reset STATE
+		CLRF STATE		;Reset STATE
 		BSF STATE,3		;Set W to 0100 to track steps
-		BCF STATE,4		;Reset STATE
 		RETURN			;GOTO LISTEN
 ;Power to Step 4
 STEP4	MOVLW 0xD8		;Setup Step1 output(1101 1000)
 		MOVWF PORTB		;Output Step2 to PORTB
-		BCF STATE,3		;Reset STATE
+		CLRF STATE		;Reset STATE
 		BSF STATE,4		;Set W to 1000 to track steps
-		BCF STATE,1		;Reset STATE
 		RETURN			;GOTO LISTEN
 END
