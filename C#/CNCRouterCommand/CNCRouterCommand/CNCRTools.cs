@@ -28,7 +28,6 @@ namespace CNCRouterCommand
 
         public static string GetCNCRouterVersion(string SerialPortName)
         {
-            CNCRConstants.strCurFWVersion;
             return "Not Implemented";
         }
 

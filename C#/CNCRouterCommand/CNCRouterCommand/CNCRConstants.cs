@@ -8,11 +8,10 @@ namespace CNCRouterCommand
     class CNCRConstants
     {
         // Constants for checking firmware compatibility.
-        public const string[] strFWVersions = { "1" };
-        public const string strCurFWVersion = strFWVersions[1];
+        public const int CNCROUTER_CURRENTFW = 0;
 
         // Constants for error messages
-        public const string strErr_IncompatFirmware = "The firmware version of the CNCRouter is not compatible with this version of the software.";
+        public const string ERRMESG_INCOMPATFIRMWARE = "The firmware version of the CNCRouter is not compatible with this version of the software.";
 
 
     }
