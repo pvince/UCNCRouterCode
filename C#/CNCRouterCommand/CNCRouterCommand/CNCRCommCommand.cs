@@ -222,9 +222,16 @@ namespace CNCRouterCommand
 
         public void SendMsg(CNCRMessage msg)
         {
-            if (!(comPort.IsOpen == true)) comPort.Open();
-            byte[] newMsg = BitConverter.GetBytes(msg.toSerial());
-            comPort.Write(newMsg, 0, newMsg.Length);
+            if (!(comPort.IsOpen == true)) OpenPort();
+            if (comPort.IsOpen)
+            {
+                byte[] newMsg = msg.toSerial();
+                comPort.Write(newMsg, 0, newMsg.Length);
+            }
+            else
+            {
+                //TODO: Log an error
+            }
 
         }
         #endregion
@@ -282,7 +289,6 @@ namespace CNCRouterCommand
         [STAThread]
         private void DisplayData(MessageType type, string msg)
         {
-            /*
             _displayWindow.Invoke(new EventHandler(delegate
             {
                 _displayWindow.SelectedText = string.Empty;
@@ -290,7 +296,7 @@ namespace CNCRouterCommand
                 _displayWindow.SelectionColor = MessageColor[(int)type];
                 _displayWindow.AppendText(msg);
                 _displayWindow.ScrollToCaret();
-            }));*/
+            }));
         }
         #endregion
 
@@ -301,7 +307,7 @@ namespace CNCRouterCommand
             {
                 //first check if the port is already open
                 //if its open then close it
-                if (comPort.IsOpen == true) comPort.Close();
+                if (comPort.IsOpen == true) ClosePort();
 
                 //set the properties of our SerialPort Object
                 comPort.BaudRate = int.Parse(_baudRate);    //BaudRate
