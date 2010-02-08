@@ -219,6 +219,14 @@ namespace CNCRouterCommand
                     break;
             }
         }
+
+        public void SendMsg(CNCRMessage msg)
+        {
+            if (!(comPort.IsOpen == true)) comPort.Open();
+            byte[] newMsg = BitConverter.GetBytes(msg.toSerial());
+            comPort.Write(newMsg, 0, newMsg.Length);
+
+        }
         #endregion
 
         #region HexByteConverters
@@ -274,6 +282,7 @@ namespace CNCRouterCommand
         [STAThread]
         private void DisplayData(MessageType type, string msg)
         {
+            /*
             _displayWindow.Invoke(new EventHandler(delegate
             {
                 _displayWindow.SelectedText = string.Empty;
@@ -281,7 +290,7 @@ namespace CNCRouterCommand
                 _displayWindow.SelectionColor = MessageColor[(int)type];
                 _displayWindow.AppendText(msg);
                 _displayWindow.ScrollToCaret();
-            }));
+            }));*/
         }
         #endregion
 
@@ -296,9 +305,9 @@ namespace CNCRouterCommand
 
                 //set the properties of our SerialPort Object
                 comPort.BaudRate = int.Parse(_baudRate);    //BaudRate
-                comPort.DataBits = int.Parse(_dataBits);    //DataBits
-                comPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), _stopBits);    //StopBits
-                comPort.Parity = (Parity)Enum.Parse(typeof(Parity), _parity);    //Parity
+                //comPort.DataBits = int.Parse(_dataBits);    //DataBits
+                //comPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), _stopBits);    //StopBits
+                //comPort.Parity = (Parity)Enum.Parse(typeof(Parity), _parity);    //Parity
                 comPort.PortName = _portName;   //PortName
                 //now open the port
                 comPort.Open();

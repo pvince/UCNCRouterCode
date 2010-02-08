@@ -34,9 +34,12 @@ namespace CNCRouterCommand
 
         private void button1_Click(object sender, EventArgs e)
         {
-            int jim = 1;
-            int bigJim = jim << 5;
-            label1.Text = bigJim.ToString();
+            CNCRMsgPing pingMsg = new CNCRMsgPing();
+            CNCRCommCommand commCmd = new CNCRCommCommand();
+            commCmd.BaudRate = "9600";
+            commCmd.PortName = "COM5";
+
+            commCmd.SendMsg(pingMsg);
         }
     }
 }
