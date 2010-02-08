@@ -12,10 +12,11 @@ namespace CNCRouterCommand
         {
         }
 
-        public override long toSerial()
+        public override byte[] toSerial()
         {
-            // 0010 | 0...0
-            return 2^29;
+            // 0010 0000 | 255
+            byte[] result = { 0x20, 255 };
+            return result;
         }
     }
 }
