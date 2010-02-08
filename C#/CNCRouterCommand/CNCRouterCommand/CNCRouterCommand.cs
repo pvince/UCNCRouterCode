@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
+
 /**
  * Some thoughts on the program
  * - "Communication" interface classes
@@ -32,10 +34,9 @@ namespace CNCRouterCommand
 
         private void button1_Click(object sender, EventArgs e)
         {
-            label1.Text = "";
-            string[] bob = CNCRTools.GetCommPortList();
-            for (int i = 0; i < bob.Length; i++)
-                label1.Text += bob[i] + '\n';
+            int jim = 1;
+            int bigJim = jim << 5;
+            label1.Text = bigJim.ToString();
         }
     }
 }

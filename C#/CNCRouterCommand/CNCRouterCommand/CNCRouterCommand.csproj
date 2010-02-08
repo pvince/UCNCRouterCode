@@ -50,6 +50,9 @@
   <ItemGroup>
     <Compile Include="CNCRCommCommand.cs" />
     <Compile Include="CNCRConstants.cs" />
+    <Compile Include="CNCRMessage.cs" />
+    <Compile Include="CNCRMsgEStop.cs" />
+    <Compile Include="CNCRMsgPing.cs" />
     <Compile Include="CNCRouterCommand.cs">
       <SubType>Form</SubType>
     </Compile>

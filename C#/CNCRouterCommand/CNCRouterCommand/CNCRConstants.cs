@@ -5,7 +5,18 @@ using System.Text;
 
 namespace CNCRouterCommand
 {
-    class CNCRConstants
+
+    public enum CNCRMESSAGE_TYPE
+    {
+        PING,
+        CMD_ACKNOWLEDGE,
+        E_STOP,
+        REQUEST_COMMAND,
+        START_QUEUE,
+        SET_SPEED
+    };
+
+    public class CNCRConstants
     {
         // Constants for checking firmware compatibility.
         public const int CNCROUTER_CURRENTFW = 0;
