@@ -9,13 +9,12 @@ namespace CNCRouterCommand
     {
         public CNCRMsgEStop()
             : base(CNCRMESSAGE_TYPE.E_STOP)
-        {
-        }
+        { }
 
         public override byte[] toSerial()
         {
             // 0010 0000 | 255
-            byte[] result = { 0x20, 255 };
+            byte[] result = { 0x20, CNCRConstants.END_OF_MSG };
             return result;
         }
     }

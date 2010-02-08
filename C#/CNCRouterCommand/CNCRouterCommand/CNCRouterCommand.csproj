@@ -51,8 +51,12 @@
     <Compile Include="CNCRCommCommand.cs" />
     <Compile Include="CNCRConstants.cs" />
     <Compile Include="CNCRMessage.cs" />
+    <Compile Include="CNCRMsgCmdAck.cs" />
     <Compile Include="CNCRMsgEStop.cs" />
+    <Compile Include="CNCRMsgMove.cs" />
     <Compile Include="CNCRMsgPing.cs" />
+    <Compile Include="CNCRMsgSetSpeed.cs" />
+    <Compile Include="CNCRMsgStartQueue.cs" />
     <Compile Include="CNCRouterCommand.cs">
       <SubType>Form</SubType>
     </Compile>

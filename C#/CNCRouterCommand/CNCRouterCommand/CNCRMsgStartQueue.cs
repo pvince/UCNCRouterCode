@@ -5,15 +5,15 @@ using System.Text;
 
 namespace CNCRouterCommand
 {
-    public class CNCRMsgPing : CNCRMessage
+    public class CNCRMsgStartQueue : CNCRMessage
     {
-        public CNCRMsgPing() : base(CNCRMESSAGE_TYPE.PING)
+        public CNCRMsgStartQueue()
+            : base(CNCRMESSAGE_TYPE.START_QUEUE)
         { }
 
         public override byte[] toSerial()
-        { 
-            // 0000 0000
-            byte[] result = { 0x00, CNCRConstants.END_OF_MSG };
+        {
+            byte[] result = { 0x40, CNCRConstants.END_OF_MSG };
             return result;
         }
     }
