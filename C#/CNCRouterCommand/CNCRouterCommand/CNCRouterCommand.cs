@@ -32,14 +32,22 @@ namespace CNCRouterCommand
 
         }
 
+        CNCRCommCommand commCmd = new CNCRCommCommand();
         private void button1_Click(object sender, EventArgs e)
         {
-            CNCRMsgPing pingMsg = new CNCRMsgPing();
-            CNCRCommCommand commCmd = new CNCRCommCommand();
+
+            CNCRMessage sendMsg = new CNCRMsgEStop();
+            commCmd.SendMsg(sendMsg);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
             commCmd.BaudRate = "9600";
             commCmd.PortName = "COM5";
-
-            commCmd.SendMsg(pingMsg);
+            commCmd.DisplayWindow = richTextBox1;
+            commCmd.CurrentTransmissionType = CNCRCommCommand.TransmissionType.Text;
+            commCmd.OpenPort();
+            //TODO: add CommCmd.isOpen();
         }
     }
 }
