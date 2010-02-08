@@ -9,6 +9,10 @@ void setup()
 {
   Serial.begin(MessageRate);
   pinMode(12,OUTPUT);
+  for (int x=0;x<500;x++)  //Makes sure the Queue is blank.
+  {
+    Queue[x]=0;
+  }
 }
 
 void loop()

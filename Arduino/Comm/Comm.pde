@@ -29,12 +29,9 @@
 int MessageFilter(long* Message)
 {
   long* packet;
-  switch(*Message & 15)
+  switch(*Message & 15) //4026531840 number to use to get the first 4bits of the message.
   {
     case (0):  //Ping
-      MessageAck Acknowledge;
-      *packet = long(&Acknowledge);
-      Serial.print((long*) packet);
       break;
     case (1):  //Acknowledge
       Serial.print(Firmware);
@@ -50,14 +47,13 @@ int MessageFilter(long* Message)
       FlagStart = 1;
       break;
     case(5):  //SetSpeed
-      MessageSetSpeed Packet;
-      //Packet = (void) *Message;
+      QueueAdd(Message);
       break;
     case(6):  //ToolCMD
-      MessageToolCMD Packet2;
+      QueueAdd(Message);
       break;
     case(7):  //Move
-      MessageMove Packet3;
+      QueueAdd(Message);
       break;
    }
 }
