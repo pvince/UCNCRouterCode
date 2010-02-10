@@ -16,7 +16,6 @@ namespace CNCRouterCommand
     /// </summary>
     public class CNCRMsgCmdAck : CNCRMessage
     {
-        //TODO: CNCRMsgCmdAck: Implement getters // setters // constructor for isError
         private bool isError = false;
         private byte firmware = 0;
 
@@ -43,24 +42,22 @@ namespace CNCRouterCommand
             firmware = msgBytes[1];
         }
 
-        public bool getError()
+        /// <summary>
+        /// Gets and sets the error variable for this message.
+        /// </summary>
+        public bool Error
         {
-            return isError;
+            get { return isError; }
+            set { isError = value; }
         }
 
-        public void setError(bool error)
+        /// <summary>
+        /// Gets and sets the firmware value.
+        /// </summary>
+        public byte Firmware
         {
-            this.isError = error;
-        }
-
-        public byte getFirmware()
-        {
-            return this.firmware;
-        }
-
-        public void setFirmware(byte firmware)
-        {
-            this.firmware = firmware;
+            get { return firmware; }
+            set { firmware = value; }
         }
 
         /// <summary>
