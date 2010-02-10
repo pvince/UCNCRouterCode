@@ -5,14 +5,63 @@ using System.Text;
 
 namespace CNCRouterCommand
 {
+    /// <summary>
+    /// This message is sent after the receipt of a command.
+    /// 
+    /// Command Structure:
+    /// [Type Error] [Firmware] [255]
+    /// -     Type: 1
+    /// -    Error: 4 bits, only the lowest bit really counts.  0 for no error, 1 for error.
+    /// - Firmware: 8 bit number
+    /// </summary>
     public class CNCRMsgCmdAck : CNCRMessage
     {
         //TODO: CNCRMsgCmdAck: Implement getters // setters // constructor for isError
         private bool isError = false;
+        private byte firmware = 0;
 
         public CNCRMsgCmdAck()
             : base(CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE)
         { }
+
+        public CNCRMsgCmdAck(bool isError, byte firmware)
+            : base(CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE)
+        {
+            this.isError = isError;
+            this.firmware = firmware;
+        }
+
+        public CNCRMsgCmdAck(byte[] msgBytes)
+            : base(CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE)
+        {
+            if (msgBytes.Length != 3)
+                isError = true; // TODO: CNCRMsgCmdAck: Report an error in size of the message.
+            byte errorBit = msgBytes[0] & 1;
+            if (errorBit == 1)
+                isError = true;
+
+            firmware = msgBytes[1];
+        }
+
+        public bool getError()
+        {
+            return isError;
+        }
+
+        public void setError(bool error)
+        {
+            this.isError = error;
+        }
+
+        public byte getFirmware()
+        {
+            return this.firmware;
+        }
+
+        public void setFirmware(byte firmware)
+        {
+            this.firmware = firmware;
+        }
 
         /// <summary>
         /// Transfers CNCRMsgCmdAck data to a byte array for transfer.
@@ -28,7 +77,7 @@ namespace CNCRouterCommand
             if (isError)
                 TypeAndErr = TypeAndErr | 1;
 
-            byte[] result = { TypeAndErr, CNCRConstants.END_OF_MSG };
+            byte[] result = { TypeAndErr, firmware, CNCRConstants.END_OF_MSG };
             return result;
         }
     }
