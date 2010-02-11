@@ -38,7 +38,7 @@ namespace CNCRouterCommand
                 throw new ArgumentNullException("msgBytes", "msgBytes may not be null");
             else if (msgBytes.Length != CNCRConstants.MSG_LEN_CMD_ACK)
                 throw new ArgumentOutOfRangeException("msgBytes", "Incorrect number of bytes.");
-            else if (((msgBytes[0] & 0xF0) >> 4) != Convert.ToByte(_msgType))
+            else if (((msgBytes[0] & 0xF0) >> 4) != Convert.ToByte(MessageType))
                 throw new ArgumentException("Passed in msgBytes has the wrong type.", "msgBytes");
             else if ((msgBytes[0] & 0x0F) != 0x00 || (msgBytes[0] & 0x0F) != 0x01)
                 throw new ArgumentOutOfRangeException("msgBytes",
@@ -84,7 +84,7 @@ namespace CNCRouterCommand
         public override byte[] toSerial()
         {
             // Set top 4 bits to "0001"
-            byte TypeAndErr = Convert.ToByte(Convert.ToByte(_msgType) << 4);
+            byte TypeAndErr = Convert.ToByte(Convert.ToByte(MessageType) << 4);
             if (isError)
                 TypeAndErr |= 0x01;
 

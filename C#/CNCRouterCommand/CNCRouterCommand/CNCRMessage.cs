@@ -16,9 +16,9 @@ namespace CNCRouterCommand
 
         public abstract byte[] toSerial();
 
-        public CNCRMESSAGE_TYPE getMessageType()
+        public CNCRMESSAGE_TYPE MessageType
         {
-            return _msgType;
+            get { return _msgType; }
         }
     }
 }
