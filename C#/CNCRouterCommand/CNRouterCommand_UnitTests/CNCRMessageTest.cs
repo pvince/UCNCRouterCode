@@ -92,7 +92,7 @@ namespace CNRouterCommand_UnitTests
             CNCRMessage target = CreateCNCRMessage(); // TODO: Initialize to an appropriate value
             CNCRMESSAGE_TYPE expected = new CNCRMESSAGE_TYPE(); // TODO: Initialize to an appropriate value
             CNCRMESSAGE_TYPE actual;
-            actual = target.getMessageType();
+            actual = target.MessageType;
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }

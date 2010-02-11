@@ -1,4 +1,5 @@
 ﻿using CNCRouterCommand;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CNRouterCommand_UnitTests
 {
@@ -68,12 +69,11 @@ namespace CNRouterCommand_UnitTests
         [TestMethod()]
         public void toSerialTest()
         {
-            CNCRMsgStartQueue target = new CNCRMsgStartQueue(); // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            CNCRMsgStartQueue target = new CNCRMsgStartQueue();
+            byte[] expected = { 0x40, 255 };
             byte[] actual;
             actual = target.toSerial();
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace CNRouterCommand_UnitTests
         public void CNCRMsgStartQueueConstructorTest()
         {
             CNCRMsgStartQueue target = new CNCRMsgStartQueue();
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual(CNCRMESSAGE_TYPE.START_QUEUE, target.MessageType);
         }
     }
 }
