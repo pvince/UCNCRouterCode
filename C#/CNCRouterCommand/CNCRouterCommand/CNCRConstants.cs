@@ -19,6 +19,15 @@ namespace CNCRouterCommand
 
     public class CNCRConstants
     {
+        // Constants for checking to ensure correct serial message length.
+        public const int MSG_LEN_PING = 2;
+        public const int MSG_LEN_CMD_ACK = 3;
+        public const int MSG_LEN_ESTOP = 2;
+        public const int MSG_LEN_RQST_COMM = 2;
+        public const int MSG_LEN_STARTQ = 1;
+        public const int MSG_LEN_SETSPD = 3;
+        public const int MSG_LEN_MOVE = 8;
+
         // Constants for checking firmware compatibility.
         public const int CNCROUTER_CURRENTFW = 0;
 
