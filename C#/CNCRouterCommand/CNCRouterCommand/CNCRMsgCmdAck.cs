@@ -33,9 +33,20 @@ namespace CNCRouterCommand
         public CNCRMsgCmdAck(byte[] msgBytes)
             : base(CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE)
         {
-            if (msgBytes.Length != 3)
-                isError = true; // TODO: CNCRMsgCmdAck: Report an error in size of the message.
-            byte errorBit = msgBytes[0] & 1;
+            // TODO: CNCRMsgCmdAck: Validate the passed in msgBytes.
+            if (msgBytes == null)
+                throw new ArgumentNullException("msgBytes", "msgBytes may not be null");
+            else if (msgBytes.Length != CNCRConstants.MSG_LEN_CMD_ACK)
+                throw new ArgumentOutOfRangeException("msgBytes", "Incorrect number of bytes.");
+            else if (((msgBytes[0] & 0xF0) >> 4) != Convert.ToByte(_msgType))
+                throw new ArgumentException("Passed in msgBytes has the wrong type.", "msgBytes");
+            else if ((msgBytes[0] & 0x0F) != 0x00 || (msgBytes[0] & 0x0F) != 0x01)
+                throw new ArgumentOutOfRangeException("msgBytes",
+                    "Error value in msgBytes is neither 1 or 0");
+            else if (msgBytes[2] == CNCRConstants.END_OF_MSG)
+                throw new ArgumentException("Message dooes not end in End-of-Message byte", "msgBytes");
+
+            int errorBit = msgBytes[0] & 0x01;
             if (errorBit == 1)
                 isError = true;
 
@@ -52,7 +63,9 @@ namespace CNCRouterCommand
         }
 
         /// <summary>
-        /// Gets and sets the firmware value.
+        /// Gets and sets the firmware value. Must be less than 255.  If it is
+        /// equal to 255 it will be seen as the router as an "End of Message"
+        /// byte.
         /// </summary>
         public byte Firmware
         {
@@ -70,9 +83,10 @@ namespace CNCRouterCommand
         /// </returns>
         public override byte[] toSerial()
         {
-            byte TypeAndErr = 0x10; // Set top 4 bits to "0001"
+            // Set top 4 bits to "0001"
+            byte TypeAndErr = Convert.ToByte(Convert.ToByte(_msgType) << 4);
             if (isError)
-                TypeAndErr = TypeAndErr | 1;
+                TypeAndErr |= 0x01;
 
             byte[] result = { TypeAndErr, firmware, CNCRConstants.END_OF_MSG };
             return result;
