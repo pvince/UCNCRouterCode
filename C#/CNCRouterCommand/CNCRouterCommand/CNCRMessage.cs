@@ -18,13 +18,11 @@ namespace CNCRouterCommand
 
         public abstract byte[] toSerial();
 
-        //TODO: Change MessageType to getMessageType()
-        public CNCRMESSAGE_TYPE MessageType
+        public CNCRMESSAGE_TYPE getMessageType()
         {
-            get { return _msgType; }
+            return _msgType;
         }
 
-        //TODO: Make messages use this instead of doing the conversion every time.
         public byte getMsgTypeByte()
         {
             return _msgTypeByte;

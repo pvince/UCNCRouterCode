@@ -85,7 +85,7 @@ namespace CNCRouterCommand
         public override byte[] toSerial()
         {
             // Build first byte [Type 0 XYZ] --> [0101 0XYZ]
-            byte TypeAndAxis = Convert.ToByte(Convert.ToByte(MessageType) << 4);
+            byte TypeAndAxis = getMsgTypeByte();
             if (_X) { TypeAndAxis |= 0x04; } // Set X bit [0000 0100]
             if (_Y) { TypeAndAxis |= 0x02; } // Set Y bit [0000 0010]
             if (_Z) { TypeAndAxis |= 0x01; } // Set Z bit [0000 0001]

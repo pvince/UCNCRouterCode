@@ -29,7 +29,7 @@ namespace CNCRouterCommand
         public override byte[] toSerial()
         {
             // [0010 0000] [255]
-            byte Type = Convert.ToByte(Convert.ToByte(MessageType) << 4);
+            byte Type = getMsgTypeByte();
             byte[] result = { Type, CNCRConstants.END_OF_MSG };
             return result;
         }

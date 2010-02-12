@@ -83,7 +83,7 @@ namespace CNRouterCommand_UnitTests
         public void CNCRMsgStartQueueConstructorTest()
         {
             CNCRMsgStartQueue target = new CNCRMsgStartQueue();
-            Assert.AreEqual(CNCRMESSAGE_TYPE.START_QUEUE, target.MessageType);
+            Assert.AreEqual(CNCRMESSAGE_TYPE.START_QUEUE, target.getMessageType());
         }
     }
 }

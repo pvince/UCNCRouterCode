@@ -34,7 +34,7 @@ namespace CNCRouterCommand
             {
                 // Error: Incorrect length
             }
-            else if ((msgBytes[0] & 0xF0) != Convert.ToByte(Convert.ToByte(MessageType) << 4))
+            else if ((msgBytes[0] & 0xF0) != getMsgTypeByte())
             {
                 // Error: Incorrect type
             }
@@ -56,7 +56,7 @@ namespace CNCRouterCommand
         /// </returns>
         public override byte[] toSerial()
         {
-            byte TypeCmdCount = Convert.ToByte(Convert.ToByte(MessageType) << 4);
+            byte TypeCmdCount = getMsgTypeByte();
             TypeCmdCount |= commandCount;           // Store the command count in the lower 4 bits.
             byte[] result = { TypeCmdCount, 255 };  // Build the result array.
             return result;

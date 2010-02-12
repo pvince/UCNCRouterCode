@@ -75,7 +75,7 @@ namespace CNCRouterCommand
         /// </returns>
         public override byte[] toSerial()
         {
-            byte Type = Convert.ToByte(Convert.ToByte(MessageType) << 4);
+            byte Type = getMsgTypeByte();
             byte[] xBits = BitConverter.GetBytes(X);
             byte[] yBits = BitConverter.GetBytes(Y);
             byte[] zBits = BitConverter.GetBytes(Z);

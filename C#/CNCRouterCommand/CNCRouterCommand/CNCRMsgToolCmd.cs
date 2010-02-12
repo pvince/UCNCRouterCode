@@ -35,7 +35,7 @@ namespace CNCRouterCommand
         /// </returns>
         public override byte[] toSerial()
         {
-            byte TypeOnOff = Convert.ToByte(Convert.ToByte(MessageType) << 4);
+            byte TypeOnOff = getMsgTypeByte();
             if (_toolOn) { TypeOnOff |= 0x01; } // If tool on, set the bit.
 
             byte[] result = { TypeOnOff, CNCRConstants.END_OF_MSG };
