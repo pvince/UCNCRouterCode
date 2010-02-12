@@ -16,23 +16,25 @@ namespace CNCRouterCommand
     /// </summary>
     public class CNCRMsgRequestCommands : CNCRMessage
     {
-        // The lowest possible value for CommandCount is 4.
-        private Int32 commandCount = 4;
+        private byte commandCount = 0;
 
-        public Int32 CommandCount
+        /// <summary>
+        /// Number of commands to send to the router.  This value can be from 4 to 64.
+        /// </summary>
+        public int getCommandCount()
         {
-            get { return commandCount; }
+            return (commandCount + 1) * 4;
         }
 
         public CNCRMsgRequestCommands(byte[] msgBytes)
             : base(CNCRMESSAGE_TYPE.REQUEST_COMMAND)
         {
-            // TODO: Validate msgBytes
+            // TODO: Validate byte constructor
             if (msgBytes.Length != CNCRConstants.MSG_LEN_RQST_COMM)
             {
                 // Error: Incorrect length
             }
-            else if ((msgBytes[0] & 0xF0) != 0x30)
+            else if ((msgBytes[0] & 0xF0) != Convert.ToByte(Convert.ToByte(MessageType) << 4))
             {
                 // Error: Incorrect type
             }
@@ -40,19 +42,23 @@ namespace CNCRouterCommand
             // byte.  The number of commands to send is equal to
             // the (sent count + 1) * 4, giving it a range of
             // 4 to 64.
-            this.commandCount = ((msgBytes[0] & 0x0F) + 1) * 4;
+            this.commandCount = Convert.ToByte(msgBytes[0] & 0x0F);
         }
 
         /// <summary>
-        /// This message (CNCRMsgRequestCommands) should not really need a "toSerial()" command, however
-        /// I am including one because I can, and who knows?
+        /// Converts message data to a byte array for transfer over serial.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// Command Structure:
+        /// [Type #Cmds] [255]
+        /// -     Type: 3
+        /// -    #Cmds: 4 bits, interpreted as (#Cmds + 1) * 4, giving a 4 - 64 range
+        /// </returns>
         public override byte[] toSerial()
         {
-            byte tempByte = Convert.ToByte((commandCount / 4) - 1); // Compress command count down to the lower 4 bits.
-            tempByte |= 0x30;                       // Store the command type (3) in the upper 4 bits.
-            byte[] result = {tempByte, 255};        // Build the result array.
+            byte TypeCmdCount = Convert.ToByte(Convert.ToByte(MessageType) << 4);
+            TypeCmdCount |= commandCount;           // Store the command count in the lower 4 bits.
+            byte[] result = { TypeCmdCount, 255 };  // Build the result array.
             return result;
 
         }

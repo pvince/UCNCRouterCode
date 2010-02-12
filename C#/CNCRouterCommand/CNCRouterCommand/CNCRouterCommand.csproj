@@ -58,6 +58,7 @@
     <Compile Include="CNCRMsgRequestCommands.cs" />
     <Compile Include="CNCRMsgSetSpeed.cs" />
     <Compile Include="CNCRMsgStartQueue.cs" />
+    <Compile Include="CNCRMsgToolCmd.cs" />
     <Compile Include="CNCRouterCommand.cs">
       <SubType>Form</SubType>
     </Compile>
