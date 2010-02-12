@@ -14,7 +14,8 @@ namespace CNCRouterCommand
         REQUEST_COMMAND,//3 - Computer <-  Router
         START_QUEUE,    //4 - Computer  -> Router
         SET_SPEED,      //5 - Computer  -> Router
-        MOVE            //6 - Computer  -> Router
+        MOVE,           //6 - Computer  -> Router
+        TOOL_CMD        //7 - Computer  -> Router
     };
 
     public class CNCRConstants
