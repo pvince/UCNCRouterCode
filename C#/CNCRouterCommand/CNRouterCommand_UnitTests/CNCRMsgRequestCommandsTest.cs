@@ -71,7 +71,7 @@ namespace CNRouterCommand_UnitTests
             byte[] msgBytes = null; // TODO: Initialize to an appropriate value
             CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(msgBytes); // TODO: Initialize to an appropriate value
             int actual;
-            actual = target.CommandCount;
+            actual = target.getCommandCount();
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
 

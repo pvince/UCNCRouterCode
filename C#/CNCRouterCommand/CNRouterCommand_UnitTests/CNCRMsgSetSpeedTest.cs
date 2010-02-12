@@ -119,7 +119,7 @@ namespace CNRouterCommand_UnitTests
         public void CNCRMsgSetSpeedConstructorTest()
         {
             byte speed = 0; // TODO: Initialize to an appropriate value
-            CNCRMsgSetSpeed target = new CNCRMsgSetSpeed(speed);
+            CNCRMsgSetSpeed target = new CNCRMsgSetSpeed(true, true, true, speed);
             Assert.Inconclusive("TODO: Implement code to verify target");
         }
     }
