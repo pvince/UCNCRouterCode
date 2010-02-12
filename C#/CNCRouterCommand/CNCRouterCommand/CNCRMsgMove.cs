@@ -44,7 +44,7 @@ namespace CNCRouterCommand
         { }
 
         public CNCRMsgMove(Int16 X, Int16 Y, Int16 Z)
-            : base(CNCRMESSAGE_TYPE.MOVE)
+            : this()
         {
             this._X = X;
             this._Y = Y;
@@ -52,7 +52,7 @@ namespace CNCRouterCommand
         }
 
         public CNCRMsgMove(byte[] msgBytes)
-            : base(CNCRMESSAGE_TYPE.MOVE)
+            : this()
         {
             //TODO: CNCRMsgMove: Error check the bytes
             //Convert Bytes to X, Y, Z

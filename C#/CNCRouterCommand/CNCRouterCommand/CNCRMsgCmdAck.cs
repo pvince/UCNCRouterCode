@@ -16,22 +16,22 @@ namespace CNCRouterCommand
     /// </summary>
     public class CNCRMsgCmdAck : CNCRMessage
     {
-        private bool isError = false;
-        private byte firmware = 0;
+        private bool _isError = false;
+        private byte _firmware = 0;
 
         public CNCRMsgCmdAck()
             : base(CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE)
         { }
 
         public CNCRMsgCmdAck(bool isError, byte firmware)
-            : base(CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE)
+            : this()
         {
-            this.isError = isError;
-            this.firmware = firmware;
+            this._isError = isError;
+            this._firmware = firmware;
         }
 
         public CNCRMsgCmdAck(byte[] msgBytes)
-            : base(CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE)
+            : this()
         {
             // TODO: CNCRMsgCmdAck: Validate the passed in msgBytes.
             if (msgBytes == null)
@@ -48,30 +48,21 @@ namespace CNCRouterCommand
 
             int errorBit = msgBytes[0] & 0x01;
             if (errorBit == 1)
-                isError = true;
+                _isError = true;
 
-            firmware = msgBytes[1];
+            _firmware = msgBytes[1];
         }
 
-        /// <summary>
-        /// Gets and sets the error variable for this message.
-        /// </summary>
-        public bool Error
-        {
-            get { return isError; }
-            set { isError = value; }
-        }
+        public bool getError() { return _isError; }
+        public void setError(bool isError) { _isError = isError; }
 
         /// <summary>
         /// Gets and sets the firmware value. Must be less than 255.  If it is
         /// equal to 255 it will be seen as the router as an "End of Message"
         /// byte.
         /// </summary>
-        public byte Firmware
-        {
-            get { return firmware; }
-            set { firmware = value; }
-        }
+        public byte getFirmware() { return _firmware; }
+        public void setFirmware(byte firmware) { _firmware = firmware; }
 
         /// <summary>
         /// Transfers CNCRMsgCmdAck data to a byte array for transfer.
@@ -85,10 +76,10 @@ namespace CNCRouterCommand
         {
             // Set top 4 bits to "0001"
             byte TypeAndErr = getMsgTypeByte();
-            if (isError)
+            if (_isError)
                 TypeAndErr |= 0x01;
 
-            byte[] result = { TypeAndErr, firmware, CNCRConstants.END_OF_MSG };
+            byte[] result = { TypeAndErr, _firmware, CNCRConstants.END_OF_MSG };
             return result;
         }
     }

@@ -21,6 +21,7 @@ namespace CNCRouterCommand
         private bool _Y = false;
         private bool _Z = false;
 
+        #region Getters and Setters
         /// <summary>
         /// Get the speed that will be sent to the router.
         /// </summary>
@@ -44,6 +45,7 @@ namespace CNCRouterCommand
         public void setY(bool Y) { _Y = Y; }
         public bool isZ() { return _Z; }
         public void setZ(bool Z) { _Z = Z; }
+        #endregion
 
         /// <summary>
         /// Default constructor
@@ -60,7 +62,7 @@ namespace CNCRouterCommand
         /// <param name="Z">Set Speed for Z axis.</param>
         /// <param name="speed">Speed the axis will move.  May not be 255.</param>
         public CNCRMsgSetSpeed(bool X, bool Y, bool Z, byte speed)
-            : base(CNCRMESSAGE_TYPE.SET_SPEED)
+            : this()
         {
             if (speed == 255)
                 throw new ArgumentOutOfRangeException("speed", "Speed may not be equal to 255.");
@@ -72,6 +74,15 @@ namespace CNCRouterCommand
             _speed = speed;
         }
 
+        public CNCRMsgSetSpeed(byte[] msgBytes)
+            : this()
+        {
+            //TODO: CNCRMsgSetSpeed: msgBytes constructor needs to validate msgBytes.
+            if ((msgBytes[0] & 0x04) == 0x04) { _X = true; }
+            if ((msgBytes[0] & 0x02) == 0x02) { _Y = true; }
+            if ((msgBytes[0] & 0x01) == 0x01) { _Z = true; }
+            setSpeed(msgBytes[1]);
+        }
         /// <summary>
         /// Transfers message data to a byte array for transfer.
         /// </summary>
