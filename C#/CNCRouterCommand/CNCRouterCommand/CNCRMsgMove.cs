@@ -5,8 +5,6 @@ using System.Text;
 
 namespace CNCRouterCommand
 {
-    //TODO: CNCRMsgMove: Implement this class (CNCRouterCommand).
-    //TODO: CNCRMsgMove: Design this class.
     /// <summary>
     /// This message is sent by the computer to send X, Y, Z coordinates
     /// to the router.
