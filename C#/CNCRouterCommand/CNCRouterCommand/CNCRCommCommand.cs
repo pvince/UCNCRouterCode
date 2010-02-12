@@ -17,40 +17,20 @@ using System.Drawing;
 
 namespace CNCRouterCommand
 {
-    class CNCRCommCommand
+    public class CNCRCommCommand
     {
-        #region Manager Enums
-        /// <summary>
-        /// enumeration to hold our transmission types
-        /// </summary>
-        public enum TransmissionType { Text, Hex }
-
-        /// <summary>
-        /// enumeration to hold our message types
-        /// </summary>
-        public enum MessageType { Incoming, Outgoing, Normal, Warning, Error };
-        #endregion
-
-        #region Manager Variables
-        //property variables
+        #region Local Variables
         private string _baudRate = string.Empty;
         private string _parity = string.Empty;
         private string _stopBits = string.Empty;
         private string _dataBits = string.Empty;
         private string _portName = string.Empty;
-        private TransmissionType _transType;
+        //TODO: Figure out what method will be called by "received"
 
-        // TODO: This needs to be changed to an object we control.
-        private RichTextBox _displayWindow;
-
-        //global manager variables
-
-        //TODO: Do we need these color variables? I do not think so.
-        private Color[] MessageColor = { Color.Blue, Color.Green, Color.Black, Color.Orange, Color.Red };
         private SerialPort comPort = new SerialPort();
         #endregion
 
-        #region Manager Properties
+        #region Getter // Setter Properties
         /// <summary>
         /// Property to hold the BaudRate
         /// of our manager class
@@ -100,31 +80,10 @@ namespace CNCRouterCommand
             get { return _portName; }
             set { _portName = value; }
         }
-
-        /// <summary>
-        /// property to hold our TransmissionType
-        /// of our manager class
-        /// </summary>
-        public TransmissionType CurrentTransmissionType
-        {
-            get { return _transType; }
-            set { _transType = value; }
-        }
-
-        // TODO: This will be something like "CommandQueue"
-        /// <summary>
-        /// property to hold our display window
-        /// value
-        /// </summary>
-        public RichTextBox DisplayWindow
-        {
-            get { return _displayWindow; }
-            set { _displayWindow = value; }
-        }
         #endregion
 
-        #region Manager Constructors
-        /// <summary>
+        #region Constructors
+        // <summary>
         /// Constructor to set the properties of our Manager Class
         /// </summary>
         /// <param name="baud">Desired BaudRate</param>
@@ -140,8 +99,6 @@ namespace CNCRouterCommand
             _dataBits = dBits;
             _portName = name;
 
-            // TODO: DisplayWindow: Make into something like CommandQueue
-            _displayWindow = rtb;
             //now add an event handler
             comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
         }
@@ -157,67 +114,17 @@ namespace CNCRouterCommand
             _stopBits = string.Empty;
             _dataBits = string.Empty;
             _portName = "COM1";
-
-            // TODO: DisplayWindow: Make into something like CommandQueue
-            _displayWindow = null;
             //add event handler
             comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
         }
         #endregion
 
-        #region WriteData
+        #region Send Data
         public void WriteData(string msg)
         {
-            switch (CurrentTransmissionType)
-            {
-                case TransmissionType.Text:
-                    //first make sure the port is open
-                    //if its not open then open it
-                    if (!(comPort.IsOpen == true)) comPort.Open();
-                    //send the message to the port
-                    comPort.Write(msg);
-                    //display the message
-                    //TODO: Determine if DisplayData is nessessary for anything.
-                    DisplayData(MessageType.Outgoing, msg + "\n");
-                    break;
-                case TransmissionType.Hex:
-                    try
-                    {
-                        //convert the message to byte array
-                        byte[] newMsg = HexToByte(msg);
-                        //first make sure the port is open
-                        //if its not open then open it
-                        if (!(comPort.IsOpen == true)) comPort.Open();
-                        //send the message to the port
-                        comPort.Write(newMsg, 0, newMsg.Length);
-                        //convert back to hex and display
-                        //TODO: Determine if DisplayData is nessessary for anything.
-                        DisplayData(MessageType.Outgoing, ByteToHex(newMsg) + "\n");
-                    }
-                    catch (FormatException ex)
-                    {
-                        //display error message
-                        //TODO: Determine if DisplayData is nessessary for anything.
-                        DisplayData(MessageType.Error, ex.Message);
-                    }
-                    finally
-                    {
-
-                        //TODO: Determine if DisplayData is nessessary for anything.
-                        //Also, WTF was this for?
-                        _displayWindow.SelectAll();
-                    }
-                    break;
-                default:
-                    //first make sure the port is open
-                    //if its not open then open it
-                    if (!(comPort.IsOpen == true)) comPort.Open();
-                    //send the message to the port
-                    comPort.Write(msg);
-                    //display the message
-                    DisplayData(MessageType.Outgoing, msg + "\n");
-                    break;
-            }
+            if (!(comPort.IsOpen == true)) comPort.Open();
+            //send the message to the port
+            comPort.Write(msg);
         }
 
         public void SendMsg(CNCRMessage msg)
@@ -230,54 +137,118 @@ namespace CNCRouterCommand
             }
             else
             {
-                //TODO: Log an error
+                //TODO: SendMsg: Log an error
             }
 
         }
         #endregion
 
-        #region HexByteConverters
-        //TODO: A Hex string of "1" should be valid for a byte, it would
-        //      just be 00000001
-        /// <summary>
-        /// method to convert hex string into a byte array
-        /// </summary>
-        /// <param name="msg">string to convert</param>
-        /// <returns>a byte array</returns>
-        private byte[] HexToByte(string msg)
+        #region OpenClosePort
+        public bool OpenPort()
         {
-            //remove any spaces from the string
-            msg = msg.Replace(" ", "");
-            //create a byte array the length of the
-            //divided by 2 (Hex is 2 characters in length)
-            byte[] comBuffer = new byte[msg.Length / 2];
-            //loop through the length of the provided string
-            for (int i = 0; i < msg.Length; i += 2)
-                //convert each set of 2 characters to a byte
-                //and add to the array
-                comBuffer[i / 2] = (byte)Convert.ToByte(msg.Substring(i, 2), 16);
-            //return the array
-            return comBuffer;
+            try
+            {
+                //first check if the port is already open
+                //if its open then close it
+                if (comPort.IsOpen == true) ClosePort();
+
+                //set the properties of our SerialPort Object
+                comPort.BaudRate = int.Parse(_baudRate);    //BaudRate
+                comPort.DataBits = int.Parse(_dataBits);    //DataBits
+                comPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), _stopBits);    //StopBits
+                comPort.Parity = (Parity)Enum.Parse(typeof(Parity), _parity);    //Parity
+                comPort.PortName = _portName;   //PortName
+                //now open the port
+                comPort.Open();
+                //return true
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                //TODO: OpenPort: Figure out what we are doing for error reporting
+                //return false;
+            }
         }
 
         /// <summary>
-        /// method to convert a byte array into a hex string
+        /// Closes an open Comm port.
         /// </summary>
-        /// <param name="comByte">byte array to convert</param>
-        /// <returns>a hex string</returns>
-        private string ByteToHex(byte[] comByte)
+        /// <returns>Returns true if the comm port is successfully closed w/o any errors</returns>
+        public bool ClosePort()
         {
-            //create a new StringBuilder object
-            StringBuilder builder = new StringBuilder(comByte.Length * 3);
-            //loop through each byte in the array
-            foreach (byte data in comByte)
-                //convert the byte to a string and add to the stringbuilder
-                builder.Append(Convert.ToString(data, 16).PadLeft(2, '0').PadRight(3, ' '));
-            //return the converted value
-            return builder.ToString().ToUpper();
+            bool result = false;
+
+            try
+            {
+                comPort.Close();
+                result = comPort.IsOpen;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                //TODO: ClosePort: Figure out what we are doing for error reporting
+                //return false;
+            }
+            return result;
         }
         #endregion
 
+        #region GetParityValues
+        public string[] GetParityValues()
+        {
+            return Enum.GetNames(typeof(Parity));
+        }
+        #endregion
+
+        #region GetStopBitValues
+        public string[] GetStopBitValues()
+        {
+            return Enum.GetNames(typeof(StopBits));
+        }
+        #endregion
+
+        #region comPort_DataReceived
+        /// <summary>
+        /// method that will be called when theres data waiting in the buffer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void comPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            /*
+            //TODO: Repurpose this method to work for me.
+            //determine the mode the user selected (binary/string)
+            switch (CurrentTransmissionType)
+            {
+                //user chose string
+                case TransmissionType.Text:
+                    //read data waiting in the buffer
+                    string msg = comPort.ReadExisting();
+                    //display the data to the user
+                    //DisplayData(MessageType.Incoming, msg + "\n");
+                    break;
+                //user chose binary
+                case TransmissionType.Hex:
+                    //retrieve number of bytes in the buffer
+                    int bytes = comPort.BytesToRead;
+                    //create a byte array to hold the awaiting data
+                    byte[] comBuffer = new byte[bytes];
+                    //read the data and store it
+                    comPort.Read(comBuffer, 0, bytes);
+                    //display the data to the user
+                    //DisplayData(MessageType.Incoming, ByteToHex(comBuffer) + "\n");
+                    break;
+                default:
+                    //read data waiting in the buffer
+                    string str = comPort.ReadExisting();
+                    //display the data to the user
+                    //DisplayData(MessageType.Incoming, str + "\n");
+                    break;
+            }//*/
+        }
+        #endregion
+        /*
         //TODO: Review how DisplayData works, primarily what STAthread refers too.
         #region DisplayData
         /// <summary>
@@ -298,118 +269,6 @@ namespace CNCRouterCommand
                 _displayWindow.ScrollToCaret();
             }));
         }
-        #endregion
-
-        #region OpenClosePort
-        public bool OpenPort()
-        {
-            try
-            {
-                //first check if the port is already open
-                //if its open then close it
-                if (comPort.IsOpen == true) ClosePort();
-
-                //set the properties of our SerialPort Object
-                comPort.BaudRate = int.Parse(_baudRate);    //BaudRate
-                //comPort.DataBits = int.Parse(_dataBits);    //DataBits
-                //comPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), _stopBits);    //StopBits
-                //comPort.Parity = (Parity)Enum.Parse(typeof(Parity), _parity);    //Parity
-                comPort.PortName = _portName;   //PortName
-                //now open the port
-                comPort.Open();
-                //display message
-                DisplayData(MessageType.Normal, "Port opened at " + DateTime.Now + "\n");
-                //return true
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DisplayData(MessageType.Error, ex.Message);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Closes an open Comm port.
-        /// </summary>
-        /// <returns>Returns true if the comm port is successfully closed w/o any errors</returns>
-        public bool ClosePort()
-        {
-            bool result = false;
-
-            try
-            {
-                comPort.Close();
-                result = comPort.IsOpen;
-            }
-            catch (Exception ex)
-            {
-                DisplayData(MessageType.Error, ex.Message);
-                return false;
-            }
-            return result;
-        }
-        #endregion
-
-        //TODO: Determine what it means by "SetParityValues" and how this function works.
-        #region SetParityValues
-        public void SetParityValues(object obj)
-        {
-            foreach (string str in Enum.GetNames(typeof(Parity)))
-            {
-                ((ComboBox)obj).Items.Add(str);
-            }
-        }
-        #endregion
-
-        //TODO: What does it mean by "SetStopBits"? What does this function do?
-        #region SetStopBitValues
-        public void SetStopBitValues(object obj)
-        {
-            foreach (string str in Enum.GetNames(typeof(StopBits)))
-            {
-                ((ComboBox)obj).Items.Add(str);
-            }
-        }
-        #endregion
-
-        #region comPort_DataReceived
-        /// <summary>
-        /// method that will be called when theres data waiting in the buffer
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void comPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            //determine the mode the user selected (binary/string)
-            switch (CurrentTransmissionType)
-            {
-                //user chose string
-                case TransmissionType.Text:
-                    //read data waiting in the buffer
-                    string msg = comPort.ReadExisting();
-                    //display the data to the user
-                    DisplayData(MessageType.Incoming, msg + "\n");
-                    break;
-                //user chose binary
-                case TransmissionType.Hex:
-                    //retrieve number of bytes in the buffer
-                    int bytes = comPort.BytesToRead;
-                    //create a byte array to hold the awaiting data
-                    byte[] comBuffer = new byte[bytes];
-                    //read the data and store it
-                    comPort.Read(comBuffer, 0, bytes);
-                    //display the data to the user
-                    DisplayData(MessageType.Incoming, ByteToHex(comBuffer) + "\n");
-                    break;
-                default:
-                    //read data waiting in the buffer
-                    string str = comPort.ReadExisting();
-                    //display the data to the user
-                    DisplayData(MessageType.Incoming, str + "\n");
-                    break;
-            }
-        }
-        #endregion
+        #endregion//*/
     }
 }

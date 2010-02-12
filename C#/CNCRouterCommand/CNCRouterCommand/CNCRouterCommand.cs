@@ -44,8 +44,8 @@ namespace CNCRouterCommand
         {
             commCmd.BaudRate = "9600";
             commCmd.PortName = "COM5";
-            commCmd.DisplayWindow = richTextBox1;
-            commCmd.CurrentTransmissionType = CNCRCommCommand.TransmissionType.Text;
+            //commCmd.DisplayWindow = richTextBox1;
+            //commCmd.CurrentTransmissionType = CNCRCommCommand.TransmissionType.Text;
             commCmd.OpenPort();
             //TODO: add CommCmd.isOpen();
         }
