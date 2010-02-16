@@ -21,25 +21,12 @@ namespace CNCRouterCommand
         private Int16 _Y = 0;
         private Int16 _Z = 0;
 
-        #region Getters
-        public Int16 X
-        {
-            get { return _X; }
-        }
-
-        public Int16 Y
-        {
-            get { return _Y; }
-        }
-
-        public Int16 Z
-        {
-            get { return _Z; }
-        }
-        #endregion
+        public Int16 getX() { return _X; }
+        public Int16 getY() { return _Y; }
+        public Int16 getZ() { return _Z; }
 
         #region Constructors
-        public CNCRMsgMove()
+        private CNCRMsgMove()
             : base(CNCRMESSAGE_TYPE.MOVE)
         { }
 
@@ -76,9 +63,9 @@ namespace CNCRouterCommand
         public override byte[] toSerial()
         {
             byte Type = getMsgTypeByte();
-            byte[] xBits = BitConverter.GetBytes(X);
-            byte[] yBits = BitConverter.GetBytes(Y);
-            byte[] zBits = BitConverter.GetBytes(Z);
+            byte[] xBits = BitConverter.GetBytes(getX());
+            byte[] yBits = BitConverter.GetBytes(getY());
+            byte[] zBits = BitConverter.GetBytes(getZ());
             byte[] result = { Type,
                               xBits[0], xBits[1],
                               yBits[0], yBits[1],

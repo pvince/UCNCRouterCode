@@ -17,7 +17,6 @@ namespace CNCRouterCommand
     {
         private bool _toolOn = false;
         public bool isToolOn() { return _toolOn; }
-        public void setToolOn(bool toolOn) { _toolOn = toolOn; }
 
         public CNCRMsgToolCmd(bool toolOn)
             : base(CNCRMESSAGE_TYPE.TOOL_CMD)

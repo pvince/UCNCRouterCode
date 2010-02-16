@@ -21,36 +21,16 @@ namespace CNCRouterCommand
         private bool _Y = false;
         private bool _Z = false;
 
-        #region Getters and Setters
-        /// <summary>
-        /// Get the speed that will be sent to the router.
-        /// </summary>
-        /// <returns></returns>
         public byte getSpeed() { return _speed; }
-
-        /// <summary>
-        /// Set the speed that the message will contain.  Speed may not be equal to 255.
-        /// </summary>
-        /// <param name="speed">New speed for this message.  May not equal 255.</param>
-        public void setSpeed(byte speed)
-        {
-            if (speed == 255)
-                throw new ArgumentOutOfRangeException("speed", "Speed may not be equal to 255.");
-            _speed = speed;
-        }
-
         public bool isX() { return _X; }
-        public void setX(bool X) { _X = X; }
         public bool isY() { return _Y; }
-        public void setY(bool Y) { _Y = Y; }
         public bool isZ() { return _Z; }
-        public void setZ(bool Z) { _Z = Z; }
-        #endregion
 
+        #region Constructors
         /// <summary>
         /// Default constructor
         /// </summary>
-        public CNCRMsgSetSpeed()
+        private CNCRMsgSetSpeed()
             : base(CNCRMESSAGE_TYPE.SET_SPEED)
         {}
 
@@ -81,8 +61,10 @@ namespace CNCRouterCommand
             if ((msgBytes[0] & 0x04) == 0x04) { _X = true; }
             if ((msgBytes[0] & 0x02) == 0x02) { _Y = true; }
             if ((msgBytes[0] & 0x01) == 0x01) { _Z = true; }
-            setSpeed(msgBytes[1]);
+            _speed = msgBytes[1];
         }
+        #endregion
+
         /// <summary>
         /// Transfers message data to a byte array for transfer.
         /// </summary>
