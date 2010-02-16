@@ -36,14 +36,14 @@ namespace CNCRouterCommand
         private void button1_Click(object sender, EventArgs e)
         {
 
-            CNCRMessage sendMsg = new CNCRMsgEStop();
+            CNCRMessage sendMsg = new CNCRMsgMove(256, 257, 258);
             commCmd.SendMsg(sendMsg);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             commCmd.BaudRate = "9600";
-            commCmd.PortName = "COM5";
+            commCmd.PortName = "COM3";
             //commCmd.DisplayWindow = richTextBox1;
             //commCmd.CurrentTransmissionType = CNCRCommCommand.TransmissionType.Text;
             commCmd.OpenPort();

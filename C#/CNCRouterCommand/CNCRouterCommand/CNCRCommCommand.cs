@@ -154,9 +154,9 @@ namespace CNCRouterCommand
 
                 //set the properties of our SerialPort Object
                 comPort.BaudRate = int.Parse(_baudRate);    //BaudRate
-                comPort.DataBits = int.Parse(_dataBits);    //DataBits
-                comPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), _stopBits);    //StopBits
-                comPort.Parity = (Parity)Enum.Parse(typeof(Parity), _parity);    //Parity
+                //comPort.DataBits = int.Parse(_dataBits);    //DataBits
+                //comPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), _stopBits);    //StopBits
+                //comPort.Parity = (Parity)Enum.Parse(typeof(Parity), _parity);    //Parity
                 comPort.PortName = _portName;   //PortName
                 //now open the port
                 comPort.Open();
@@ -209,13 +209,71 @@ namespace CNCRouterCommand
         #endregion
 
         #region comPort_DataReceived
+        void handleData(byte[] commBuffer)
+        {
+        }
         /// <summary>
-        /// method that will be called when theres data waiting in the buffer
+        /// method that will be called when there is data waiting in the buffer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void comPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
+            //TODO: comPort_DataReceived: Think about receiving messages.
+            /* What are the possiblities here?
+             * 1. These are the first bytes we are receiving.  Need to add them to a buffer queue.
+             * 2. We have already received some bytes of the command, but not all of them.
+             * 3. We have received multiple commands.
+             * 4. Some combination of 1, 2, or 3.
+             * 
+             * How to handle this?  Pass off all bytes to an apartment thread that
+             * will keep track of the current status of the incoming bytes.
+             * 1. First data arrives, check type.
+             * 2. Using type, check length of bytes in buffer.
+             * 3. If length of bytes in buffer is not long enough, drop current bytes into a 2nd queue.
+             * 3.1 More data arrives.
+             * 3.2 Add data to queue, check length again.  If length is > number of bytes needed, read
+             *     the needed number of bytes, and check to make sure that the final byte is 255.
+             * 
+             * For now, for simple testing I am keeping the code below.
+             * 
+             * Also, we need 
+             */
+            int bytes = comPort.BytesToRead;
+            byte[] comBuffer = new byte[bytes];
+            comPort.Read(comBuffer, 0, bytes);
+
+            CNCRMESSAGE_TYPE comType = (CNCRMESSAGE_TYPE)Enum.ToObject(typeof(CNCRMESSAGE_TYPE), (comBuffer[0] & 0xF0) >> 4);
+            CNCRMessage receivedMsg;
+            switch (comType)
+            {
+                case CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE:
+                    receivedMsg = new CNCRMsgCmdAck(comBuffer);
+                    break;
+                case CNCRMESSAGE_TYPE.E_STOP:
+                    receivedMsg = new CNCRMsgEStop();
+                    break;
+                case CNCRMESSAGE_TYPE.REQUEST_COMMAND:
+                    receivedMsg = new CNCRMsgRequestCommands(comBuffer);
+                    break;
+                // The following commands should not be received by the computer... if we get one, there was
+                // a problem.  Should we log an error?
+                //TODO: comPort_DataReceived: Invalid Commands, Should we log an error here?
+                case CNCRMESSAGE_TYPE.PING:
+                    break;
+                case CNCRMESSAGE_TYPE.START_QUEUE:
+                    break;
+                case CNCRMESSAGE_TYPE.SET_SPEED:
+                    break;
+                case CNCRMESSAGE_TYPE.MOVE:
+                    receivedMsg = new CNCRMsgMove(comBuffer);
+                    break;
+                case CNCRMESSAGE_TYPE.TOOL_CMD:
+                    break;
+            }
+
+            int bob = 0;
+
             /*
             //TODO: Repurpose this method to work for me.
             //determine the mode the user selected (binary/string)

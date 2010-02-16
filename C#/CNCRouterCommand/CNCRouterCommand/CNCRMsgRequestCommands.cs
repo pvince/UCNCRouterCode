@@ -32,10 +32,10 @@ namespace CNCRouterCommand
             : this()
         {
             if (commandCount > 64)
-                throw ArgumentOutOfRangeException("commandCount", "Command count must be 64 or less");
+                throw new ArgumentOutOfRangeException("commandCount", "Command count must be 64 or less");
             else if (commandCount < 4)
                 commandCount = 4;
-            _commandCount = (commandCount >> 2) - 1;
+            _commandCount = Convert.ToByte((commandCount >> 2) - 1);
             if (_commandCount < 0) _commandCount = 0;
         }
         public CNCRMsgRequestCommands(byte[] msgBytes)
