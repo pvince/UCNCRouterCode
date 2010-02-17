@@ -27,5 +27,20 @@ namespace CNCRouterCommand
         {
             return _msgTypeByte;
         }
+
+        private byte[] getParityBytes(byte[] serialBytes)
+        {
+            // newByteCount =   the number of additional bytes needed for a parity
+            //                  msg.  Every 8 bytes adds an additional byte to the
+            //                  parity result.  It is +2 because we need at least
+            //                  one new byte because of the shifting 
+            // Hmm, this function is fail.  What about the type bit? Questions.
+            int newByteCount = (serialBytes.Length / 8 + 2);
+            byte[] result = new byte[serialBytes.Length + newByteCount];
+            for (int i = 0; i < result.Length; i++)
+            {
+
+            }
+        }
     }
 }
