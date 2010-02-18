@@ -45,22 +45,42 @@ namespace CNCRouterCommand
             return result;
         }
 
+        /// <summary>
+        /// Generates the final parity byte by counting the number of bits in
+        /// each column.
+        /// </summary>
+        /// <param name="serialBytes">
+        /// This parameter is passed by reference, the final byte in the array
+        /// is used for the parity byte.  serialBytes must be at least two bytes.
+        /// </param>
         public void generateParityByte(ref byte[] serialBytes)
         {
-            // the result is serialBytes[serialBytes.length - 1]
-            byte test = 255;
+            if (serialBytes.Length < 2)
+                throw new ArgumentOutOfRangeException("serialBytes",
+                    "serialBytes must be at least two bytes long.");
+
+            // Set the final byte, the parity byte, to 0.
             int z = serialBytes.Length - 1;
             serialBytes[z] = 0;
 
-            for (byte i = 1; i <= 255; i <<= 1)
+            // Create a sliding binary '1' to filter for binary
+            // digits in each byte.
+            for (UInt16 i = 1; i <= 255; i <<= 1)
             {
+                // Count the number of '1' digits in each column.
+                // z is the number of actual data bytes (no parity byte)
                 int numOnes = 0;
-                for (int j = 0; i < serialBytes.Length; i++)
+                for (int j = 0; j < z; j++)
                 {
                     if ((serialBytes[j] & i) != 0)
                         ++numOnes;
                 }
-                serialBytes[z] |= ((numOnes & 1) == 1) ? i : 0;
+                // Check to see if numOnes is odd, if so ignore it (its already 0)
+                //              if numOnes is even, set that bit to 1.
+                if ((numOnes & 1) == 0)
+                {
+                    serialBytes[z] |= Convert.ToByte(i);
+                }
             }
         }
 
