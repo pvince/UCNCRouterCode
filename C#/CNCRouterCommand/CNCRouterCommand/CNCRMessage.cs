@@ -49,7 +49,19 @@ namespace CNCRouterCommand
         {
             // the result is serialBytes[serialBytes.length - 1]
             byte test = 255;
-            BitArray bob = new BitArray(test);
+            int z = serialBytes.Length - 1;
+            serialBytes[z] = 0;
+
+            for (byte i = 1; i <= 255; i <<= 1)
+            {
+                int numOnes = 0;
+                for (int j = 0; i < serialBytes.Length; i++)
+                {
+                    if ((serialBytes[j] & i) != 0)
+                        ++numOnes;
+                }
+                serialBytes[z] |= ((numOnes & 1) == 1) ? i : 0;
+            }
         }
 
         /// <summary>
@@ -74,7 +86,8 @@ namespace CNCRouterCommand
                 tempByte >>= 1;
             }
             // Set the parity bit.
-            serialByte |= ((numOnes % 2) == 1) ? Convert.ToByte(0) : Convert.ToByte(1);
+            // If numOnes is odd
+            serialByte |= ((numOnes & 1) == 1) ? Convert.ToByte(0) : Convert.ToByte(1);
 
         }
     }
