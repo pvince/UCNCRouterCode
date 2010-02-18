@@ -36,14 +36,18 @@ namespace CNCRouterCommand
         private void button1_Click(object sender, EventArgs e)
         {
 
-            CNCRMessage sendMsg = new CNCRMsgMove(256, 257, 258);
             byte testByte = 254;
-            sendMsg.generateParityBit(ref testByte);
+            CNCRTools.generateParityBit(ref testByte);
             testByte = 252;
-            sendMsg.generateParityBit(ref testByte);
+            CNCRTools.generateParityBit(ref testByte);
             testByte = 255;
-            sendMsg.generateParityBit(ref testByte);
+            CNCRTools.generateParityBit(ref testByte);
             byte testTwo = 0;
+
+            byte[] testArray = { 171, 84, 254, 0 };
+            CNCRTools.generateParityByte(ref testArray);
+            byte testThree = 0;
+
             //commCmd.SendMsg(sendMsg);
         }
 
