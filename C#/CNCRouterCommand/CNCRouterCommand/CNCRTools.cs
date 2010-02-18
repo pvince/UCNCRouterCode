@@ -28,7 +28,82 @@ namespace CNCRouterCommand
 
         public static string GetCNCRouterVersion(string SerialPortName)
         {
-            return "Not Implemented";
+            throw new NotImplementedException();
+        }
+
+
+
+        public static byte[] generateInt16ParityBytes(Int16 value)
+        {
+            byte[] result = new byte[3]; // Takes 3 bytes to hold a paritized int16
+            byte[] tempBytes = BitConverter.GetBytes(value);
+            result[0] = tempBytes[0];
+            return result;
+        }
+
+        /// <summary>
+        /// Generates the final parity byte by counting the number of bits in
+        /// each column.
+        /// </summary>
+        /// <param name="serialBytes">
+        /// This parameter is passed by reference, the final byte in the array
+        /// is used for the parity byte.  serialBytes must be at least two bytes.
+        /// </param>
+        public static void generateParityByte(ref byte[] serialBytes)
+        {
+            if (serialBytes.Length < 2)
+                throw new ArgumentOutOfRangeException("serialBytes",
+                    "serialBytes must be at least two bytes long.");
+
+            // Set the final byte, the parity byte, to 0.
+            int z = serialBytes.Length - 1;
+            serialBytes[z] = 0;
+
+            // Create a sliding binary '1' to filter for binary
+            // digits in each byte.
+            for (UInt16 i = 1; i <= 255; i <<= 1)
+            {
+                // Count the number of '1' digits in each column.
+                // z is the number of actual data bytes (no parity byte)
+                int numOnes = 0;
+                for (int j = 0; j < z; j++)
+                {
+                    if ((serialBytes[j] & i) != 0)
+                        ++numOnes;
+                }
+                // Check to see if numOnes is odd, if so ignore it (its already 0)
+                //              if numOnes is even, set that bit to 1.
+                if ((numOnes & 1) == 0)
+                {
+                    serialBytes[z] |= Convert.ToByte(i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Counts the number of '1' bits in the passed in byte, then fills in
+        /// the final parity bit.
+        /// 
+        /// Odd number of 1's  = 0 parity
+        /// Even number of 1's = 1 parity
+        /// </summary>
+        /// <param name="serialByte">Byte to generate and fill parity.</param>
+        public static void generateParityBit(ref byte serialByte)
+        {
+            int numOnes = 0;
+            // Clear the lowest bit.
+            serialByte = Convert.ToByte(serialByte & 254);
+            // Set the temp byte.
+            byte tempByte = serialByte;
+            // Count the 1 bits
+            while (tempByte != 0)
+            {
+                numOnes += tempByte & 0x1;
+                tempByte >>= 1;
+            }
+            // Set the parity bit.
+            // If numOnes is odd
+            serialByte |= ((numOnes & 1) == 1) ? Convert.ToByte(0) : Convert.ToByte(1);
         }
 
     }
