@@ -37,7 +37,14 @@ namespace CNCRouterCommand
         {
 
             CNCRMessage sendMsg = new CNCRMsgMove(256, 257, 258);
-            commCmd.SendMsg(sendMsg);
+            byte testByte = 254;
+            sendMsg.generateParityBit(ref testByte);
+            testByte = 252;
+            sendMsg.generateParityBit(ref testByte);
+            testByte = 255;
+            sendMsg.generateParityBit(ref testByte);
+            byte testTwo = 0;
+            //commCmd.SendMsg(sendMsg);
         }
 
         private void button2_Click(object sender, EventArgs e)
