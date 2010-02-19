@@ -73,7 +73,7 @@ namespace CNCRouterCommand
         public static void generateParity(ref byte[] serialBytes)
         {
             // Look at creating a combined ParityBits parityByte
-            generateParityBits(ref serialBytes);
+            generateParityBits(ref serialBytes, serialBytes.Length - 1);
             generateParityByte(ref serialBytes);
         }
         /// <summary>
@@ -134,7 +134,7 @@ namespace CNCRouterCommand
         /// <param name="serialBytes">Array of bytes to generate parity bits for.</param>
         public static void generateParityBits(ref byte[] serialBytes)
         {
-            generateParityBits(serialBytes, serialBytes.Length);
+            generateParityBits(ref serialBytes, serialBytes.Length);
         }
 
         /// <summary>
