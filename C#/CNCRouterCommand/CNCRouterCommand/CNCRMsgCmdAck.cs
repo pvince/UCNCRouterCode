@@ -12,7 +12,7 @@ namespace CNCRouterCommand
     /// [Type Error P] [Firmware P] [Parity]
     /// -     Type: 1
     /// -    Error: 4 bits, only the lowest bit really counts.  0 for no error, 1 for error.
-    /// - Firmware: 8 bit number, may not be 255
+    /// - Firmware: 7 bit number, number can range from 0 to 127
     /// </summary>
     public class CNCRMsgCmdAck : CNCRMessage
     {
@@ -36,9 +36,9 @@ namespace CNCRouterCommand
         public CNCRMsgCmdAck(bool isError, byte firmware)
             : this()
         {
-            if (firmware > 254)
+            if (firmware > 127)
                 throw new ArgumentOutOfRangeException("firmware", 
-                    "Firmware must be less than 254.");
+                    "Firmware must be less than 128.");
 
             this._isError = isError;
             this._firmware = firmware;
@@ -48,10 +48,13 @@ namespace CNCRouterCommand
             : this()
         {
             // TODO: CNCRMsgCmdAck: Validate the passed in msgBytes.
+            // Check if the 2nd bit flag is active.
             if ((msgBytes[0] & 0x02) != 0)
                 _isError = true;
 
-            _firmware = Convert.ToByte(msgBytes[1] & 254);
+            // Grab the top 7 bits from the 2nd byte, and shift them right
+            // once.
+            _firmware = Convert.ToByte((msgBytes[1] & 254) >> 1);
         }
         #endregion
 
@@ -68,14 +71,14 @@ namespace CNCRouterCommand
         {
             // Set top 4 bits to "0001"
             byte TypeAndErr = getMsgTypeByte();
+            // Set the error flag.
             if (_isError)
                 TypeAndErr |= 0x02;
 
-            byte[] result = { TypeAndErr, _firmware, 0};
+            byte[] result = { TypeAndErr, Convert.ToByte(_firmware << 1), 0};
             
             // Set the parity bits and byte.
-            CNCRTools.generateParityBits(ref result);
-            CNCRTools.generateParityByte(ref result);
+            CNCRTools.generateParity(ref result);
             return result;
         }
     }

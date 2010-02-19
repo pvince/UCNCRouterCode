@@ -10,20 +10,22 @@ namespace CNCRouterCommand
     /// to send more commands to the router.
     /// 
     /// Command Structure:
-    /// [Type #Cmds] [255]
+    /// [Type 000 P] [#Cmds P] [255]
     /// -     Type: 3
-    /// -    #Cmds: 4 bits, interpreted as (#Cmds + 1) * 4, giving a 4 - 64 range
+    /// -    #Cmds: 7 bits, gives a range of 1 to 128.
     /// </summary>
     public class CNCRMsgRequestCommands : CNCRMessage
     {
+        // Stored internally in the class as 0 to 127 for bit reasons.
         private byte _commandCount = 0;
 
         /// <summary>
-        /// Number of commands to send to the router.  This value can be from 4 to 64.
+        /// Number of commands to send to the router.  This value can be from 1
+        /// to 128
         /// </summary>
         public int getCommandCount()
         {
-            return (_commandCount + 1) * 4;
+            return _commandCount + 1;
         }
 
         private CNCRMsgRequestCommands() : base(CNCRMESSAGE_TYPE.REQUEST_COMMAND) { }
@@ -31,22 +33,19 @@ namespace CNCRouterCommand
         public CNCRMsgRequestCommands(byte commandCount)
             : this()
         {
-            if (commandCount > 64)
-                throw new ArgumentOutOfRangeException("commandCount", "Command count must be 64 or less");
-            else if (commandCount < 4)
-                commandCount = 4;
-            _commandCount = Convert.ToByte((commandCount >> 2) - 1);
-            if (_commandCount < 0) _commandCount = 0;
+            if (commandCount > 128)
+                throw new ArgumentOutOfRangeException("commandCount", 
+                    "Command count must be 128 or less");
+            else if (commandCount < 1)
+                commandCount = 1;
+            _commandCount = --commandCount; //TODO: CNCRMsgRequestCommands: validate --commandCount works.
         }
         public CNCRMsgRequestCommands(byte[] msgBytes)
             : this()
         {
             // TODO: Validate byte constructor
-            // CommandCount is stored in the lower 4 bits of the first
-            // byte.  The number of commands to send is equal to
-            // the (sent count + 1) * 4, giving it a range of
-            // 4 to 64.
-            this._commandCount = Convert.ToByte(msgBytes[0] & 0x0F);
+            // CommandCount is stored in the top 7 bits of the 2nd byte.
+            this._commandCount = Convert.ToByte((msgBytes[1] & 264) >> 1);
         }
 
         /// <summary>
@@ -54,15 +53,17 @@ namespace CNCRouterCommand
         /// </summary>
         /// <returns>
         /// Command Structure:
-        /// [Type #Cmds] [255]
+        /// [Type 000 P] [#Cmds P] [255]
         /// -     Type: 3
-        /// -    #Cmds: 4 bits, interpreted as (#Cmds + 1) * 4, giving a 4 - 64 range
+        /// -    #Cmds: 7 bits, gives a range of 1 to 128.
         /// </returns>
         public override byte[] toSerial()
         {
-            byte TypeCmdCount = getMsgTypeByte();
-            TypeCmdCount |= _commandCount;           // Store the command count in the lower 4 bits.
-            byte[] result = { TypeCmdCount, 255 };  // Build the result array.
+            byte Type = getMsgTypeByte();
+            byte CmdCount = Convert.ToByte(_commandCount << 1);
+            byte[] result = { Type, CmdCount, 0 };   // Build the result array.
+            // generate parity
+            CNCRTools.generateParity(ref result);
             return result;
 
         }

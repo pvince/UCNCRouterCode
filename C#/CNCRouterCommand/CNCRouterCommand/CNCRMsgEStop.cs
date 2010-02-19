@@ -31,8 +31,7 @@ namespace CNCRouterCommand
             // [0010 000 P] [Parity]
             byte Type = getMsgTypeByte();
             byte[] result = { Type, 0 };
-            CNCRTools.generateParityBit(ref result[0]);
-            CNCRTools.generateParityByte(ref result);
+            CNCRTools.generateParity(ref result);
             return result;
         }
     }

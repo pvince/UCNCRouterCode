@@ -43,9 +43,9 @@ namespace CNCRouterCommand
         {
             //TODO: CNCRMsgMove: Error check the bytes
             //Convert Bytes to X, Y, Z
-            this._X = BitConverter.ToInt16(msgBytes, 1);
-            this._Y = BitConverter.ToInt16(msgBytes, 3);
-            this._Z = BitConverter.ToInt16(msgBytes, 5);
+            this._X = CNCRTools.generateInt16FromThreeBytes(msgBytes, 1);
+            this._Y = CNCRTools.generateInt16FromThreeBytes(msgBytes, 4);
+            this._Z = CNCRTools.generateInt16FromThreeBytes(msgBytes, 7);
         }
         #endregion
 
@@ -55,10 +55,10 @@ namespace CNCRouterCommand
         /// </summary>
         /// <returns>
         /// Command Structure:
-        /// [Type 000] [UpperX] [LowerX]
-        ///            [UpperY] [LowerY]
-        ///            [UpperZ] [LowerZ]
-        ///            [255]
+        /// [Type 000] [UpperX] [LowerX] [EndsX]
+        ///            [UpperY] [LowerY] [EndsY]
+        ///            [UpperZ] [LowerZ] [EndsZ]
+        ///            [Parity]
         /// </returns>
         public override byte[] toSerial()
         {
@@ -71,6 +71,7 @@ namespace CNCRouterCommand
                               yBits[0], yBits[1], yBits[2],
                               zBits[0], zBits[1], yBits[2],
                               0 };
+            CNCRTools.generateParity(ref result);
             return result;
         }
     }

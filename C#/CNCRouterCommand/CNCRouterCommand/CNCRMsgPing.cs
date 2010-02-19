@@ -10,7 +10,7 @@ namespace CNCRouterCommand
     /// that the router is still connected.
     /// 
     /// Command Structure:
-    /// [Type 0000] [255]
+    /// [Type 0000] [Parity]
     /// -   Type: 0
     /// </summary>
     public class CNCRMsgPing : CNCRMessage
@@ -23,14 +23,15 @@ namespace CNCRouterCommand
         /// </summary>
         /// <returns>
         ///  Command Structure:
-        ///     [Type ----] [255]
-        ///     [0000 0000] [255]
+        ///     [Type ----] [Parity]
+        ///     [0000 0000] [Parity]
         /// </returns>
         public override byte[] toSerial()
         { 
             // 0000 0000
             byte Type = getMsgTypeByte();
-            byte[] result = { Type, CNCRConstants.END_OF_MSG };
+            byte[] result = { Type, 0 };
+            CNCRTools.generateParity(ref result);
             return result;
         }
     }
