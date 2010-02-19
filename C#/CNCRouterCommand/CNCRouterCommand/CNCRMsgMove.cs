@@ -10,10 +10,10 @@ namespace CNCRouterCommand
     /// to the router.
     /// 
     /// Command Structure:
-    /// [Type 000] [UpperX] [LowerX]
-    ///            [UpperY] [LowerY]
-    ///            [UpperZ] [LowerZ]
-    ///            [255]
+    /// [Type 000] [UpperX] [LowerX] [EndsX]
+    ///            [UpperY] [LowerY] [EndsY]
+    ///            [UpperZ] [LowerZ] [EndsZ]
+    ///            [Parity]
     /// </summary>
     public class CNCRMsgMove : CNCRMessage
     {
@@ -63,14 +63,14 @@ namespace CNCRouterCommand
         public override byte[] toSerial()
         {
             byte Type = getMsgTypeByte();
-            byte[] xBits = BitConverter.GetBytes(getX());
-            byte[] yBits = BitConverter.GetBytes(getY());
-            byte[] zBits = BitConverter.GetBytes(getZ());
+            byte[] xBits = CNCRTools.generateThreeBytesFromInt16(getX());
+            byte[] yBits = CNCRTools.generateThreeBytesFromInt16(getY());
+            byte[] zBits = CNCRTools.generateThreeBytesFromInt16(getZ());
             byte[] result = { Type,
-                              xBits[0], xBits[1],
-                              yBits[0], yBits[1],
-                              zBits[0], zBits[1],
-                              CNCRConstants.END_OF_MSG };
+                              xBits[0], xBits[1], xBits[2],
+                              yBits[0], yBits[1], yBits[2],
+                              zBits[0], zBits[1], yBits[2],
+                              0 };
             return result;
         }
     }

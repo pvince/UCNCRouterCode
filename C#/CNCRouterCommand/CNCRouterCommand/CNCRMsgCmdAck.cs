@@ -9,7 +9,7 @@ namespace CNCRouterCommand
     /// This message is sent after the receipt of a command.
     /// 
     /// Command Structure:
-    /// [Type Error] [Firmware] [255]
+    /// [Type Error P] [Firmware P] [Parity]
     /// -     Type: 1
     /// -    Error: 4 bits, only the lowest bit really counts.  0 for no error, 1 for error.
     /// - Firmware: 8 bit number, may not be 255
@@ -27,11 +27,18 @@ namespace CNCRouterCommand
             : base(CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE)
         { }
 
+        /// <summary>
+        /// Create a new CommandAcknowledge message.
+        /// </summary>
+        /// <param name="isError">True for there was an error in the previous
+        ///                       message.</param>
+        /// <param name="firmware">Current FW version.  Max value 254.</param>
         public CNCRMsgCmdAck(bool isError, byte firmware)
             : this()
         {
-            if (firmware == 255)
-                throw new ArgumentOutOfRangeException("firmware", "Firmware may not be equal to 255.");
+            if (firmware > 254)
+                throw new ArgumentOutOfRangeException("firmware", 
+                    "Firmware must be less than 254.");
 
             this._isError = isError;
             this._firmware = firmware;
@@ -41,11 +48,10 @@ namespace CNCRouterCommand
             : this()
         {
             // TODO: CNCRMsgCmdAck: Validate the passed in msgBytes.
-            int errorBit = msgBytes[0] & 0x01;
-            if (errorBit == 1)
+            if ((msgBytes[0] & 0x02) != 0)
                 _isError = true;
 
-            _firmware = msgBytes[1];
+            _firmware = Convert.ToByte(msgBytes[1] & 254);
         }
         #endregion
 
@@ -55,17 +61,21 @@ namespace CNCRouterCommand
         /// </summary>
         /// <returns>
         /// Structure of result:
-        ///     0001 | 0001 | 1111 1111
-        ///     type | err  | end
+        ///     0001 001 0 | 0000 000 0 | Parity
+        ///     type err P | firmware P | Parity
         /// </returns>
         public override byte[] toSerial()
         {
             // Set top 4 bits to "0001"
             byte TypeAndErr = getMsgTypeByte();
             if (_isError)
-                TypeAndErr |= 0x01;
+                TypeAndErr |= 0x02;
 
-            byte[] result = { TypeAndErr, _firmware, CNCRConstants.END_OF_MSG };
+            byte[] result = { TypeAndErr, _firmware, 0};
+            
+            // Set the parity bits and byte.
+            CNCRTools.generateParityBits(ref result);
+            CNCRTools.generateParityByte(ref result);
             return result;
         }
     }

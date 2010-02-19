@@ -39,7 +39,7 @@ namespace CNCRouterCommand
         ///                           Int16.</param>
         /// <param name="startIndex">Index of parityBytes to start parsing.</param>
         /// <returns>An int16 contained in parityBytes.</returns>
-        public static Int16 generateInt16FromParityBytes(byte[] parityBytes, int startIndex)
+        public static Int16 generateInt16FromThreeBytes(byte[] parityBytes, int startIndex)
         {
             if ((parityBytes.Length - startIndex) < 3)
                 throw new ArgumentOutOfRangeException("startIndex",
@@ -58,7 +58,7 @@ namespace CNCRouterCommand
         /// </summary>
         /// <param name="value">Int16 to convert to parity bytes.</param>
         /// <returns>Parity bytes for an int16.</returns>
-        public static byte[] generateParityBytesFromInt16(Int16 value)
+        public static byte[] generateThreeBytesFromInt16(Int16 value)
         {
             byte[] result = new byte[3]; // Takes 3 bytes to hold a paritized int16
             byte[] tempBytes = BitConverter.GetBytes(value);
@@ -67,11 +67,15 @@ namespace CNCRouterCommand
             // Grab the lowest bit for both bytes and place them in the final byte.
             // [0000 0 tB0_lowest tB1_Lowest Parity]
             result[2] = Convert.ToByte(((tempBytes[0] & 1) << 2) | ((tempBytes[1] & 1) << 1));
-            // Generate the parity bits for each byte in result.
-            generateParityBits(ref result);
             return result;
         }
 
+        public static void generateParity(ref byte[] serialBytes)
+        {
+            // Look at creating a combined ParityBits parityByte
+            generateParityBits(ref serialBytes);
+            generateParityByte(ref serialBytes);
+        }
         /// <summary>
         /// Generates the final parity byte by counting the number of bits in
         /// each column.
@@ -116,13 +120,23 @@ namespace CNCRouterCommand
         /// Takes an array of bytes and generates their parity bits.
         /// </summary>
         /// <param name="serialBytes">Array of bytes to generate parity bits for.</param>
-        public static void generateParityBits(ref byte[] serialBytes)
+        public static void generateParityBits(ref byte[] serialBytes, int numberBytes)
         {
-            for (int i = 0; i < serialBytes.Length; i++)
+            for (int i = 0; i < numberBytes; i++)
             {
                 generateParityBit(ref serialBytes[i]);
             }
         }
+
+        /// <summary>
+        /// Takes an array of bytes and generates their parity bits.
+        /// </summary>
+        /// <param name="serialBytes">Array of bytes to generate parity bits for.</param>
+        public static void generateParityBits(ref byte[] serialBytes)
+        {
+            generateParityBits(serialBytes, serialBytes.Length);
+        }
+
         /// <summary>
         /// Counts the number of '1' bits in the passed in byte, then fills in
         /// the final parity bit.
@@ -159,7 +173,7 @@ namespace CNCRouterCommand
             // Create copy of the passed in byte.
             byte tempByte = serialByte;
             // Generate the parity for the received byte.
-            generateParityBit(tempByte);
+            generateParityBit(ref tempByte);
             // Validate the generated is the same as the received.
             if (serialByte != tempByte)
                 return false;   // if it is not, fail the parity check.

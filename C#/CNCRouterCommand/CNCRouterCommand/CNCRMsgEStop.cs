@@ -10,7 +10,7 @@ namespace CNCRouterCommand
     /// to stop the router and the software.
     /// 
     /// Command Structure:
-    /// [Type 0000] [255]
+    /// [Type 000 P] [Parity]
     /// - Type: 2
     /// </summary>
     public class CNCRMsgEStop : CNCRMessage
@@ -24,13 +24,15 @@ namespace CNCRouterCommand
         /// </summary>
         /// <returns>
         /// Command Structure:
-        ///     [Type 0000] [255]
+        ///     [Type 000 P] [Parity]
         /// </returns>
         public override byte[] toSerial()
         {
-            // [0010 0000] [255]
+            // [0010 000 P] [Parity]
             byte Type = getMsgTypeByte();
-            byte[] result = { Type, CNCRConstants.END_OF_MSG };
+            byte[] result = { Type, 0 };
+            CNCRTools.generateParityBit(ref result[0]);
+            CNCRTools.generateParityByte(ref result);
             return result;
         }
     }
