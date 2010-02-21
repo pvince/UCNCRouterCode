@@ -38,7 +38,7 @@ namespace CNCRouterCommand
             if (_toolOn) { TypeOnOff |= 0x02; } // If tool on, set the bit.
 
             byte[] result = { TypeOnOff, 0 };
-            CNCRTools.generateParity(result);
+            CNCRTools.generateParity(ref result);
             return result;
         }
     }
