@@ -55,9 +55,9 @@ namespace CNCRouterCommand
             : this()
         {
             //TODO: CNCRMsgSetSpeed: msgBytes constructor needs to validate msgBytes.
-            if ((msgBytes[0] & 0x04) == 0x04) { _X = true; }
-            if ((msgBytes[0] & 0x02) == 0x02) { _Y = true; }
-            if ((msgBytes[0] & 0x01) == 0x01) { _Z = true; }
+            if ((msgBytes[0] & 0x04) == 0x08) { _X = true; }
+            if ((msgBytes[0] & 0x02) == 0x04) { _Y = true; }
+            if ((msgBytes[0] & 0x01) == 0x02) { _Z = true; }
             _speed = CNCRTools.generateUInt16FromThreeBytes(msgBytes, 1);
         }
         #endregion
