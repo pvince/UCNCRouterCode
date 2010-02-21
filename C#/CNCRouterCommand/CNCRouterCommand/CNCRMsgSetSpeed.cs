@@ -9,19 +9,19 @@ namespace CNCRouterCommand
     /// Message object sent to router to change the feedrate.
     /// 
     /// Command Structure:
-    /// [Type 0 XYZ] [Speed] [255]
+    /// [Type XYZ P] [SpeedUpper7 P] [SpeedLower7 P] [0000 0 SU1 SL1 P] [Parity]
     /// -  Type: 5
     /// -   XYZ: 110 would set the speed for X and Y, but not Z
-    /// - Speed: 0 to 254, may NOT be 255. 0 = Stop, 255 = Full speed
+    /// - Speed: 16 bit unsigned int, a range of about 64k
     /// </summary>
     public class CNCRMsgSetSpeed : CNCRMessage
     {
-        private byte _speed = 0;
+        private UInt16 _speed = 0;
         private bool _X = false;
         private bool _Y = false;
         private bool _Z = false;
 
-        public byte getSpeed() { return _speed; }
+        public UInt16 getSpeed() { return _speed; }
         public bool isX() { return _X; }
         public bool isY() { return _Y; }
         public bool isZ() { return _Z; }
@@ -41,12 +41,9 @@ namespace CNCRouterCommand
         /// <param name="Y">Set speed for Y axis.</param>
         /// <param name="Z">Set Speed for Z axis.</param>
         /// <param name="speed">Speed the axis will move.  May not be 255.</param>
-        public CNCRMsgSetSpeed(bool X, bool Y, bool Z, byte speed)
+        public CNCRMsgSetSpeed(bool X, bool Y, bool Z, UInt16 speed)
             : this()
         {
-            if (speed == 255)
-                throw new ArgumentOutOfRangeException("speed", "Speed may not be equal to 255.");
-            
             _X = X;
             _Y = Y;
             _Z = Z;
@@ -61,7 +58,7 @@ namespace CNCRouterCommand
             if ((msgBytes[0] & 0x04) == 0x04) { _X = true; }
             if ((msgBytes[0] & 0x02) == 0x02) { _Y = true; }
             if ((msgBytes[0] & 0x01) == 0x01) { _Z = true; }
-            _speed = msgBytes[1];
+            _speed = CNCRTools.generateUInt16FromThreeBytes(msgBytes, 1);
         }
         #endregion
 
@@ -70,20 +67,24 @@ namespace CNCRouterCommand
         /// </summary>
         /// <returns>
         /// Command Structure:
-        /// [Type 0 XYZ] [Speed] [255]
+        /// [Type XYZ P] [SpeedUpper7 P] [SpeedLower7 P] [0000 0 SU1 SL1 P] [Parity]
         /// -  Type: 5
         /// -   XYZ: 110 would set the speed for X and Y, but not Z
-        /// - Speed: 0 to 254, may NOT be 255. 0 = Stop, 255 = Full speed
+        /// - Speed: 16 bit unsigned int, a range of about 64k
         /// </returns>
         public override byte[] toSerial()
         {
             // Build first byte [Type 0 XYZ] --> [0101 0XYZ]
             byte TypeAndAxis = getMsgTypeByte();
-            if (_X) { TypeAndAxis |= 0x04; } // Set X bit [0000 0100]
-            if (_Y) { TypeAndAxis |= 0x02; } // Set Y bit [0000 0010]
-            if (_Z) { TypeAndAxis |= 0x01; } // Set Z bit [0000 0001]
+            if (_X) { TypeAndAxis |= 0x08; } // Set X bit [0000 1000]
+            if (_Y) { TypeAndAxis |= 0x04; } // Set Y bit [0000 0100]
+            if (_Z) { TypeAndAxis |= 0x02; } // Set Z bit [0000 0010]
 
-            byte[] result = { TypeAndAxis, _speed, CNCRConstants.END_OF_MSG };
+            byte[] speedBytes = CNCRTools.generateThreeBytesFromUInt16(_speed);
+
+            byte[] result = { TypeAndAxis, speedBytes[0],
+                              speedBytes[1], speedBytes[2], 0 };
+            CNCRTools.generateParity(ref result);
             return result;
         }
     }

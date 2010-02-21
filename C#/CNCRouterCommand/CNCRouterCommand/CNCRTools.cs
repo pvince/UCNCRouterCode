@@ -31,6 +31,7 @@ namespace CNCRouterCommand
             throw new NotImplementedException();
         }
 
+        #region Byte Conversion Functions
         /// <summary>
         /// Creates an int16 variable from three bytes in a parity byte array.
         /// Requires parityBytes.Length - startIndex to be greater than 3.
@@ -41,35 +42,87 @@ namespace CNCRouterCommand
         /// <returns>An int16 contained in parityBytes.</returns>
         public static Int16 generateInt16FromThreeBytes(byte[] parityBytes, int startIndex)
         {
-            if ((parityBytes.Length - startIndex) < 3)
-                throw new ArgumentOutOfRangeException("startIndex",
-                    "startIndex does not allow for 3 bytes.");
-
-            byte[] result = new byte[2];
-            result[0] = Convert.ToByte(parityBytes[0] & 254);
-            result[1] = Convert.ToByte(parityBytes[1] & 254);
-            result[0] |= Convert.ToByte((parityBytes[2] & 4) >> 2);
-            result[1] |= Convert.ToByte((parityBytes[2] & 2) >> 1);
-            return BitConverter.ToInt16(result, 0);
+            return BitConverter.ToInt16(generateTwoBytesFromThree(parityBytes, startIndex), 0);
         }
 
         /// <summary>
-        /// Generate parity bytes from an int16 variable.
+        /// Generate three bytes from an int16 variable.
+        /// </summary>
+        /// <param name="value">Int16 to convert to three bytes.</param>
+        /// <returns>Three bytes for an int16.</returns>
+        public static byte[] generateThreeBytesFromInt16(Int16 value)
+        {
+            return generateThreeBytesFromTwo(BitConverter.GetBytes(value));
+        }
+
+        /// <summary>
+        /// Generate three bytes from a Uint16 variable.
+        /// </summary>
+        /// <param name="value">UInt16 to convert to three bytes.</param>
+        /// <returns>Three bytes for a uint16.</returns>
+        public static byte[] generateThreeBytesFromUInt16(UInt16 value)
+        {
+            return generateThreeBytesFromTwo(BitConverter.GetBytes(value));
+        }
+
+        /// <summary>
+        /// Creates a uint16 variable from three bytes in a parity byte array.
+        /// Requires parityBytes.Length - startIndex to be greater than 3.
+        /// </summary>
+        /// <param name="parityBytes">Array of parity bytes containing a
+        ///                           UInt16.</param>
+        /// <param name="startIndex">Index of parityBytes to start parsing.</param>
+        /// <returns>A uint16 contained in parityBytes.</returns>
+        public static UInt16 generateUInt16FromThreeBytes(byte[] parityBytes, int startIndex)
+        {
+            return BitConverter.ToUInt16(generateTwoBytesFromThree(parityBytes, startIndex), 0);
+        }
+
+        /// <summary>
+        /// Generate three bytes from two bytes.
         /// </summary>
         /// <param name="value">Int16 to convert to parity bytes.</param>
         /// <returns>Parity bytes for an int16.</returns>
-        public static byte[] generateThreeBytesFromInt16(Int16 value)
+        public static byte[] generateThreeBytesFromTwo(byte[] bytes)
         {
-            byte[] result = new byte[3]; // Takes 3 bytes to hold a paritized int16
-            byte[] tempBytes = BitConverter.GetBytes(value);
-            result[0] = Convert.ToByte(tempBytes[0] & 254); // grab top 7 bits.
-            result[1] = Convert.ToByte(tempBytes[1] & 254); // Grab to 7 bits.
+            if (bytes.Length != 2)
+                throw new ArgumentOutOfRangeException("bytes",
+                    "Input byte array must have a length of exactly two.");
+
+            byte[] result = {0, 0, 0}; // Takes 3 bytes to hold a paritized int16
+            result[0] = Convert.ToByte(bytes[0] & 254); // grab top 7 bits.
+            result[1] = Convert.ToByte(bytes[1] & 254); // Grab to 7 bits.
             // Grab the lowest bit for both bytes and place them in the final byte.
             // [0000 0 tB0_lowest tB1_Lowest Parity]
-            result[2] = Convert.ToByte(((tempBytes[0] & 1) << 2) | ((tempBytes[1] & 1) << 1));
+            result[2] = Convert.ToByte(((bytes[0] & 1) << 2) | ((bytes[1] & 1) << 1));
             return result;
+
         }
 
+        /// <summary>
+        /// Condences a 3-byte parity array down to a 2 byte standard array.
+        /// Requires parityBytes.Length - startIndex to be greater than 3.
+        /// </summary>
+        /// <param name="parityBytes">Array containing 3 consequtive bytes
+        ///                           that will be condensed down to 2 bytes.</param>
+        /// <param name="startIndex">Index of byteArray to start parsing.</param>
+        /// <returns>A 2-byte array condensed from byteArray</returns>
+        public static byte[] generateTwoBytesFromThree(byte[] byteArray, int startIndex)
+        {
+            if ((byteArray.Length - startIndex) < 3)
+                throw new ArgumentOutOfRangeException("startIndex",
+                    "startIndex does not allow for 3 bytes.");
+
+            byte[] result = {0, 0};
+            result[0] = Convert.ToByte(byteArray[0] & 254); // Grab top 7 bits
+            result[1] = Convert.ToByte(byteArray[1] & 254); // Grab top 7 bits
+            result[0] |= Convert.ToByte((byteArray[2] & 4) >> 2); // Grab bot bit
+            result[1] |= Convert.ToByte((byteArray[2] & 2) >> 1); // Grab bot bit
+            return result;
+        }
+        #endregion
+
+        #region Parity Generation Functions
         public static void generateParity(ref byte[] serialBytes)
         {
             // Look at creating a combined ParityBits parityByte
@@ -162,7 +215,9 @@ namespace CNCRouterCommand
             // If numOnes is odd
             serialByte |= Convert.ToByte(numOnes & 1);
         }
+        #endregion
 
+        #region Parity Validation Functions
         /// <summary>
         /// Checks the value of the parity bit.  Returns false if the check fails.
         /// </summary>
@@ -218,5 +273,6 @@ namespace CNCRouterCommand
 
             return true; // Parity check passed.
         }
+        #endregion
     }
 }
