@@ -10,7 +10,7 @@ namespace CNCRouterCommand
     /// its queue of commands.
     /// 
     /// Command Structure:
-    /// [Type 0000] [255]
+    /// [Type 000P] [Parity]
     /// - Type: 4
     /// </summary>
     public class CNCRMsgStartQueue : CNCRMessage
@@ -27,13 +27,14 @@ namespace CNCRouterCommand
         /// </summary>
         /// <returns>
         /// Command Structure:
-        /// [Type 0000] [255]
+        /// [Type 000P] [Parity]
         /// - Type: 4
         /// </returns>
         public override byte[] toSerial()
         {
             byte type = getMsgTypeByte();
-            byte[] result = { type, CNCRConstants.END_OF_MSG };
+            byte[] result = { type, 0 };
+            CNCRTools.generateParity(ref result);
             return result;
         }
     }

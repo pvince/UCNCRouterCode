@@ -9,7 +9,7 @@ namespace CNCRouterCommand
     /// This message is sent to turn the routers tool on and off.
     /// 
     /// Command Structure:
-    /// [Type OnOff][255]
+    /// [Type 00 OnOff P][Parity]
     /// -  Type: 7
     /// - OnOff: 0 for off, 1 for on
     /// </summary>
@@ -28,16 +28,17 @@ namespace CNCRouterCommand
         /// Transfers the message data to a byte array for transfer.
         /// </summary>
         /// <returns>
-        /// [Type OnOff][255]
+        /// [Type 00 OnOff P][Parity]
         /// -  Type: 7
         /// - OnOff: 0 for off, 1 for on
         /// </returns>
         public override byte[] toSerial()
         {
             byte TypeOnOff = getMsgTypeByte();
-            if (_toolOn) { TypeOnOff |= 0x01; } // If tool on, set the bit.
+            if (_toolOn) { TypeOnOff |= 0x02; } // If tool on, set the bit.
 
-            byte[] result = { TypeOnOff, CNCRConstants.END_OF_MSG };
+            byte[] result = { TypeOnOff, 0 };
+            CNCRTools.generateParity(result);
             return result;
         }
     }
