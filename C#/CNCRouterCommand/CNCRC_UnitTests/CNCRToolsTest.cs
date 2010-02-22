@@ -116,6 +116,8 @@ namespace CNCRC_UnitTests
             Assert.AreEqual(expected, actual);
         }
 
+        //TODO: Implement these tests.
+        /*
         /// <summary>
         ///A test for GetCommPortList
         ///</summary>
@@ -155,7 +157,7 @@ namespace CNCRC_UnitTests
             Assert.AreEqual(expected, actual);
             Assert.Inconclusive("Verify the correctness of this test method.");
         }
-
+        //*/
         /// <summary>
         ///A test for generateUInt16FromThreeBytes
         ///</summary>
@@ -370,13 +372,36 @@ namespace CNCRC_UnitTests
         ///A test for generateParityBit
         ///</summary>
         [TestMethod()]
-        public void generateParityBitTest()
+        public void generateParityBitTest_Valid1()
         {
-            byte serialByte = 0; // TODO: Initialize to an appropriate value
-            byte serialByteExpected = 0; // TODO: Initialize to an appropriate value
+            byte serialByte = 234;
+            byte serialByteExpected = 235;
             CNCRTools.generateParityBit(ref serialByte);
             Assert.AreEqual(serialByteExpected, serialByte);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
+        }
+
+        /// <summary>
+        ///A test for generateParityBit
+        ///</summary>
+        [TestMethod()]
+        public void generateParityBitTest_Valid1_2()
+        {
+            byte serialByte = 254;
+            byte serialByteExpected = 255;
+            CNCRTools.generateParityBit(ref serialByte);
+            Assert.AreEqual(serialByteExpected, serialByte);
+        }
+
+        /// <summary>
+        ///A test for generateParityBit
+        ///</summary>
+        [TestMethod()]
+        public void generateParityBitTest_Valid0()
+        {
+            byte serialByte = 232;
+            byte serialByteExpected = 232;
+            CNCRTools.generateParityBit(ref serialByte);
+            Assert.AreEqual(serialByteExpected, serialByte);
         }
 
         /// <summary>
