@@ -1,15 +1,15 @@
 ﻿using CNCRouterCommand;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-namespace CNRouterCommand_UnitTests
+namespace CNCRC_UnitTests
 {
     
     
     /// <summary>
-    ///This is a test class for CNCRMsgMoveTest and is intended
-    ///to contain all CNCRMsgMoveTest Unit Tests
+    ///This is a test class for CNCRMessageTest and is intended
+    ///to contain all CNCRMessageTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class CNCRMsgMoveTest
+    public class CNCRMessageTest
     {
 
 
@@ -68,7 +68,7 @@ namespace CNRouterCommand_UnitTests
         [TestMethod()]
         public void toSerialTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(1024, 1024, 1024); // TODO: Initialize to an appropriate value
+            CNCRMessage target = CreateCNCRMessage(); // TODO: Initialize to an appropriate value
             byte[] expected = null; // TODO: Initialize to an appropriate value
             byte[] actual;
             actual = target.toSerial();
@@ -77,13 +77,38 @@ namespace CNRouterCommand_UnitTests
         }
 
         /// <summary>
-        ///A test for CNCRMsgMove Constructor
+        ///A test for getMsgTypeByte
         ///</summary>
         [TestMethod()]
-        public void CNCRMsgMoveConstructorTest()
+        public void getMsgTypeByteTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(1024, 1024, 1024);
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            CNCRMessage target = CreateCNCRMessage(); // TODO: Initialize to an appropriate value
+            byte expected = 0; // TODO: Initialize to an appropriate value
+            byte actual;
+            actual = target.getMsgTypeByte();
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        internal virtual CNCRMessage CreateCNCRMessage()
+        {
+            // TODO: Instantiate an appropriate concrete class.
+            CNCRMessage target = null;
+            return target;
+        }
+
+        /// <summary>
+        ///A test for getMessageType
+        ///</summary>
+        [TestMethod()]
+        public void getMessageTypeTest()
+        {
+            CNCRMessage target = CreateCNCRMessage(); // TODO: Initialize to an appropriate value
+            CNCRMESSAGE_TYPE expected = new CNCRMESSAGE_TYPE(); // TODO: Initialize to an appropriate value
+            CNCRMESSAGE_TYPE actual;
+            actual = target.getMessageType();
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
         }
     }
 }

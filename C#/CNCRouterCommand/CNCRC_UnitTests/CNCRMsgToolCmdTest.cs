@@ -1,15 +1,15 @@
 ﻿using CNCRouterCommand;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-namespace CNRouterCommand_UnitTests
+namespace CNCRC_UnitTests
 {
     
     
     /// <summary>
-    ///This is a test class for CNCRMsgMoveTest and is intended
-    ///to contain all CNCRMsgMoveTest Unit Tests
+    ///This is a test class for CNCRMsgToolCmdTest and is intended
+    ///to contain all CNCRMsgToolCmdTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class CNCRMsgMoveTest
+    public class CNCRMsgToolCmdTest
     {
 
 
@@ -68,7 +68,8 @@ namespace CNRouterCommand_UnitTests
         [TestMethod()]
         public void toSerialTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(1024, 1024, 1024); // TODO: Initialize to an appropriate value
+            bool toolOn = false; // TODO: Initialize to an appropriate value
+            CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn); // TODO: Initialize to an appropriate value
             byte[] expected = null; // TODO: Initialize to an appropriate value
             byte[] actual;
             actual = target.toSerial();
@@ -77,12 +78,28 @@ namespace CNRouterCommand_UnitTests
         }
 
         /// <summary>
-        ///A test for CNCRMsgMove Constructor
+        ///A test for isToolOn
         ///</summary>
         [TestMethod()]
-        public void CNCRMsgMoveConstructorTest()
+        public void isToolOnTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(1024, 1024, 1024);
+            bool toolOn = false; // TODO: Initialize to an appropriate value
+            CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn); // TODO: Initialize to an appropriate value
+            bool expected = false; // TODO: Initialize to an appropriate value
+            bool actual;
+            actual = target.isToolOn();
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for CNCRMsgToolCmd Constructor
+        ///</summary>
+        [TestMethod()]
+        public void CNCRMsgToolCmdConstructorTest()
+        {
+            bool toolOn = false; // TODO: Initialize to an appropriate value
+            CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn);
             Assert.Inconclusive("TODO: Implement code to verify target");
         }
     }

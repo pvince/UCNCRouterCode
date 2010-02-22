@@ -1,15 +1,15 @@
 ﻿using CNCRouterCommand;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-namespace CNRouterCommand_UnitTests
+namespace CNCRC_UnitTests
 {
     
     
     /// <summary>
-    ///This is a test class for CNCRMsgMoveTest and is intended
-    ///to contain all CNCRMsgMoveTest Unit Tests
+    ///This is a test class for CNCRMsgStartQueueTest and is intended
+    ///to contain all CNCRMsgStartQueueTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class CNCRMsgMoveTest
+    public class CNCRMsgStartQueueTest
     {
 
 
@@ -68,7 +68,7 @@ namespace CNRouterCommand_UnitTests
         [TestMethod()]
         public void toSerialTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(1024, 1024, 1024); // TODO: Initialize to an appropriate value
+            CNCRMsgStartQueue target = new CNCRMsgStartQueue(); // TODO: Initialize to an appropriate value
             byte[] expected = null; // TODO: Initialize to an appropriate value
             byte[] actual;
             actual = target.toSerial();
@@ -77,12 +77,12 @@ namespace CNRouterCommand_UnitTests
         }
 
         /// <summary>
-        ///A test for CNCRMsgMove Constructor
+        ///A test for CNCRMsgStartQueue Constructor
         ///</summary>
         [TestMethod()]
-        public void CNCRMsgMoveConstructorTest()
+        public void CNCRMsgStartQueueConstructorTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(1024, 1024, 1024);
+            CNCRMsgStartQueue target = new CNCRMsgStartQueue();
             Assert.Inconclusive("TODO: Implement code to verify target");
         }
     }

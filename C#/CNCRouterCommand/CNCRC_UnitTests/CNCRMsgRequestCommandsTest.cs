@@ -1,15 +1,15 @@
 ﻿using CNCRouterCommand;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-namespace CNRouterCommand_UnitTests
+namespace CNCRC_UnitTests
 {
     
     
     /// <summary>
-    ///This is a test class for CNCRMsgMoveTest and is intended
-    ///to contain all CNCRMsgMoveTest Unit Tests
+    ///This is a test class for CNCRMsgRequestCommandsTest and is intended
+    ///to contain all CNCRMsgRequestCommandsTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class CNCRMsgMoveTest
+    public class CNCRMsgRequestCommandsTest
     {
 
 
@@ -68,7 +68,7 @@ namespace CNRouterCommand_UnitTests
         [TestMethod()]
         public void toSerialTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(1024, 1024, 1024); // TODO: Initialize to an appropriate value
+            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(null); // TODO: Initialize to an appropriate value
             byte[] expected = null; // TODO: Initialize to an appropriate value
             byte[] actual;
             actual = target.toSerial();
@@ -77,12 +77,49 @@ namespace CNRouterCommand_UnitTests
         }
 
         /// <summary>
-        ///A test for CNCRMsgMove Constructor
+        ///A test for getCommandCount
         ///</summary>
         [TestMethod()]
-        public void CNCRMsgMoveConstructorTest()
+        public void getCommandCountTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(1024, 1024, 1024);
+            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(null); // TODO: Initialize to an appropriate value
+            int expected = 0; // TODO: Initialize to an appropriate value
+            int actual;
+            actual = target.getCommandCount();
+            Assert.AreEqual(expected, actual);
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for CNCRMsgRequestCommands Constructor
+        ///</summary>
+        [TestMethod()]
+        public void CNCRMsgRequestCommandsConstructorTest2()
+        {
+            byte commandCount = 0; // TODO: Initialize to an appropriate value
+            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(commandCount);
+            Assert.Inconclusive("TODO: Implement code to verify target");
+        }
+
+        /// <summary>
+        ///A test for CNCRMsgRequestCommands Constructor
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("CNCRouterCommand.exe")]
+        public void CNCRMsgRequestCommandsConstructorTest1()
+        {
+            CNCRMsgRequestCommands_Accessor target = new CNCRMsgRequestCommands_Accessor();
+            Assert.Inconclusive("TODO: Implement code to verify target");
+        }
+
+        /// <summary>
+        ///A test for CNCRMsgRequestCommands Constructor
+        ///</summary>
+        [TestMethod()]
+        public void CNCRMsgRequestCommandsConstructorTest()
+        {
+            byte[] msgBytes = null; // TODO: Initialize to an appropriate value
+            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(msgBytes);
             Assert.Inconclusive("TODO: Implement code to verify target");
         }
     }
