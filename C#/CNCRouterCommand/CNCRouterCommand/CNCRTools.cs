@@ -90,11 +90,11 @@ namespace CNCRouterCommand
                     "Input byte array must have a length of exactly two.");
 
             byte[] result = {0, 0, 0}; // Takes 3 bytes to hold a paritized int16
-            result[0] = Convert.ToByte(bytes[0] & 254); // grab top 7 bits.
-            result[1] = Convert.ToByte(bytes[1] & 254); // Grab to 7 bits.
+            result[0] = Convert.ToByte(bytes[1] & 254); // grab top 7 bits.
+            result[1] = Convert.ToByte(bytes[0] & 254); // Grab to 7 bits.
             // Grab the lowest bit for both bytes and place them in the final byte.
             // [0000 0 tB0_lowest tB1_Lowest Parity]
-            result[2] = Convert.ToByte(((bytes[0] & 1) << 2) | ((bytes[1] & 1) << 1));
+            result[2] = Convert.ToByte(((bytes[1] & 1) << 2) | ((bytes[0] & 1) << 1));
             return result;
 
         }
@@ -114,10 +114,13 @@ namespace CNCRouterCommand
                     "startIndex does not allow for 3 bytes.");
 
             byte[] result = {0, 0};
-            result[0] = Convert.ToByte(byteArray[startIndex] & 254); // Grab top 7 bits
-            result[1] = Convert.ToByte(byteArray[startIndex + 1] & 254); // Grab top 7 bits
-            result[0] |= Convert.ToByte((byteArray[startIndex + 2] & 4) >> 2); // Grab bot bit
-            result[1] |= Convert.ToByte((byteArray[startIndex + 2] & 2) >> 1); // Grab bot bit
+            // The microcontroller is expecting the bytes to be inverted.
+            // The computer writes out          [Lower Bits] [Upper Bits]
+            // The microcontroller is expecting [Upper Bits] [Lower Bits]
+            result[1] = Convert.ToByte(byteArray[startIndex] & 254); // Grab top 7 bits
+            result[0] = Convert.ToByte(byteArray[startIndex + 1] & 254); // Grab top 7 bits
+            result[1] |= Convert.ToByte((byteArray[startIndex + 2] & 4) >> 2); // Grab bot bit
+            result[0] |= Convert.ToByte((byteArray[startIndex + 2] & 2) >> 1); // Grab bot bit
             return result;
         }
         #endregion

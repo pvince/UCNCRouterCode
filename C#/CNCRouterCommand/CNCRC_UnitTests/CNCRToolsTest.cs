@@ -224,8 +224,58 @@ namespace CNCRC_UnitTests
             byte[] expected = {170, 170};
             byte[] actual;
             actual = CNCRTools.generateTwoBytesFromThree(byteArray, startIndex);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreEqual<byte>(expected[i], actual[i]);
+            }
+        }
+
+        /// <summary>
+        ///A test for generateTwoBytesFromThree
+        ///</summary>
+        [TestMethod()]
+        public void generateTwoBytesFromThreeTest_ValidComplex()
+        {
+            byte[] byteArray = { 0, 0xCA, 0x53, 4 };
+            int startIndex = 1;
+            byte[] expected = { 0x52, 0xCB };
+            byte[] actual;
+            actual = CNCRTools.generateTwoBytesFromThree(byteArray, startIndex);
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreEqual<byte>(expected[i], actual[i]);
+            }
+        }
+
+        /// <summary>
+        ///A test for generateTwoBytesFromThree
+        ///</summary>
+        [TestMethod()]
+        public void generateTwoBytesFromThreeTest_InvalidComplex()
+        {
+            byte[] byteArray = { 0, 0xCA, 0x53, 4 };
+            int startIndex = 1;
+            byte[] expected = { 0xCB, 0x52 };
+            byte[] actual;
+            actual = CNCRTools.generateTwoBytesFromThree(byteArray, startIndex);
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreNotEqual<byte>(expected[i], actual[i]);
+            }
+        }
+
+        /// <summary>
+        ///A test for generateTwoBytesFromThree
+        ///</summary>
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentOutOfRangeException),
+            "An out of bound startIndex was allowed")]
+        public void generateTwoBytesFromThreeTest_InvalidIndex()
+        {
+            byte[] byteArray = { 0, 0xCA, 0x53, 4 };
+            int startIndex = 2;
+            byte[] actual;
+            actual = CNCRTools.generateTwoBytesFromThree(byteArray, startIndex);
         }
 
         /// <summary>
@@ -234,12 +284,14 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void generateThreeBytesFromUInt16Test()
         {
-            ushort value = 0; // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            ushort value = 52050;
+            byte[] expected = { 0xCA, 0x52, 4 };
             byte[] actual;
             actual = CNCRTools.generateThreeBytesFromUInt16(value);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreEqual<byte>(expected[i], actual[i]);
+            }
         }
 
         /// <summary>
@@ -248,12 +300,14 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void generateThreeBytesFromTwoTest()
         {
-            byte[] bytes = null; // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            byte[] bytes = { 0x52, 0xCB }; // 52050, result of Bitconvert.getBytes()
+            byte[] expected = { 0xCA, 0x52, 4 }; // TODO: Initialize to an appropriate value
             byte[] actual;
             actual = CNCRTools.generateThreeBytesFromTwo(bytes);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreEqual<byte>(expected[i], actual[i]);
+            }
         }
 
         /// <summary>
@@ -262,12 +316,14 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void generateThreeBytesFromInt16Test()
         {
-            short value = 0; // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            short value = 25000;
+            byte[] expected = {0x60, 0xA8, 4};
             byte[] actual;
             actual = CNCRTools.generateThreeBytesFromInt16(value);
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreEqual<byte>(expected[i], actual[i]);
+            }
         }
 
         /// <summary>
