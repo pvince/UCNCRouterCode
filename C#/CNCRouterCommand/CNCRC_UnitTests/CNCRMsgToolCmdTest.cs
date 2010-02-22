@@ -66,30 +66,60 @@ namespace CNCRC_UnitTests
         ///A test for toSerial
         ///</summary>
         [TestMethod()]
-        public void toSerialTest()
+        public void toSerialTest_ToolOn()
         {
-            bool toolOn = false; // TODO: Initialize to an appropriate value
-            CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn); // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            bool toolOn = true;
+            CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn);
+            byte[] expected = { 0x72, 0x72 };
             byte[] actual;
             actual = target.toSerial();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.AreEqual(expected.Length, actual.Length);
+            Assert.AreEqual(expected[0], actual[0]);
+            Assert.AreEqual(expected[1], actual[1]);
+        }
+
+        /// <summary>
+        ///A test for toSerial
+        ///</summary>
+        [TestMethod()]
+        public void toSerialTest_ToolOff()
+        {
+            bool toolOn = false;
+            CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn);
+            byte[] expected = { 0x71, 0x71 };
+            byte[] actual;
+            actual = target.toSerial();
+            Assert.AreEqual(expected.Length, actual.Length);
+            Assert.AreEqual(expected[0], actual[0]);
+            Assert.AreEqual(expected[1], actual[1]);
         }
 
         /// <summary>
         ///A test for isToolOn
         ///</summary>
         [TestMethod()]
-        public void isToolOnTest()
+        public void isToolOnTest_Off()
         {
-            bool toolOn = false; // TODO: Initialize to an appropriate value
-            CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn); // TODO: Initialize to an appropriate value
-            bool expected = false; // TODO: Initialize to an appropriate value
+            bool toolOn = false;
+            CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn);
+            bool expected = false;
             bool actual;
             actual = target.isToolOn();
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for isToolOn
+        ///</summary>
+        [TestMethod()]
+        public void isToolOnTest_On()
+        {
+            bool toolOn = true;
+            CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn);
+            bool expected = true;
+            bool actual;
+            actual = target.isToolOn();
+            Assert.AreEqual(expected, actual);
         }
 
         /// <summary>
@@ -100,7 +130,9 @@ namespace CNCRC_UnitTests
         {
             bool toolOn = false; // TODO: Initialize to an appropriate value
             CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn);
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual(CNCRMESSAGE_TYPE.TOOL_CMD, target.getMessageType());
+            Assert.AreEqual(0x70, target.getMsgTypeByte());
+            Assert.AreEqual(toolOn, target.isToolOn());
         }
     }
 }

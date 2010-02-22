@@ -1,4 +1,5 @@
 ﻿using CNCRouterCommand;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CNCRC_UnitTests
 {
@@ -68,12 +69,14 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void toSerialTest()
         {
-            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(null); // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(128);
+            byte[] expected = { 0x30, 0xFF, 0xCF };
             byte[] actual;
             actual = target.toSerial();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.AreEqual(expected.Length, actual.Length);
+            Assert.AreEqual<byte>(expected[0], actual[0], "Byte 0");
+            Assert.AreEqual<byte>(expected[1], actual[1], "Byte 1");
+            Assert.AreEqual<byte>(expected[2], actual[2], "Byte 2");
         }
 
         /// <summary>
@@ -82,12 +85,11 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void getCommandCountTest()
         {
-            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(null); // TODO: Initialize to an appropriate value
-            int expected = 0; // TODO: Initialize to an appropriate value
+            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(128);
+            int expected = 128;
             int actual;
             actual = target.getCommandCount();
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
         }
 
         /// <summary>
@@ -96,9 +98,23 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void CNCRMsgRequestCommandsConstructorTest2()
         {
-            byte commandCount = 0; // TODO: Initialize to an appropriate value
+            byte commandCount = 128;
             CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(commandCount);
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual(CNCRMESSAGE_TYPE.REQUEST_COMMAND, target.getMessageType());
+            Assert.AreEqual(0x30, target.getMsgTypeByte());
+            Assert.AreEqual(commandCount, target.getCommandCount());
+        }
+
+        /// <summary>
+        ///A test for CNCRMsgRequestCommands Constructor
+        ///</summary>
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentOutOfRangeException),
+            "Constructor allowed large command count.")]
+        public void CNCRMsgRequestCommandsConstructorTest2_Fail()
+        {
+            byte commandCount = 129;
+            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(commandCount);
         }
 
         /// <summary>
@@ -109,7 +125,6 @@ namespace CNCRC_UnitTests
         public void CNCRMsgRequestCommandsConstructorTest1()
         {
             CNCRMsgRequestCommands_Accessor target = new CNCRMsgRequestCommands_Accessor();
-            Assert.Inconclusive("TODO: Implement code to verify target");
         }
 
         /// <summary>
@@ -118,9 +133,11 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void CNCRMsgRequestCommandsConstructorTest()
         {
-            byte[] msgBytes = null; // TODO: Initialize to an appropriate value
+            byte[] msgBytes = { 0x30, 0xFF, 0xCF }; // TODO: Initialize to an appropriate value
             CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(msgBytes);
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual(CNCRMESSAGE_TYPE.REQUEST_COMMAND, target.getMessageType());
+            Assert.AreEqual(0x30, target.getMsgTypeByte());
+            Assert.AreEqual(128, target.getCommandCount());
         }
     }
 }

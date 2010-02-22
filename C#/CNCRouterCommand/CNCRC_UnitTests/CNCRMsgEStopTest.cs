@@ -72,6 +72,7 @@ namespace CNCRC_UnitTests
             byte[] expected = { 0x21, 0x21 }; // TODO: Initialize to an appropriate value
             byte[] actual;
             actual = target.toSerial();
+            Assert.AreEqual(expected.Length, actual.Length);
             Assert.AreEqual<byte>(expected[0], actual[0]);
             Assert.AreEqual<byte>(expected[1], actual[1]);
         }
@@ -84,6 +85,7 @@ namespace CNCRC_UnitTests
         {
             CNCRMsgEStop target = new CNCRMsgEStop();
             Assert.AreEqual(CNCRMESSAGE_TYPE.E_STOP, target.getMessageType());
+            Assert.AreEqual(0x20, target.getMsgTypeByte());
         }
     }
 }

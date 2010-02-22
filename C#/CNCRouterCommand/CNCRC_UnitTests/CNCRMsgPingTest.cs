@@ -69,11 +69,15 @@ namespace CNCRC_UnitTests
         public void toSerialTest()
         {
             CNCRMsgPing target = new CNCRMsgPing(); // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            byte[] expected = {0x00, 0x00}; // TODO: Initialize to an appropriate value
             byte[] actual;
             actual = target.toSerial();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.AreEqual(expected.Length, actual.Length);
+            for(int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreEqual<byte>(expected[i], actual[i]);
+            }
+            
         }
 
         /// <summary>
@@ -83,7 +87,8 @@ namespace CNCRC_UnitTests
         public void CNCRMsgPingConstructorTest()
         {
             CNCRMsgPing target = new CNCRMsgPing();
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual(CNCRMESSAGE_TYPE.PING, target.getMessageType());
+            Assert.AreEqual(0x00, target.getMsgTypeByte());
         }
     }
 }

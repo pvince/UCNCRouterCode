@@ -30,6 +30,10 @@ namespace CNCRouterCommand
 
         private CNCRMsgRequestCommands() : base(CNCRMESSAGE_TYPE.REQUEST_COMMAND) { }
 
+        /// <summary>
+        /// Initialize a command request message.
+        /// </summary>
+        /// <param name="commandCount">Byte, has a range of 1 to 128.</param>
         public CNCRMsgRequestCommands(byte commandCount)
             : this()
         {
@@ -45,7 +49,7 @@ namespace CNCRouterCommand
         {
             // TODO: Validate byte constructor
             // CommandCount is stored in the top 7 bits of the 2nd byte.
-            this._commandCount = Convert.ToByte((msgBytes[1] & 264) >> 1);
+            this._commandCount = Convert.ToByte(msgBytes[1] >> 1);
         }
 
         /// <summary>
