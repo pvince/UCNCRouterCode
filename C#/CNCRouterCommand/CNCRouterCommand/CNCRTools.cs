@@ -114,10 +114,10 @@ namespace CNCRouterCommand
                     "startIndex does not allow for 3 bytes.");
 
             byte[] result = {0, 0};
-            result[0] = Convert.ToByte(byteArray[0] & 254); // Grab top 7 bits
-            result[1] = Convert.ToByte(byteArray[1] & 254); // Grab top 7 bits
-            result[0] |= Convert.ToByte((byteArray[2] & 4) >> 2); // Grab bot bit
-            result[1] |= Convert.ToByte((byteArray[2] & 2) >> 1); // Grab bot bit
+            result[0] = Convert.ToByte(byteArray[startIndex] & 254); // Grab top 7 bits
+            result[1] = Convert.ToByte(byteArray[startIndex + 1] & 254); // Grab top 7 bits
+            result[0] |= Convert.ToByte((byteArray[startIndex + 2] & 4) >> 2); // Grab bot bit
+            result[1] |= Convert.ToByte((byteArray[startIndex + 2] & 2) >> 1); // Grab bot bit
             return result;
         }
         #endregion
@@ -268,7 +268,7 @@ namespace CNCRouterCommand
             generateParityByte(ref tempBytes);
 
             // Validate the generated = the received
-            if (tempBytes[tempBytes.Length] != serialBytes[serialBytes.Length])
+            if (tempBytes[tempBytes.Length - 1] != serialBytes[serialBytes.Length - 1])
                 return false; // Parity check failed.
 
             return true; // Parity check passed.
