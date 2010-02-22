@@ -176,7 +176,7 @@ namespace CNCRouterCommand
         /// Takes an array of bytes and generates their parity bits.
         /// </summary>
         /// <param name="serialBytes">Array of bytes to generate parity bits for.</param>
-        public static void generateParityBits(ref byte[] serialBytes, int numberBytes)
+        private static void generateParityBits(ref byte[] serialBytes, int numberBytes)
         {
             for (int i = 0; i < numberBytes; i++)
             {

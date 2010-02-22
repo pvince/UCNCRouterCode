@@ -303,7 +303,7 @@ namespace CNCRC_UnitTests
         public void generateThreeBytesFromTwoTest()
         {
             byte[] bytes = { 0x52, 0xCB }; // 52050, result of Bitconvert.getBytes()
-            byte[] expected = { 0xCA, 0x52, 4 }; // TODO: Initialize to an appropriate value
+            byte[] expected = { 0xCA, 0x52, 4 };
             byte[] actual;
             actual = CNCRTools.generateThreeBytesFromTwo(bytes);
             for (int i = 0; i < expected.Length; i++)
@@ -334,11 +334,13 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void generateParityByteTest()
         {
-            byte[] serialBytes = null; // TODO: Initialize to an appropriate value
-            byte[] serialBytesExpected = null; // TODO: Initialize to an appropriate value
+            byte[] serialBytes = { 0x33, 0xFF, 0xBE, 0x06, 0 };
+            byte[] serialBytesExpected = { 0x33, 0xFF, 0xBE, 0x06, 0x74 };
             CNCRTools.generateParityByte(ref serialBytes);
-            Assert.AreEqual(serialBytesExpected, serialBytes);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
+            for (int i = 0; i < serialBytesExpected.Length; i++)
+            {
+                Assert.AreEqual<byte>(serialBytesExpected[i], serialBytes[i]);
+            }
         }
 
         /// <summary>
@@ -347,25 +349,13 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void generateParityBitsTest1()
         {
-            byte[] serialBytes = null; // TODO: Initialize to an appropriate value
-            byte[] serialBytesExpected = null; // TODO: Initialize to an appropriate value
+            byte[] serialBytes = {232, 0, 2, 254, 6 };
+            byte[] serialBytesExpected = {232, 0, 3, 255, 6};
             CNCRTools.generateParityBits(ref serialBytes);
-            Assert.AreEqual(serialBytesExpected, serialBytes);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
-        }
-
-        /// <summary>
-        ///A test for generateParityBits
-        ///</summary>
-        [TestMethod()]
-        public void generateParityBitsTest()
-        {
-            byte[] serialBytes = null; // TODO: Initialize to an appropriate value
-            byte[] serialBytesExpected = null; // TODO: Initialize to an appropriate value
-            int numberBytes = 0; // TODO: Initialize to an appropriate value
-            CNCRTools.generateParityBits(ref serialBytes, numberBytes);
-            Assert.AreEqual(serialBytesExpected, serialBytes);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
+            for (int i = 0; i < serialBytesExpected.Length; i++)
+            {
+                Assert.AreEqual<byte>(serialBytesExpected[i], serialBytes[i]);
+            }
         }
 
         /// <summary>
@@ -410,11 +400,13 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void generateParityTest()
         {
-            byte[] serialBytes = null; // TODO: Initialize to an appropriate value
-            byte[] serialBytesExpected = null; // TODO: Initialize to an appropriate value
+            byte[] serialBytes = {0x32, 0xFE, 0xBE, 0x06, 0};
+            byte[] serialBytesExpected = {0x33, 0xFF, 0xBE, 0x06, 0x74 };
             CNCRTools.generateParity(ref serialBytes);
-            Assert.AreEqual(serialBytesExpected, serialBytes);
-            Assert.Inconclusive("A method that does not return a value cannot be verified.");
+            for (int i = 0; i < serialBytesExpected.Length; i++)
+            {
+                Assert.AreEqual<byte>(serialBytesExpected[i], serialBytes[i]);
+            }
         }
 
         /// <summary>
@@ -423,13 +415,28 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void generateInt16FromThreeBytesTest()
         {
-            byte[] parityBytes = null; // TODO: Initialize to an appropriate value
-            int startIndex = 0; // TODO: Initialize to an appropriate value
-            short expected = 0; // TODO: Initialize to an appropriate value
+            byte[] parityBytes = { 0, 0x60, 0xA8, 4, 0 };
+            int startIndex = 1; // TODO: Initialize to an appropriate value
+            short expected = 25000; // TODO: Initialize to an appropriate value
             short actual;
             actual = CNCRTools.generateInt16FromThreeBytes(parityBytes, startIndex);
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for generateInt16FromThreeBytes
+        ///</summary>
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentOutOfRangeException),
+            "An out of bound startIndex was allowed")]
+        public void generateInt16FromThreeBytesTest_BadIndex()
+        {
+            byte[] parityBytes = { 0, 0x60, 0xA8, 4, 0 };
+            int startIndex = 3; // TODO: Initialize to an appropriate value
+            short expected = 25000; // TODO: Initialize to an appropriate value
+            short actual;
+            actual = CNCRTools.generateInt16FromThreeBytes(parityBytes, startIndex);
+            Assert.AreEqual(expected, actual);
         }
     }
 }
