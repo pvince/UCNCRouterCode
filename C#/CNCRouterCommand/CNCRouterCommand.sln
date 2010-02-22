@@ -6,6 +6,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{79539885-EFC3-4C2E-BB9B-C1CF817CBB0F}"
 	ProjectSection(SolutionItems) = preProject
 		CNCRouterCommand1.vsmdi = CNCRouterCommand1.vsmdi
+		CNCRouterCommand2.vsmdi = CNCRouterCommand2.vsmdi
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 	EndProjectSection
 EndProject
@@ -17,7 +18,7 @@ Global
 		Manager = AnkhSVN - Subversion Support for Visual Studio
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = CNCRouterCommand1.vsmdi
+		CategoryFile = CNCRouterCommand2.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -32,7 +32,7 @@ namespace CNCRouterCommand
         /// </summary>
         /// <param name="isError">True for there was an error in the previous
         ///                       message.</param>
-        /// <param name="firmware">Current FW version.  Max value 254.</param>
+        /// <param name="firmware">Current FW version.  Max value 127.</param>
         public CNCRMsgCmdAck(bool isError, byte firmware)
             : this()
         {

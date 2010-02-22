@@ -1,4 +1,5 @@
 ﻿using CNCRouterCommand;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CNCRC_UnitTests
 {
@@ -68,12 +69,14 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void toSerialTest()
         {
-            CNCRMsgCmdAck target = new CNCRMsgCmdAck(null); // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            CNCRMsgCmdAck target = new CNCRMsgCmdAck(true, 127);
+            byte[] expected = { 0x12, 0xFF, 0xED };
             byte[] actual;
             actual = target.toSerial();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreEqual<byte>(expected[i], actual[i]);
+            }
         }
 
         /// <summary>
@@ -82,12 +85,11 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void getFirmwareTest()
         {
-            CNCRMsgCmdAck target = new CNCRMsgCmdAck(null); // TODO: Initialize to an appropriate value
-            byte expected = 0; // TODO: Initialize to an appropriate value
+            CNCRMsgCmdAck target = new CNCRMsgCmdAck(true, 127); // TODO: Initialize to an appropriate value
+            byte expected = 127; // TODO: Initialize to an appropriate value
             byte actual;
             actual = target.getFirmware();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.AreEqual<byte>(expected, actual);
         }
 
         /// <summary>
@@ -96,12 +98,11 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void getErrorTest()
         {
-            CNCRMsgCmdAck target = new CNCRMsgCmdAck(null); // TODO: Initialize to an appropriate value
-            bool expected = false; // TODO: Initialize to an appropriate value
+            CNCRMsgCmdAck target = new CNCRMsgCmdAck(true, 127); // TODO: Initialize to an appropriate value
+            bool expected = true; // TODO: Initialize to an appropriate value
             bool actual;
             actual = target.getError();
             Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
         }
 
         /// <summary>
@@ -112,7 +113,6 @@ namespace CNCRC_UnitTests
         public void CNCRMsgCmdAckConstructorTest2()
         {
             CNCRMsgCmdAck_Accessor target = new CNCRMsgCmdAck_Accessor();
-            Assert.Inconclusive("TODO: Implement code to verify target");
         }
 
         /// <summary>
@@ -121,21 +121,64 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void CNCRMsgCmdAckConstructorTest1()
         {
-            byte[] msgBytes = null; // TODO: Initialize to an appropriate value
+            byte[] msgBytes = { 0x12, 0xFF, 0xED };
             CNCRMsgCmdAck target = new CNCRMsgCmdAck(msgBytes);
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual(true, target.getError());
+            Assert.AreEqual(127, target.getFirmware());
         }
 
         /// <summary>
         ///A test for CNCRMsgCmdAck Constructor
         ///</summary>
         [TestMethod()]
-        public void CNCRMsgCmdAckConstructorTest()
+        public void CNCRMsgCmdAckConstructorTest_valid()
         {
-            bool isError = false; // TODO: Initialize to an appropriate value
-            byte firmware = 0; // TODO: Initialize to an appropriate value
+            bool isError = false;
+            byte firmware = 0;
             CNCRMsgCmdAck target = new CNCRMsgCmdAck(isError, firmware);
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual(isError, target.getError());
+            Assert.AreEqual(firmware, target.getFirmware());
+        }
+
+        /// <summary>
+        ///A test for CNCRMsgCmdAck Constructor
+        ///</summary>
+        [TestMethod()]
+        public void CNCRMsgCmdAckConstructorTest_ErrorLowFW()
+        {
+            bool isError = true;
+            byte firmware = 0;
+            CNCRMsgCmdAck target = new CNCRMsgCmdAck(isError, firmware);
+            Assert.AreEqual(isError, target.getError());
+            Assert.AreEqual(firmware, target.getFirmware());
+        }
+
+        /// <summary>
+        ///A test for CNCRMsgCmdAck Constructor
+        ///</summary>
+        [TestMethod()]
+        public void CNCRMsgCmdAckConstructorTest_ErrHighFW()
+        {
+            bool isError = true;
+            byte firmware = 127;
+            CNCRMsgCmdAck target = new CNCRMsgCmdAck(isError, firmware);
+            Assert.AreEqual(isError, target.getError());
+            Assert.AreEqual(firmware, target.getFirmware());
+        }
+
+        ///<summary>
+        ///A test for CNCRMsgCmdAck Constructor
+        ///</summary>
+        [TestMethod()]
+        [ExpectedException(typeof(ArgumentOutOfRangeException),
+            "Constructor allowed a bad FW version.")]
+        public void CNCRMsgCmdAckConstructorTest_ErrBadFW()
+        {
+            bool isError = true;
+            byte firmware = 128;
+            CNCRMsgCmdAck target = new CNCRMsgCmdAck(isError, firmware);
+            Assert.AreEqual(isError, target.getError());
+            Assert.AreEqual(firmware, target.getFirmware());
         }
     }
 }

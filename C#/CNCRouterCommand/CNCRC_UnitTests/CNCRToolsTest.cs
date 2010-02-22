@@ -416,8 +416,8 @@ namespace CNCRC_UnitTests
         public void generateInt16FromThreeBytesTest()
         {
             byte[] parityBytes = { 0, 0x60, 0xA8, 4, 0 };
-            int startIndex = 1; // TODO: Initialize to an appropriate value
-            short expected = 25000; // TODO: Initialize to an appropriate value
+            int startIndex = 1;
+            short expected = 25000;
             short actual;
             actual = CNCRTools.generateInt16FromThreeBytes(parityBytes, startIndex);
             Assert.AreEqual(expected, actual);
@@ -432,8 +432,8 @@ namespace CNCRC_UnitTests
         public void generateInt16FromThreeBytesTest_BadIndex()
         {
             byte[] parityBytes = { 0, 0x60, 0xA8, 4, 0 };
-            int startIndex = 3; // TODO: Initialize to an appropriate value
-            short expected = 25000; // TODO: Initialize to an appropriate value
+            int startIndex = 3;
+            short expected = 25000;
             short actual;
             actual = CNCRTools.generateInt16FromThreeBytes(parityBytes, startIndex);
             Assert.AreEqual(expected, actual);

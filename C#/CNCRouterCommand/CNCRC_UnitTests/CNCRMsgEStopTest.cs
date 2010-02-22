@@ -69,11 +69,11 @@ namespace CNCRC_UnitTests
         public void toSerialTest()
         {
             CNCRMsgEStop target = new CNCRMsgEStop(); // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            byte[] expected = { 0x21, 0x21 }; // TODO: Initialize to an appropriate value
             byte[] actual;
             actual = target.toSerial();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.AreEqual<byte>(expected[0], actual[0]);
+            Assert.AreEqual<byte>(expected[1], actual[1]);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace CNCRC_UnitTests
         public void CNCRMsgEStopConstructorTest()
         {
             CNCRMsgEStop target = new CNCRMsgEStop();
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual(CNCRMESSAGE_TYPE.E_STOP, target.getMessageType());
         }
     }
 }
