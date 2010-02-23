@@ -15,7 +15,7 @@ namespace CNCRouterCommand
     /// </summary>
     public class CNCRMsgPing : CNCRMessage
     {
-        public CNCRMsgPing() : base(CNCRMESSAGE_TYPE.PING)
+        public CNCRMsgPing() : base(CNCRMSG_TYPE.PING)
         { }
 
         /// <summary>

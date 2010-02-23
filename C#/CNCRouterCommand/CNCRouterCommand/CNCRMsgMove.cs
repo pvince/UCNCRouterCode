@@ -27,7 +27,7 @@ namespace CNCRouterCommand
 
         #region Constructors
         private CNCRMsgMove()
-            : base(CNCRMESSAGE_TYPE.MOVE)
+            : base(CNCRMSG_TYPE.MOVE)
         { }
 
         public CNCRMsgMove(Int16 X, Int16 Y, Int16 Z)

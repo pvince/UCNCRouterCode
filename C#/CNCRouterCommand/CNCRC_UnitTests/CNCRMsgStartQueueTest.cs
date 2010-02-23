@@ -84,7 +84,7 @@ namespace CNCRC_UnitTests
         public void CNCRMsgStartQueueConstructorTest()
         {
             CNCRMsgStartQueue target = new CNCRMsgStartQueue();
-            Assert.AreEqual(CNCRMESSAGE_TYPE.START_QUEUE, target.getMessageType());
+            Assert.AreEqual(CNCRMSG_TYPE.START_QUEUE, target.getMessageType());
             Assert.AreEqual(0x40, target.getMsgTypeByte());
         }
     }

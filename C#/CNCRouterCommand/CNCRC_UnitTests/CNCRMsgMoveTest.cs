@@ -136,7 +136,7 @@ namespace CNCRC_UnitTests
         {
             byte[] msgBytes = { 0x60, 0x81, 0x00, 0x00, 0x7E, 0xFF, 0x06, 0x5F, 0x5A, 0x03, 0x60 };
             CNCRMsgMove target = new CNCRMsgMove(msgBytes);
-            Assert.AreEqual <CNCRMESSAGE_TYPE>(CNCRMESSAGE_TYPE.MOVE, target.getMessageType());
+            Assert.AreEqual <CNCRMSG_TYPE>(CNCRMSG_TYPE.MOVE, target.getMessageType());
             Assert.AreEqual<byte>(0x60, target.getMsgTypeByte());
             Assert.AreEqual<short>(-32768, target.getX());
             Assert.AreEqual<short>(32767, target.getY());
@@ -154,7 +154,7 @@ namespace CNCRC_UnitTests
             short Y = 32767; // TODO: Initialize to an appropriate value
             short Z = 24155; // TODO: Initialize to an appropriate value
             CNCRMsgMove target = new CNCRMsgMove(X, Y, Z);
-            Assert.AreEqual<CNCRMESSAGE_TYPE>(CNCRMESSAGE_TYPE.MOVE, target.getMessageType());
+            Assert.AreEqual<CNCRMSG_TYPE>(CNCRMSG_TYPE.MOVE, target.getMessageType());
             Assert.AreEqual<byte>(0x60, target.getMsgTypeByte());
             Assert.AreEqual<short>(-32768, target.getX());
             Assert.AreEqual<short>(32767, target.getY());

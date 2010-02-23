@@ -87,7 +87,7 @@ namespace CNCRC_UnitTests
         public void CNCRMsgPingConstructorTest()
         {
             CNCRMsgPing target = new CNCRMsgPing();
-            Assert.AreEqual(CNCRMESSAGE_TYPE.PING, target.getMessageType());
+            Assert.AreEqual(CNCRMSG_TYPE.PING, target.getMessageType());
             Assert.AreEqual(0x00, target.getMsgTypeByte());
         }
     }

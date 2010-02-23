@@ -28,7 +28,7 @@ namespace CNCRouterCommand
             return _commandCount + 1;
         }
 
-        private CNCRMsgRequestCommands() : base(CNCRMESSAGE_TYPE.REQUEST_COMMAND) { }
+        private CNCRMsgRequestCommands() : base(CNCRMSG_TYPE.REQUEST_COMMAND) { }
 
         /// <summary>
         /// Initialize a command request message.

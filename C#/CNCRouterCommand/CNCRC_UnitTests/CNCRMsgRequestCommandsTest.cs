@@ -100,7 +100,7 @@ namespace CNCRC_UnitTests
         {
             byte commandCount = 128;
             CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(commandCount);
-            Assert.AreEqual(CNCRMESSAGE_TYPE.REQUEST_COMMAND, target.getMessageType());
+            Assert.AreEqual(CNCRMSG_TYPE.REQUEST_COMMAND, target.getMessageType());
             Assert.AreEqual(0x30, target.getMsgTypeByte());
             Assert.AreEqual(commandCount, target.getCommandCount());
         }
@@ -135,7 +135,7 @@ namespace CNCRC_UnitTests
         {
             byte[] msgBytes = { 0x30, 0xFF, 0xCF }; // TODO: Initialize to an appropriate value
             CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(msgBytes);
-            Assert.AreEqual(CNCRMESSAGE_TYPE.REQUEST_COMMAND, target.getMessageType());
+            Assert.AreEqual(CNCRMSG_TYPE.REQUEST_COMMAND, target.getMessageType());
             Assert.AreEqual(0x30, target.getMsgTypeByte());
             Assert.AreEqual(128, target.getCommandCount());
         }

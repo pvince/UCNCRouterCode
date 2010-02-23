@@ -130,7 +130,7 @@ namespace CNCRC_UnitTests
         {
             bool toolOn = false; // TODO: Initialize to an appropriate value
             CNCRMsgToolCmd target = new CNCRMsgToolCmd(toolOn);
-            Assert.AreEqual(CNCRMESSAGE_TYPE.TOOL_CMD, target.getMessageType());
+            Assert.AreEqual(CNCRMSG_TYPE.TOOL_CMD, target.getMessageType());
             Assert.AreEqual(0x70, target.getMsgTypeByte());
             Assert.AreEqual(toolOn, target.isToolOn());
         }

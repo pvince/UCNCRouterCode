@@ -31,7 +31,7 @@ namespace CNCRouterCommand
         /// Default constructor
         /// </summary>
         private CNCRMsgSetSpeed()
-            : base(CNCRMESSAGE_TYPE.SET_SPEED)
+            : base(CNCRMSG_TYPE.SET_SPEED)
         {}
 
         /// <summary>

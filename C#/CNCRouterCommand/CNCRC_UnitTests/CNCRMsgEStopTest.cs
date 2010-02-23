@@ -84,7 +84,7 @@ namespace CNCRC_UnitTests
         public void CNCRMsgEStopConstructorTest()
         {
             CNCRMsgEStop target = new CNCRMsgEStop();
-            Assert.AreEqual(CNCRMESSAGE_TYPE.E_STOP, target.getMessageType());
+            Assert.AreEqual(CNCRMSG_TYPE.E_STOP, target.getMessageType());
             Assert.AreEqual(0x20, target.getMsgTypeByte());
         }
     }

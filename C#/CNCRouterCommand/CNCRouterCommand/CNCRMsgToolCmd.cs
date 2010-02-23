@@ -19,7 +19,7 @@ namespace CNCRouterCommand
         public bool isToolOn() { return _toolOn; }
 
         public CNCRMsgToolCmd(bool toolOn)
-            : base(CNCRMESSAGE_TYPE.TOOL_CMD)
+            : base(CNCRMSG_TYPE.TOOL_CMD)
         {
             _toolOn = toolOn;
         }

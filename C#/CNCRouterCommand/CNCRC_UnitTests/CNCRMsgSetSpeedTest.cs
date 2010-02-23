@@ -214,7 +214,7 @@ namespace CNCRC_UnitTests
             Assert.AreEqual(Y, target.isY());
             Assert.AreEqual(Z, target.isZ());
             Assert.AreEqual(speed, target.getSpeed());
-            Assert.AreEqual(CNCRMESSAGE_TYPE.SET_SPEED, target.getMessageType());
+            Assert.AreEqual(CNCRMSG_TYPE.SET_SPEED, target.getMessageType());
             Assert.AreEqual(0x50, target.getMsgTypeByte());
 
         }
@@ -241,7 +241,7 @@ namespace CNCRC_UnitTests
             Assert.AreEqual(true, target.isY());
             Assert.AreEqual(false, target.isZ());
             Assert.AreEqual(300, target.getSpeed());
-            Assert.AreEqual(CNCRMESSAGE_TYPE.SET_SPEED, target.getMessageType());
+            Assert.AreEqual(CNCRMSG_TYPE.SET_SPEED, target.getMessageType());
             Assert.AreEqual(0x50, target.getMsgTypeByte());
         }
     }

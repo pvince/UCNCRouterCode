@@ -8,10 +8,10 @@ namespace CNCRouterCommand
 {
     public abstract class CNCRMessage
     {
-        private CNCRMESSAGE_TYPE _msgType;
+        private CNCRMSG_TYPE _msgType;
         private byte _msgTypeByte;
 
-        public CNCRMessage(CNCRMESSAGE_TYPE msgType)
+        public CNCRMessage(CNCRMSG_TYPE msgType)
         {
             _msgType = msgType;
             _msgTypeByte = Convert.ToByte(Convert.ToByte(_msgType) << 4);
@@ -19,7 +19,7 @@ namespace CNCRouterCommand
 
         public abstract byte[] toSerial();
 
-        public CNCRMESSAGE_TYPE getMessageType()
+        public CNCRMSG_TYPE getMessageType()
         {
             return _msgType;
         }

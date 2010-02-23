@@ -16,7 +16,7 @@ namespace CNCRouterCommand
     public class CNCRMsgEStop : CNCRMessage
     {
         public CNCRMsgEStop()
-            : base(CNCRMESSAGE_TYPE.E_STOP)
+            : base(CNCRMSG_TYPE.E_STOP)
         { }
 
         /// <summary>

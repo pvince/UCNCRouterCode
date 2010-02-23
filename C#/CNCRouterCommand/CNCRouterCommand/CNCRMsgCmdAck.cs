@@ -24,7 +24,7 @@ namespace CNCRouterCommand
 
         #region Constructors
         private CNCRMsgCmdAck()
-            : base(CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE)
+            : base(CNCRMSG_TYPE.CMD_ACKNOWLEDGE)
         { }
 
         /// <summary>

@@ -19,7 +19,7 @@ namespace CNCRouterCommand
         /// Default constructor.
         /// </summary>
         public CNCRMsgStartQueue()
-            : base(CNCRMESSAGE_TYPE.START_QUEUE)
+            : base(CNCRMSG_TYPE.START_QUEUE)
         { }
 
         /// <summary>
