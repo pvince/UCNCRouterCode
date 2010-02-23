@@ -6,7 +6,7 @@ using System.Text;
 namespace CNCRouterCommand
 {
 
-    public enum CNCRMESSAGE_TYPE
+    public enum CNCRMSG_TYPE
     {
         PING,           //0 - Computer  -> Router
         CMD_ACKNOWLEDGE,//1 - Computer <-> Router
@@ -15,7 +15,8 @@ namespace CNCRouterCommand
         START_QUEUE,    //4 - Computer  -> Router
         SET_SPEED,      //5 - Computer  -> Router
         MOVE,           //6 - Computer  -> Router
-        TOOL_CMD        //7 - Computer  -> Router
+        TOOL_CMD,       //7 - Computer  -> Router
+        zNone           //If we ever get this type, it is an error.
     };
 
     public class CNCRConstants

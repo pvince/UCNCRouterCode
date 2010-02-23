@@ -277,5 +277,33 @@ namespace CNCRouterCommand
             return true; // Parity check passed.
         }
         #endregion
+
+        #region General Helper Functions
+        //TODO: getMsgLenFromType: Comment this function 
+        public static int getMsgLenFromType(CNCRMSG_TYPE msgType)
+        {
+            switch (msgType)
+            {
+                case CNCRMSG_TYPE.CMD_ACKNOWLEDGE:
+                    return CNCRConstants.MSG_LEN_CMD_ACK;
+                case CNCRMSG_TYPE.E_STOP:
+                    return CNCRConstants.MSG_LEN_ESTOP;
+                case CNCRMSG_TYPE.MOVE:
+                    return CNCRConstants.MSG_LEN_MOVE;
+                case CNCRMSG_TYPE.PING:
+                    return CNCRConstants.MSG_LEN_PING;
+                case CNCRMSG_TYPE.REQUEST_COMMAND:
+                    return CNCRConstants.MSG_LEN_RQST_COMM;
+                case CNCRMSG_TYPE.SET_SPEED:
+                    return CNCRConstants.MSG_LEN_SETSPD;
+                case CNCRMSG_TYPE.START_QUEUE:
+                    return CNCRConstants.MSG_LEN_STARTQ;
+                case CNCRMSG_TYPE.TOOL_CMD:
+                    return CNCRConstants.MSG_TOOL_CMD;
+                default:
+                    return 0; //TODO: getMsgLenFromType: Should we throw an error?
+            }
+        }
+        #endregion
     }
 }

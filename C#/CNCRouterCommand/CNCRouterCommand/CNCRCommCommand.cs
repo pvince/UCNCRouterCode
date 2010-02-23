@@ -26,6 +26,9 @@ namespace CNCRouterCommand
         private string _dataBits = string.Empty;
         private string _portName = string.Empty;
         //TODO: Figure out what method will be called by "received"
+        
+        private Queue<byte> CommBufferQueue = new Queue<byte>();
+        private CNCRMSG_TYPE curType = CNCRMSG_TYPE.zNone;
 
         private SerialPort comPort = new SerialPort();
         #endregion
@@ -209,9 +212,35 @@ namespace CNCRouterCommand
         #endregion
 
         #region comPort_DataReceived
+        // Process received messages.
+        [STAThread]
         void handleData(byte[] commBuffer)
         {
+            // Are we waiting for more data?
+            if (CommBufferQueue.Count == 0)
+            {   
+                
+                // We are not waiting for more data.
+                // So the first byte must be a new message, grab the type from
+                // the first byte.
+                CNCRMSG_TYPE comType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4);
+
+                // Now find out how many messages we should expect.
+                int expectedLength = CNCRTools.getMsgLenFromType(comType);
+                // Uh, Oh, what about expectedLength = 0, AKA, bad type?
+
+                if (expectedLength <= commBuffer.Length)
+                {
+                    // We have enough bytes
+                }
+                else
+                {
+                    // We do not have enough bytes
+                }
+            }
+            
         }
+
         /// <summary>
         /// method that will be called when there is data waiting in the buffer
         /// </summary>
@@ -243,32 +272,32 @@ namespace CNCRouterCommand
             byte[] comBuffer = new byte[bytes];
             comPort.Read(comBuffer, 0, bytes);
 
-            CNCRMESSAGE_TYPE comType = (CNCRMESSAGE_TYPE)Enum.ToObject(typeof(CNCRMESSAGE_TYPE), (comBuffer[0] & 0xF0) >> 4);
+            CNCRMSG_TYPE comType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (comBuffer[0] & 0xF0) >> 4);
             CNCRMessage receivedMsg;
             switch (comType)
             {
-                case CNCRMESSAGE_TYPE.CMD_ACKNOWLEDGE:
+                case CNCRMSG_TYPE.CMD_ACKNOWLEDGE:
                     receivedMsg = new CNCRMsgCmdAck(comBuffer);
                     break;
-                case CNCRMESSAGE_TYPE.E_STOP:
+                case CNCRMSG_TYPE.E_STOP:
                     receivedMsg = new CNCRMsgEStop();
                     break;
-                case CNCRMESSAGE_TYPE.REQUEST_COMMAND:
+                case CNCRMSG_TYPE.REQUEST_COMMAND:
                     receivedMsg = new CNCRMsgRequestCommands(comBuffer);
                     break;
                 // The following commands should not be received by the computer... if we get one, there was
                 // a problem.  Should we log an error?
                 //TODO: comPort_DataReceived: Invalid Commands, Should we log an error here?
-                case CNCRMESSAGE_TYPE.PING:
+                case CNCRMSG_TYPE.PING:
                     break;
-                case CNCRMESSAGE_TYPE.START_QUEUE:
+                case CNCRMSG_TYPE.START_QUEUE:
                     break;
-                case CNCRMESSAGE_TYPE.SET_SPEED:
+                case CNCRMSG_TYPE.SET_SPEED:
                     break;
-                case CNCRMESSAGE_TYPE.MOVE:
+                case CNCRMSG_TYPE.MOVE:
                     receivedMsg = new CNCRMsgMove(comBuffer);
                     break;
-                case CNCRMESSAGE_TYPE.TOOL_CMD:
+                case CNCRMSG_TYPE.TOOL_CMD:
                     break;
             }
 
@@ -306,7 +335,8 @@ namespace CNCRouterCommand
             }//*/
         }
         #endregion
-        /*
+
+        /* Display Data Stub
         //TODO: Review how DisplayData works, primarily what STAthread refers too.
         #region DisplayData
         /// <summary>
