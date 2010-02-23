@@ -26,38 +26,105 @@
 //
 //}
 
-int MessageFilter(long Message)
+int MessageFilter(int* Message)
 {
-  long* packet;
-  Serial.println(Message);
-  switch(Message & 15) //4026531840 number to use to get the first 4bits of the message.
+  //long* packet;
+  int Packet = *Message;
+  //***************************
+  //Serial.println(Packet,BIN);  //uncomment to print message
+  //***************************
+  switch(Packet & 15) //4026531840 number to use to get the first 4bits of the message.
   {
     case (0):  //Ping
-      Serial.println("testing");
+      Serial.println(" 0");
+      if(HorParityCheck(Packet)==0)
+      {
+        Serial.println("Correct");
+      }
+      else Serial.println("Wrong");
+      VertParityCheck(&Packet,1);
       break;
     case (1):  //Acknowledge
-      Serial.print(Firmware);
+      Serial.println(" 1");
+      if(HorParityCheck(Packet)==0)
+      {
+        Serial.println("Correct");
+      }
+      else Serial.println("Wrong");
+      //Serial.println("Firmware = " && Firmware);
       break;
     case(2):  //EStop
-      FlagEStop = 1;
+      Serial.println(" 2");
+      if(HorParityCheck(Packet)==0)
+      {
+        Serial.println("Correct");
+      }
+      else Serial.println("Wrong");
+      //FlagEStop = 1;
       FlagStart = 0;
       break;
     case(3):  //Request Commands
+      Serial.println(" 3");
+      if(HorParityCheck(Packet)==0)
+      {
+        Serial.println("Correct");
+      }
+      else Serial.println("Wrong");
       break;
     case(4):  //Start Queue
+      Serial.println(" 4");
+      HorParityCheck(Packet);
       FlagEStop = 0;
       FlagStart = 1;
       break;
     case(5):  //SetSpeed
+      Serial.println(" 5");
+      HorParityCheck(Packet);
+      MessageSetSpeed StructName;
       //QueueAdd(Message);
       break;
     case(6):  //ToolCMD
+      Serial.println(" 6");
+      HorParityCheck(Packet);
+      //MessageToolCMD StructName;
       //QueueAdd(Message);
       break;
     case(7):  //Move
+      Serial.println(" 7");
+      HorParityCheck(Packet);
       //QueueAdd(Message);
       break;
    }
    
 }
 
+int HorParityCheck(int Message)
+{
+  boolean CheckBit=0;
+  Serial.println(Message,BIN);
+  for(int x=1; x<8; x++)
+  {
+    CheckBit = CheckBit + bitRead(lowByte(Message),x);
+  }
+  
+  if(bitRead(CheckBit,0)==bitRead(Message,0))
+  {
+    return(0);
+  }
+  else
+  {
+    return(-1);
+  }
+  
+}
+
+int VertParityCheck(int *Packet ,int Length)
+{
+  Serial.println("**************"); 
+  Serial.print("Packet = ");
+  Serial.println((long) Packet);
+  Serial.print("*Packet = ");
+  Serial.println(*Packet);
+  Serial.print("&Packet = ");
+  Serial.println((long) &Packet);
+}
