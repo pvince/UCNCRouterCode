@@ -3,6 +3,11 @@
 
 int MessageRate = 9600;
 
+struct PacketContainer{
+  
+  
+  
+};
 struct MessageAck{
   int Type : 4;
   int Error : 1;// = (Message & 15);

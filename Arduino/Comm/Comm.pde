@@ -120,6 +120,7 @@ int HorParityCheck(int Message)
 
 int VertParityCheck(int *Packet ,int Length)
 {
+  int CheckByte = 0;
   Serial.println("**************"); 
   Serial.print("Packet = ");
   Serial.println((long) Packet);
@@ -127,4 +128,13 @@ int VertParityCheck(int *Packet ,int Length)
   Serial.println(*Packet);
   Serial.print("&Packet = ");
   Serial.println((long) &Packet);
+  for(int x=0; x<8; x++)
+  {
+    int CheckBit = 0;
+    for(int y=0; y<Length; y++)
+    {
+      CheckBit = CheckBit + bitRead(lowByte(*Packet),x);
+    }
+    bitWrite(CheckByte,x,bitRead(CheckBit,0));
+  }
 }
