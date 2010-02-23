@@ -69,7 +69,7 @@ namespace CNCRouterCommand
             byte[] result = { Type,
                               xBits[0], xBits[1], xBits[2],
                               yBits[0], yBits[1], yBits[2],
-                              zBits[0], zBits[1], yBits[2],
+                              zBits[0], zBits[1], zBits[2],
                               0 };
             CNCRTools.generateParity(ref result);
             return result;

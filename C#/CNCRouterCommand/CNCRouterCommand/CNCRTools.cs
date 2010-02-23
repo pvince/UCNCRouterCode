@@ -161,7 +161,7 @@ namespace CNCRouterCommand
                 for (int j = 0; j < z; j++)
                 {
                     if ((serialBytes[j] & i) != 0)
-                        ++numOnes;
+                        numOnes++;
                 }
                 // Check to see if numOnes is odd, if so ignore it (its already 0)
                 //              if numOnes is even, set that bit to 1.

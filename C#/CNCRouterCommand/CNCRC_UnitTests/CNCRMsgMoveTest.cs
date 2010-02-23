@@ -68,12 +68,15 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void toSerialTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(null); // TODO: Initialize to an appropriate value
-            byte[] expected = null; // TODO: Initialize to an appropriate value
+            CNCRMsgMove target = new CNCRMsgMove(-32768, 32767, 24155);
+            byte[] expected = {0x60, 0x81, 0x00, 0x00, 0x7E, 0xFF, 0x06, 0x5F, 0x5A, 0x03, 0x60};
             byte[] actual;
             actual = target.toSerial();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.AreEqual(expected.Length, actual.Length);
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreEqual<byte>(expected[i], actual[i], "Byte " + i);
+            }
         }
 
         /// <summary>
@@ -82,12 +85,11 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void getZTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(null); // TODO: Initialize to an appropriate value
-            short expected = 0; // TODO: Initialize to an appropriate value
+            CNCRMsgMove target = new CNCRMsgMove(-32768, 32767, 24155);
+            short expected = 24155;
             short actual;
             actual = target.getZ();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.AreEqual<short>(expected, actual);
         }
 
         /// <summary>
@@ -96,12 +98,11 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void getYTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(null); // TODO: Initialize to an appropriate value
-            short expected = 0; // TODO: Initialize to an appropriate value
+            CNCRMsgMove target = new CNCRMsgMove(-32768, 32767, 24155);
+            short expected = 32767;
             short actual;
             actual = target.getY();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.AreEqual<short>(expected, actual);
         }
 
         /// <summary>
@@ -110,12 +111,11 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void getXTest()
         {
-            CNCRMsgMove target = new CNCRMsgMove(null); // TODO: Initialize to an appropriate value
-            short expected = 0; // TODO: Initialize to an appropriate value
+            CNCRMsgMove target = new CNCRMsgMove(-32768, 32767, 24155);
+            short expected = -32768;
             short actual;
             actual = target.getX();
-            Assert.AreEqual(expected, actual);
-            Assert.Inconclusive("Verify the correctness of this test method.");
+            Assert.AreEqual<short>(expected, actual);
         }
 
         /// <summary>
@@ -126,7 +126,6 @@ namespace CNCRC_UnitTests
         public void CNCRMsgMoveConstructorTest2()
         {
             CNCRMsgMove_Accessor target = new CNCRMsgMove_Accessor();
-            Assert.Inconclusive("TODO: Implement code to verify target");
         }
 
         /// <summary>
@@ -135,9 +134,13 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void CNCRMsgMoveConstructorTest1()
         {
-            byte[] msgBytes = null; // TODO: Initialize to an appropriate value
+            byte[] msgBytes = { 0x60, 0x81, 0x00, 0x00, 0x7E, 0xFF, 0x06, 0x5F, 0x5A, 0x03, 0x60 };
             CNCRMsgMove target = new CNCRMsgMove(msgBytes);
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual <CNCRMESSAGE_TYPE>(CNCRMESSAGE_TYPE.MOVE, target.getMessageType());
+            Assert.AreEqual<byte>(0x60, target.getMsgTypeByte());
+            Assert.AreEqual<short>(-32768, target.getX());
+            Assert.AreEqual<short>(32767, target.getY());
+            Assert.AreEqual<short>(24155, target.getZ());
         }
 
         /// <summary>
@@ -146,11 +149,16 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void CNCRMsgMoveConstructorTest()
         {
-            short X = 0; // TODO: Initialize to an appropriate value
-            short Y = 0; // TODO: Initialize to an appropriate value
-            short Z = 0; // TODO: Initialize to an appropriate value
+            //-32768, 32767, 24155
+            short X = -32768; // TODO: Initialize to an appropriate value
+            short Y = 32767; // TODO: Initialize to an appropriate value
+            short Z = 24155; // TODO: Initialize to an appropriate value
             CNCRMsgMove target = new CNCRMsgMove(X, Y, Z);
-            Assert.Inconclusive("TODO: Implement code to verify target");
+            Assert.AreEqual<CNCRMESSAGE_TYPE>(CNCRMESSAGE_TYPE.MOVE, target.getMessageType());
+            Assert.AreEqual<byte>(0x60, target.getMsgTypeByte());
+            Assert.AreEqual<short>(-32768, target.getX());
+            Assert.AreEqual<short>(32767, target.getY());
+            Assert.AreEqual<short>(24155, target.getZ());
         }
     }
 }
