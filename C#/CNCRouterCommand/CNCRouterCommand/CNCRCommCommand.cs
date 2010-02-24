@@ -94,7 +94,7 @@ namespace CNCRouterCommand
         /// <param name="sBits">Desired StopBits</param>
         /// <param name="dBits">Desired DataBits</param>
         /// <param name="name">Desired PortName</param>
-        public CNCRCommCommand(string baud, string par, string sBits, string dBits, string name, RichTextBox rtb)
+        public CNCRCommCommand(string baud, string par, string sBits, string dBits, string name)
         {
             _baudRate = baud;
             _parity = par;
@@ -185,7 +185,7 @@ namespace CNCRouterCommand
             try
             {
                 comPort.Close();
-                result = comPort.IsOpen;
+                result = !comPort.IsOpen;
             }
             catch (Exception ex)
             {
@@ -214,7 +214,7 @@ namespace CNCRouterCommand
         #region comPort_DataReceived
         // Process received messages.
         [STAThread]
-        void handleData(byte[] commBuffer)
+        public void handleData(byte[] commBuffer)
         {
             // Are we currently in the middle of a type?
             if (CommBufferQueue.Count == 0)
@@ -228,20 +228,28 @@ namespace CNCRouterCommand
             {
                 CommBufferQueue.Enqueue(commBuffer[i]);
             }
-            
+
             // Check how long of a message we are expecting
             int expectedLength = CNCRTools.getMsgLenFromType(curType);
             // Uh, Oh, what about expectedLength = 0, AKA, bad type?
 
-            if (expectedLength <= CommBufferQueue.Count)
+            // Process the current Queue
+            while (CommBufferQueue.Count >= expectedLength)
             {
-                // We have enough bytes
-               
-                //byte[] msgBytes = CommBufferQueue.Take().GetEnumerator();
+                // We have enough bytes, lets get the message for those bytes.
+
+                byte[] msgBytes = CommBufferQueue.Take<byte>(expectedLength).ToArray<byte>();
+                CNCRMessage CommMsg = CNCRTools.getMsgFromBytes(msgBytes);
+                
+                // Now what do we need something like "Act On Message" that gets run Asynchronously.
+                // But what about the challenge response?  "WaitingForAck" flag, 
+                // gets set on message sent (except ack) and cleared when Ack is 
+                // received.  Can only send Ack while WaitingForAck
             }
-            else
+
+            if (CommBufferQueue.Count > 0)
             {
-                // We do not have enough bytes
+                // We still have bytes in the queue, but not enough for a complete message.
             }
             
         }
@@ -277,36 +285,7 @@ namespace CNCRouterCommand
             byte[] comBuffer = new byte[bytes];
             comPort.Read(comBuffer, 0, bytes);
 
-            CNCRMSG_TYPE comType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (comBuffer[0] & 0xF0) >> 4);
-            CNCRMessage receivedMsg;
-            switch (comType)
-            {
-                case CNCRMSG_TYPE.CMD_ACKNOWLEDGE:
-                    receivedMsg = new CNCRMsgCmdAck(comBuffer);
-                    break;
-                case CNCRMSG_TYPE.E_STOP:
-                    receivedMsg = new CNCRMsgEStop();
-                    break;
-                case CNCRMSG_TYPE.REQUEST_COMMAND:
-                    receivedMsg = new CNCRMsgRequestCommands(comBuffer);
-                    break;
-                // The following commands should not be received by the computer... if we get one, there was
-                // a problem.  Should we log an error?
-                //TODO: comPort_DataReceived: Invalid Commands, Should we log an error here?
-                case CNCRMSG_TYPE.PING:
-                    break;
-                case CNCRMSG_TYPE.START_QUEUE:
-                    break;
-                case CNCRMSG_TYPE.SET_SPEED:
-                    break;
-                case CNCRMSG_TYPE.MOVE:
-                    receivedMsg = new CNCRMsgMove(comBuffer);
-                    break;
-                case CNCRMSG_TYPE.TOOL_CMD:
-                    break;
-            }
-
-            int bob = 0;
+            handleData(comBuffer);
 
             /*
             //TODO: Repurpose this method to work for me.
@@ -341,9 +320,10 @@ namespace CNCRouterCommand
         }
         #endregion
 
-        /* Display Data Stub
+        //* Display Data Stub
         //TODO: Review how DisplayData works, primarily what STAthread refers too.
         #region DisplayData
+        public RichTextBox _displayWindow;
         /// <summary>
         /// method to display the data to & from the port
         /// on the screen
@@ -351,13 +331,12 @@ namespace CNCRouterCommand
         /// <param name="type">MessageType of the message</param>
         /// <param name="msg">Message to display</param>
         [STAThread]
-        private void DisplayData(MessageType type, string msg)
+        private void DisplayData(string msg)
         {
             _displayWindow.Invoke(new EventHandler(delegate
             {
                 _displayWindow.SelectedText = string.Empty;
                 _displayWindow.SelectionFont = new Font(_displayWindow.SelectionFont, FontStyle.Bold);
-                _displayWindow.SelectionColor = MessageColor[(int)type];
                 _displayWindow.AppendText(msg);
                 _displayWindow.ScrollToCaret();
             }));

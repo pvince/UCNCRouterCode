@@ -22,6 +22,7 @@ namespace CNCRouterCommand
 {
     public partial class CNCRouterCommand : Form
     {
+        private CNCRCommCommand commCmd = new CNCRCommCommand();
         public CNCRouterCommand()
         {
             InitializeComponent();
@@ -29,42 +30,47 @@ namespace CNCRouterCommand
 
         private void CNCRouterCommand_Load(object sender, EventArgs e)
         {
-
+            string[] ports = CNCRTools.GetCNCRouterPorts();
+            cmbPorts.Items.AddRange(ports);
+            cmbPorts.SelectedIndex = 0;
+            cmbMsgs.SelectedIndex = 0;
         }
 
-        CNCRCommCommand commCmd = new CNCRCommCommand();
-        private void button1_Click(object sender, EventArgs e)
-        {
-            CNCRMsgRequestCommands target = new CNCRMsgRequestCommands(128);
-            byte[] expected = { 0x30, 0xFF, 0xCF };
-            byte[] actual;
-            actual = target.toSerial();
-            // NOTE FOR ME: The bits are reverse for some reason, highest order
-            //              bits are in the 1 position instead of the 0 position.
-            /*
-            byte testByte = 254;
-            CNCRTools.generateParityBit(ref testByte);
-            testByte = 252;
-            CNCRTools.generateParityBit(ref testByte);
-            testByte = 255;
-            CNCRTools.generateParityBit(ref testByte);
-            byte testTwo = 0;
-
-            byte[] testArray = { 171, 84, 254, 0 };
-            CNCRTools.generateParityByte(ref testArray);
-            byte testThree = 0; //*/
-
-            //commCmd.SendMsg(sendMsg);
-        }
-
-        private void button2_Click(object sender, EventArgs e)
+        private void btnOpenPort_Click(object sender, EventArgs e)
         {
             commCmd.BaudRate = "9600";
-            commCmd.PortName = "COM3";
+            commCmd.PortName = cmbPorts.SelectedItem.ToString();
             //commCmd.DisplayWindow = richTextBox1;
             //commCmd.CurrentTransmissionType = CNCRCommCommand.TransmissionType.Text;
-            commCmd.OpenPort();
+            if (commCmd.OpenPort())
+            {
+                btnOpenPort.Enabled = false;
+                btnClosePort.Enabled = true;
+                btnSndMsg.Enabled = true;
+            }
+            
             //TODO: add CommCmd.isOpen();
+        }
+
+        private void btnSndMsg_Click(object sender, EventArgs e)
+        {
+            int discarded = 0;
+            byte[] bytes = CNCRTools.GetBytes(txtHex.Text, out discarded);
+            lblDbgOut.Text = "";
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                lblDbgOut.Text += bytes[i].ToString() + " ";
+            }
+        }
+
+        private void btnClosePort_Click(object sender, EventArgs e)
+        {
+            if (commCmd.ClosePort())
+            {
+                btnOpenPort.Enabled = true;
+                btnClosePort.Enabled = false;
+                btnSndMsg.Enabled = false;
+            }
         }
     }
 }
