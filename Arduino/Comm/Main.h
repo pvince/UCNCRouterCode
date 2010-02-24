@@ -3,7 +3,7 @@
 
 
 
-int Firmware = 2;
+int Firmware = 3;
 int FlagStart = 0;
 int FlagEStop = 0;
 int FlagMotorDelay = 0; //1=Motors busy  0=Motors ready

@@ -5,136 +5,168 @@
 #include "Queue.h"
 #include "Comm.h"
 
-//int ErrorCheck(long* Message,int len)
-//{
-//        long sum1 = 0xffff, sum2 = 0xffff;
-// 
-//        while (len) {
-//                unsigned tlen = len > 360 ? 360 : len;
-//                len -= tlen;
-//                do {
-//                        sum1 += *Message++;
-//                        sum2 += sum1;
-//                } while (--tlen);
-//                sum1 = (sum1 & 0xffff) + (sum1 >> 16);
-//                sum2 = (sum2 & 0xffff) + (sum2 >> 16);
-//        }
-//        /* Second reduction step to reduce sums to 16 bits */
-//        sum1 = (sum1 & 0xffff) + (sum1 >> 16);
-//        sum2 = (sum2 & 0xffff) + (sum2 >> 16);
-//        return sum2 << 16 | sum1;
-//
-//}
 
-int MessageFilter(int* Message)
+
+int MessageFilter(char Message)
 {
   //long* packet;
-  int Packet = *Message;
-  //***************************
-  //Serial.println(Packet,BIN);  //uncomment to print message
-  //***************************
-  switch(Packet & 15) //4026531840 number to use to get the first 4bits of the message.
+  PacketContainer Packet;
+  Packet.array[0] =  Message;
+  switch(Packet.array[0] & 15) //4026531840 number to use to get the first 4bits of the message.
   {
     case (0):  //Ping
-      Serial.println(" 0");
-      if(HorParityCheck(Packet)==0)
-      {
-        Serial.println("Correct");
-      }
-      else Serial.println("Wrong");
-      VertParityCheck(&Packet,1);
+      Serial.println("***** Case 0*****");
+      Packet.length=PingLength;
+      RecievePing(&Packet);
       break;
     case (1):  //Acknowledge
-      Serial.println(" 1");
-      if(HorParityCheck(Packet)==0)
-      {
-        Serial.println("Correct");
-      }
-      else Serial.println("Wrong");
-      //Serial.println("Firmware = " && Firmware);
+      Serial.println("***** Case 1*****");
+      Packet.length=2;
+      RecievePing(&Packet);
       break;
     case(2):  //EStop
-      Serial.println(" 2");
-      if(HorParityCheck(Packet)==0)
-      {
-        Serial.println("Correct");
-      }
-      else Serial.println("Wrong");
-      //FlagEStop = 1;
-      FlagStart = 0;
+      Serial.println("***** Case 2*****");
+      Packet.length=EStopLength;
+      RecieveEStop(&Packet);
       break;
     case(3):  //Request Commands
-      Serial.println(" 3");
-      if(HorParityCheck(Packet)==0)
-      {
-        Serial.println("Correct");
-      }
-      else Serial.println("Wrong");
+      Serial.println("***** Case 3*****");
+      Packet.length=RequestCommandsLength;
+      RecieveRequestCommands(&Packet);
       break;
     case(4):  //Start Queue
-      Serial.println(" 4");
-      HorParityCheck(Packet);
-      FlagEStop = 0;
-      FlagStart = 1;
+      Serial.println("***** Case 4*****");
+      Packet.length=StartQueueLength;
+      RecieveStartQueue(&Packet);
       break;
     case(5):  //SetSpeed
-      Serial.println(" 5");
-      HorParityCheck(Packet);
-      MessageSetSpeed StructName;
-      //QueueAdd(Message);
+      Serial.println("***** Case 5*****");
+      Packet.length=SetSpeedLength;
+      RecieveSetSpeed(&Packet);
       break;
-    case(6):  //ToolCMD
-      Serial.println(" 6");
-      HorParityCheck(Packet);
-      //MessageToolCMD StructName;
-      //QueueAdd(Message);
+    case(6):  //Move
+      Serial.println("***** Case 6*****");
+      Packet.length=MoveLength;
+      RecieveMove(&Packet);
       break;
-    case(7):  //Move
-      Serial.println(" 7");
-      HorParityCheck(Packet);
-      //QueueAdd(Message);
+    case(7):  //ToolCMD
+      Serial.println("***** Case 7*****");
+      Packet.length=ToolCMDLength;
+      RecieveToolCMD(&Packet);
       break;
-   }
-   
+  }
+
+}
+int AcknowledgeMessage(boolean Error)
+{
+  if(Error==0)
+  {
+    Serial.println(17,BIN);
+  }
+  else
+  {
+    Serial.println(18,BIN);
+  }
 }
 
-int HorParityCheck(int Message)
+int RequestCMD(byte Number)
+{
+  PacketContainer Packet;
+  Packet.array[0]=48;
+  Packet.array[1]=HorParityGen(Number<<1);
+  
+}
+
+byte HorParityGen(byte Message)
 {
   boolean CheckBit=0;
-  Serial.println(Message,BIN);
   for(int x=1; x<8; x++)
   {
-    CheckBit = CheckBit + bitRead(lowByte(Message),x);
+    CheckBit = CheckBit + bitRead(Message,x);
   }
-  
-  if(bitRead(CheckBit,0)==bitRead(Message,0))
+  return CheckBit;
+}
+
+byte VertParityGen(PacketContainer* Packet)
+{
+  int CheckByte = 0;
+  for(int x=0; x<8; x++)
+  {
+    int CheckBit = 0;
+    for(int y=0; y<Packet->length-1; y++)
+    {
+      CheckBit = CheckBit + bitRead(lowByte(Packet->array[y]),x);
+    }
+    bitWrite(CheckByte,x,bitRead(CheckBit,0));
+  }
+  return(CheckByte);
+}
+
+int ParityChecker(PacketContainer* Packet, int Length)
+{
+   if(HorParityCheck(Packet->array[0]) !=0)
+  {
+    return(-1);
+  }
+  for(int x=1; x<Packet->length; x++)
+  {
+    Packet->array[x]=Serial.read();
+    if(HorParityCheck(Packet->array[x]) !=0)
+    {
+      Serial.println("Horizontal Parity Bit Check Failed");
+      return(-1);
+    }
+  }
+    //*******************TESTING********************
+    Packet->array[1]=(114);            //used to test message structure
+    Packet->array[2]=(65);            //used to test VirtParityCheck()
+    //***************END TESTING********************
+  return(VertParityCheck(Packet));
+}
+
+
+//**************************************************************************
+//**************************************************************************
+//**                     Parity Checks                                    **
+//**************************************************************************
+//**************************************************************************
+int HorParityCheck(int Message)
+{
+  if(HorParityGen(Message)==bitRead(Message,0))
   {
     return(0);
   }
   else
   {
+    Serial.println(Message,BIN);
+    Serial.println("Horizontal Parity Bit Check Failed");
     return(-1);
   }
-  
+
 }
 
-int VertParityCheck(int *Packet ,int Length)
+int VertParityCheck(PacketContainer *Packet)  //Checks the parity packet with the rest of the message
 {
-  int CheckByte = 0;
-  Serial.println("**************"); 
-  Serial.print("Packet = ");
-  Serial.println((long) Packet);
-  Serial.print("*Packet = ");
-  Serial.println(*Packet);
-  Serial.print("&Packet = ");
-  Serial.println((long) &Packet);
-  for(int x=0; x<8; x++)
+  //*****************Not needed but shows that the virt sync function is working******************
+  for(int z=0; z<=Packet->length-1; z++)
   {
-    int CheckBit = 0;
-    for(int y=0; y<Length; y++)
-    {
-      CheckBit = CheckBit + bitRead(lowByte(*Packet),x);
-    }
-    bitWrite(CheckByte,x,bitRead(CheckBit,0));
+    Serial.print("Message ");
+    Serial.print(z);
+    Serial.print("= ");
+    Serial.println(Packet->array[z],BIN);
+  }
+  //*****************^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*****************
+  if(Packet->array[Packet->length-1]==VertParityGen(Packet))  
+  {
+    Serial.println("Vertical Parity Byte Check Correct");
+    return(0);
+  }
+  else  
+  {
+    Serial.println("Vertical Parity Byte Check Failed");
+    return(-1);
   }
 }
+//**************************************************************************
+//**                    End Parity Checks                                 **
+//**************************************************************************
