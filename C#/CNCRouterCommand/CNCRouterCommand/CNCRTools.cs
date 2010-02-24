@@ -304,6 +304,53 @@ namespace CNCRouterCommand
                     return 0; //TODO: getMsgLenFromType: Should we throw an error?
             }
         }
+
+        //TODO: Should this be in CNCRMessage?
+        public static CNCRMessage getMsgFromBytes(byte[] msgBytes)
+        {
+            // Byte 0 should be 
+            CNCRMSG_TYPE msgType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (msgBytes[0] & 0xF0) >> 4);
+            int msgLen = getMsgLenFromType(msgType);
+
+            // Validate the message length.
+            if(msgLen != msgBytes.Length)
+                throw new RankException("MsgCommandAcknowledge is "
+                    + CNCRConstants.MSG_LEN_CMD_ACK + " not "
+                    + msgBytes.Length + " bytes long.");
+
+            // Build the correct message.
+            CNCRMessage resultMsg;
+            switch (msgType)
+            {
+                case CNCRMSG_TYPE.CMD_ACKNOWLEDGE:
+                    resultMsg = new CNCRMsgCmdAck(msgBytes);
+                    break;
+                case CNCRMSG_TYPE.E_STOP:
+                    resultMsg = new CNCRMsgEStop();
+                    break;
+                case CNCRMSG_TYPE.MOVE:
+                    resultMsg = new CNCRMsgMove(msgBytes);
+                    break;
+                case CNCRMSG_TYPE.PING:
+                    resultMsg = new CNCRMsgPing();
+                    break;
+                case CNCRMSG_TYPE.REQUEST_COMMAND:
+                    resultMsg = new CNCRMsgRequestCommands(msgBytes);
+                    break;
+                case CNCRMSG_TYPE.SET_SPEED:
+                    resultMsg = new CNCRMsgSetSpeed(msgBytes);
+                    break;
+                case CNCRMSG_TYPE.START_QUEUE:
+                    resultMsg = new CNCRMsgStartQueue();
+                    break;
+                case CNCRMSG_TYPE.TOOL_CMD:
+                    resultMsg = new CNCRMsgToolCmd(msgBytes);
+                    break;
+                default:
+                    throw new FormatException("getMsgFromBytes: Unknown message type");
+            }
+            return resultMsg;
+        }
         #endregion
     }
 }

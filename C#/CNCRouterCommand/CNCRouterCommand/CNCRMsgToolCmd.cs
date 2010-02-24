@@ -18,10 +18,30 @@ namespace CNCRouterCommand
         private bool _toolOn = false;
         public bool isToolOn() { return _toolOn; }
 
-        public CNCRMsgToolCmd(bool toolOn)
+        private CNCRMsgToolCmd()
             : base(CNCRMSG_TYPE.TOOL_CMD)
         {
+        }
+
+        /// <summary>
+        /// Initialize a ToolCommand message.
+        /// </summary>
+        /// <param name="toolOn">True to turn on the tool, False to turn it off.</param>
+        public CNCRMsgToolCmd(bool toolOn)
+            : this()
+        {
             _toolOn = toolOn;
+        }
+
+        /// <summary>
+        /// Initialize a ToolCommand message from a byte array.
+        /// </summary>
+        /// <param name="msgBytes">Array of bytes received via Serial.</param>
+        public CNCRMsgToolCmd(byte[] msgBytes)
+            : this()
+        {
+            if((msgBytes[0] & 0x02) != 0)
+                _toolOn = true;
         }
 
         /// <summary>

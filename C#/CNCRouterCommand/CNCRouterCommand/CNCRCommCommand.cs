@@ -216,27 +216,32 @@ namespace CNCRouterCommand
         [STAThread]
         void handleData(byte[] commBuffer)
         {
-            // Are we waiting for more data?
+            // Are we currently in the middle of a type?
             if (CommBufferQueue.Count == 0)
-            {   
-                
-                // We are not waiting for more data.
-                // So the first byte must be a new message, grab the type from
-                // the first byte.
-                CNCRMSG_TYPE comType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4);
+            {
+                // No, so grab the type in the next byte.
+                curType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4);
+            }
 
-                // Now find out how many messages we should expect.
-                int expectedLength = CNCRTools.getMsgLenFromType(comType);
-                // Uh, Oh, what about expectedLength = 0, AKA, bad type?
+            // Drop all incoming bytes into the queue
+            for (int i = 0; i < commBuffer.Length; i++)
+            {
+                CommBufferQueue.Enqueue(commBuffer[i]);
+            }
+            
+            // Check how long of a message we are expecting
+            int expectedLength = CNCRTools.getMsgLenFromType(curType);
+            // Uh, Oh, what about expectedLength = 0, AKA, bad type?
 
-                if (expectedLength <= commBuffer.Length)
-                {
-                    // We have enough bytes
-                }
-                else
-                {
-                    // We do not have enough bytes
-                }
+            if (expectedLength <= CommBufferQueue.Count)
+            {
+                // We have enough bytes
+               
+                //byte[] msgBytes = CommBufferQueue.Take().GetEnumerator();
+            }
+            else
+            {
+                // We do not have enough bytes
             }
             
         }
