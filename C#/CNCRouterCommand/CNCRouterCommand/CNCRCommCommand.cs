@@ -132,17 +132,20 @@ namespace CNCRouterCommand
 
         public void SendMsg(CNCRMessage msg)
         {
+            SendBytes(msg.toSerial());
+        }
+
+        public void SendBytes(byte[] bytes)
+        {
             if (!(comPort.IsOpen == true)) OpenPort();
-            if (comPort.IsOpen)
+            if (comPort.IsOpen && (bytes.Length > 0))
             {
-                byte[] newMsg = msg.toSerial();
-                comPort.Write(newMsg, 0, newMsg.Length);
+                comPort.Write(bytes, 0, bytes.Length);
             }
             else
             {
                 //TODO: SendMsg: Log an error
             }
-
         }
         #endregion
 
@@ -238,9 +241,23 @@ namespace CNCRouterCommand
             {
                 // We have enough bytes, lets get the message for those bytes.
 
-                byte[] msgBytes = CommBufferQueue.Take<byte>(expectedLength).ToArray<byte>();
-                CNCRMessage CommMsg = CNCRTools.getMsgFromBytes(msgBytes);
-                
+                byte[] msgBytes = new byte[expectedLength];
+                for (int i = 0; i < msgBytes.Length; i++)
+                {
+                    msgBytes[i] = CommBufferQueue.Dequeue();
+                }
+
+                if (CNCRTools.validateParityBytes(msgBytes))
+                {
+                    DisplayData("- Valid Parity\n");
+                    CNCRMessage CommMsg = CNCRTools.getMsgFromBytes(msgBytes);
+                    DisplayData("- Type: " + CommMsg.getMessageType().ToString() + "\n");
+                }
+                else
+                {
+                    DisplayData("- Invalid Parity\n");
+                    // Send Failed Ack.
+                }
                 // Now what do we need something like "Act On Message" that gets run Asynchronously.
                 // But what about the challenge response?  "WaitingForAck" flag, 
                 // gets set on message sent (except ack) and cleared when Ack is 
@@ -286,6 +303,7 @@ namespace CNCRouterCommand
             comPort.Read(comBuffer, 0, bytes);
 
             handleData(comBuffer);
+            DisplayData(CNCRTools.ToString(comBuffer) + "\n");
 
             /*
             //TODO: Repurpose this method to work for me.
@@ -324,6 +342,7 @@ namespace CNCRouterCommand
         //TODO: Review how DisplayData works, primarily what STAthread refers too.
         #region DisplayData
         public RichTextBox _displayWindow;
+        public Label _displayLabel;
         /// <summary>
         /// method to display the data to & from the port
         /// on the screen
@@ -340,6 +359,13 @@ namespace CNCRouterCommand
                 _displayWindow.AppendText(msg);
                 _displayWindow.ScrollToCaret();
             }));
+
+            _displayLabel.Invoke(new EventHandler(delegate
+                {
+                    _displayLabel.Text = string.Empty;
+                    byte[] bytesInQ = CommBufferQueue.ToArray();
+                    _displayLabel.Text = CNCRTools.ToString(bytesInQ);
+                }));
         }
         #endregion//*/
     }
