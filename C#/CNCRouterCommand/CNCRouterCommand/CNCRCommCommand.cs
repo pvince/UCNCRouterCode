@@ -1,5 +1,5 @@
 ﻿/**
- * The majority of this section of the program was pulled from
+ * The basis of this section of the program was pulled from
  * an article on www.dreamincode.com by PsychoCoder
  * http://www.dreamincode.net/forums/showtopic35775.htm
  * 
