@@ -5,7 +5,6 @@ void setup() {
 
 void loop() {
   if(Serial.available()) {
-    Serial.read();
-    Serial.println(4294967295);
+    Serial.write(Serial.read());
   }
 }
