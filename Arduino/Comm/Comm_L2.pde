@@ -47,8 +47,8 @@ int RecieveStartQueue(PacketContainer* Packet)
 int RecieveRequestCommands(PacketContainer* Packet)
 {
   //*******************TESTING********************
-  Packet->array[1]=(18);
-  Packet->array[2]=(33);            //used to test VirtParityCheck()
+  Packet->array[1]=(0x12);
+  Packet->array[2]=(0x21);            //used to test VirtParityCheck()
   //***************END TESTING********************
   if(ParityChecker(Packet, RequestCommandsLength)==0)
   {

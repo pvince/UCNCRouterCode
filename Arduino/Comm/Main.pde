@@ -37,15 +37,16 @@ void loop()
   }
   else if(Serial.available()) //get message on serial buffer if one exists
   {
-    int Message;
-    Message = Serial.read();
-    MessageFilter(lowByte(Message));
+    PacketContainer Packet;
+    if(MessageInProgress==0)
+    {
+      Packet.array[0] = Serial.read();
+    }
+      MessageFilter(&Packet);
   }
   else if(QueueLength<250)
   {
     //Serial.print("MoreMessages");  //Ask computer for more messages.
   }
-  //Serial.println(1);
-  //delay(3000);
 }
 
