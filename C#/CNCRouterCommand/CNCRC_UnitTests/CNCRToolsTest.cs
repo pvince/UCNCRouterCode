@@ -438,5 +438,151 @@ namespace CNCRC_UnitTests
             actual = CNCRTools.generateInt16FromThreeBytes(parityBytes, startIndex);
             Assert.AreEqual(expected, actual);
         }
+
+        /// <summary>
+        ///A test for ToString
+        ///</summary>
+        [TestMethod()]
+        public void ToStringTest()
+        {
+            byte[] bytes = {0xFF, 0x01};
+            string expected = "FF01";
+            string actual;
+            actual = CNCRTools.ToString(bytes);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for IsHexDigit
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("CNCRouterCommand.exe")]
+        public void IsHexDigitTest_valid()
+        {
+            char c = 'A';
+            bool expected = true;
+            bool actual;
+            actual = CNCRTools_Accessor.IsHexDigit(c);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for IsHexDigit
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("CNCRouterCommand.exe")]
+        public void IsHexDigitTest_Invalid()
+        {
+            char c = 'G';
+            bool expected = false;
+            bool actual;
+            actual = CNCRTools_Accessor.IsHexDigit(c);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for IsHexDigit
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("CNCRouterCommand.exe")]
+        public void IsHexDigitTest_ValidDigit()
+        {
+            char c = '1';
+            bool expected = true;
+            bool actual;
+            actual = CNCRTools_Accessor.IsHexDigit(c);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for IsHexDigit
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("CNCRouterCommand.exe")]
+        public void IsHexDigitTest_ValidA()
+        {
+            char c = 'a';
+            bool expected = true;
+            bool actual;
+            actual = CNCRTools_Accessor.IsHexDigit(c);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for HexToByte
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("CNCRouterCommand.exe")]
+        public void HexToByteTest()
+        {
+            string hex = "FE";
+            byte expected = 254;
+            byte actual;
+            actual = CNCRTools_Accessor.HexToByte(hex);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for HexToByte
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("CNCRouterCommand.exe")]
+        public void HexToByteTest_ValidSingleDigit()
+        {
+            string hex = "F";
+            byte expected = 15;
+            byte actual;
+            actual = CNCRTools_Accessor.HexToByte(hex);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for getMsgLenFromType
+        ///</summary>
+        [TestMethod()]
+        public void getMsgLenFromTypeTest()
+        {
+            CNCRMSG_TYPE msgType = CNCRMSG_TYPE.MOVE;
+            int expected = 11;
+            int actual;
+            actual = CNCRTools.getMsgLenFromType(msgType);
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for getMsgFromBytes
+        ///</summary>
+        [TestMethod()]
+        public void getMsgFromBytesTest()
+        {
+            byte[] msgBytes = {0x5C, 0x00, 0x2D, 0x05, 0x74};
+            CNCRMessage expected = new CNCRMsgSetSpeed(msgBytes);
+            CNCRMessage actual;
+            actual = CNCRTools.getMsgFromBytes(msgBytes);
+            Assert.AreEqual<CNCRMSG_TYPE>(expected.getMessageType(), actual.getMessageType());
+            Assert.AreEqual(((CNCRMsgSetSpeed)expected).isX(), ((CNCRMsgSetSpeed)actual).isX());
+            Assert.AreEqual(((CNCRMsgSetSpeed)expected).isY(), ((CNCRMsgSetSpeed)actual).isY());
+            Assert.AreEqual(((CNCRMsgSetSpeed)expected).isZ(), ((CNCRMsgSetSpeed)actual).isZ());
+            Assert.AreEqual(((CNCRMsgSetSpeed)expected).getSpeed(), ((CNCRMsgSetSpeed)actual).getSpeed());
+        }
+
+        /// <summary>
+        ///A test for GetBytes
+        ///</summary>
+        [TestMethod()]
+        public void GetBytesTest()
+        {
+            string hexString = "FF 01";
+            int discarded = 0;
+            int discardedExpected = 1;
+            byte[] expected = {0xFF, 0x01};
+            byte[] actual;
+            actual = CNCRTools.GetBytes(hexString, out discarded);
+            Assert.AreEqual(discardedExpected, discarded);
+            for (int i = 0; i < expected.Length; i++)
+            {
+                Assert.AreEqual<byte>(expected[i], actual[i]);
+            }
+        }
     }
 }
