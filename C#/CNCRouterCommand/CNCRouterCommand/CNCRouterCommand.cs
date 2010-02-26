@@ -44,6 +44,8 @@ namespace CNCRouterCommand
             commCmd.PortName = cmbPorts.SelectedItem.ToString();
             //commCmd.DisplayWindow = richTextBox1;
             //commCmd.CurrentTransmissionType = CNCRCommCommand.TransmissionType.Text;
+            rtbTraffic.AppendText("@@ Opening " + commCmd.PortName + " @@\n");
+            rtbTraffic.ScrollToCaret();
             if (commCmd.OpenPort())
             {
                 tsPortStatus.Text = commCmd.PortName + " Open";
@@ -107,7 +109,7 @@ namespace CNCRouterCommand
                     sendBytes = sendMsg.toSerial();
                     break;
             }
-            rtbTraffic.AppendText(CNCRTools.ToString(sendBytes) + "\n");
+            rtbTraffic.AppendText(CNCRTools.BytesToHex(sendBytes) + "\n");
             commCmd.SendBytes(sendBytes);
         }
 
@@ -119,7 +121,18 @@ namespace CNCRouterCommand
                 btnOpenPort.Enabled = true;
                 btnClosePort.Enabled = false;
                 btnSndMsg.Enabled = false;
+
+                rtbTraffic.AppendText("@@@@@@@@@@@@@@@@@@@@@@\n");
+                rtbTraffic.ScrollToCaret();
             }
+
+        }
+
+        private void btnRefreshPorts_Click(object sender, EventArgs e)
+        {
+            cmbPorts.Items.Clear();
+            cmbPorts.Items.AddRange(CNCRTools.GetCNCRouterPorts());
+            cmbPorts.SelectedIndex = 0;
         }
     }
 }

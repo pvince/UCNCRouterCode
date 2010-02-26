@@ -31,6 +31,8 @@ namespace CNCRouterCommand
         public const int MSG_LEN_MOVE = 11;
         public const int MSG_TOOL_CMD = 2;
 
+        public const int DISCARD_DELAY_MS = 50;
+
         // Constants for checking firmware compatibility.
         public const int CNCROUTER_CURRENTFW = 0;
 

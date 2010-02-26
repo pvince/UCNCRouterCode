@@ -14,6 +14,7 @@ using System.Text;
 using System.IO.Ports;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Threading;
 
 namespace CNCRouterCommand
 {
@@ -31,6 +32,17 @@ namespace CNCRouterCommand
         private CNCRMSG_TYPE curType = CNCRMSG_TYPE.zNone;
 
         private SerialPort comPort = new SerialPort();
+
+        /// <summary>
+        /// DO NOT ACCESS THIS VARIABLE DIRECTLY.  Use accessDiscardingData.
+        /// </summary>
+        private bool _discardingData = false;
+
+        /// <summary>
+        /// Creates a semaphore to control access to _discardingData.  Only one
+        /// thread is allowed to access discarding data at a time.
+        /// </summary>
+        private static Semaphore discardingDataLock = new Semaphore(1, 1);
         #endregion
 
         #region Getter // Setter Properties
@@ -83,6 +95,33 @@ namespace CNCRouterCommand
             get { return _portName; }
             set { _portName = value; }
         }
+
+        /// <summary>
+        /// Safely retrieves the value for _discardingData.  Only one thread
+        /// at a time can access the value of discardingdata.
+        /// </summary>
+        /// <returns>True if the communication program is currently discarding
+        /// any received data.</returns>
+        private bool getDiscardingData()
+        {
+            bool result = false;
+            discardingDataLock.WaitOne();
+            result = _discardingData;
+            discardingDataLock.Release();
+            return result;
+        }
+
+        /// <summary>
+        /// Safely sets the value for _discardingData.
+        /// </summary>
+        /// <param name="discardingData">True if we should discard any received
+        /// data.</param>
+        private void setDiscardingData(bool discardingData)
+        {
+            discardingDataLock.WaitOne();
+            _discardingData = discardingData;
+            discardingDataLock.Release();
+        }
         #endregion
 
         #region Constructors
@@ -132,6 +171,13 @@ namespace CNCRouterCommand
 
         public void SendMsg(CNCRMessage msg)
         {
+            if (getDiscardingData() // If we are discarding data.
+                && msg.getMessageType() == CNCRMSG_TYPE.CMD_ACKNOWLEDGE // and sending an acknowledge
+                && ((CNCRMsgCmdAck)msg).getError() == true)             // and that acknowledge is saying we have an error.
+            {
+                setDiscardingData(false);   // Then clear the discard data bit so we can see the response.
+                DisplayData("Sent Ack\n");
+            }
             SendBytes(msg.toSerial());
         }
 
@@ -226,51 +272,98 @@ namespace CNCRouterCommand
                 curType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4);
             }
 
-            // Drop all incoming bytes into the queue
-            for (int i = 0; i < commBuffer.Length; i++)
+            // TODO: handleData: this is a hack, figure out a better way to validate the type.
+            if (curType <= CNCRMSG_TYPE.TOOL_CMD)
             {
-                CommBufferQueue.Enqueue(commBuffer[i]);
-            }
-
-            // Check how long of a message we are expecting
-            int expectedLength = CNCRTools.getMsgLenFromType(curType);
-            // Uh, Oh, what about expectedLength = 0, AKA, bad type?
-
-            // Process the current Queue
-            while (CommBufferQueue.Count >= expectedLength)
-            {
-                // We have enough bytes, lets get the message for those bytes.
-
-                byte[] msgBytes = new byte[expectedLength];
-                for (int i = 0; i < msgBytes.Length; i++)
+                // Drop all incoming bytes into the queue
+                for (int i = 0; i < commBuffer.Length; i++)
                 {
-                    msgBytes[i] = CommBufferQueue.Dequeue();
+                    if (CNCRTools.validateParityBit(commBuffer[i]))
+                        CommBufferQueue.Enqueue(commBuffer[i]);
+                    else
+                    {
+                        // TODO: Bad Parity bit, Log an error, and discard data.
+                        handleError("Invalid Parity Bit.");
+                        return;
+                    }
                 }
 
-                if (CNCRTools.validateParityBytes(msgBytes))
+                // Check how long of a message we are expecting
+                int expectedLength = CNCRTools.getMsgLenFromType(curType);
+                // Uh, Oh, what about expectedLength = 0, AKA, bad type?
+                // - At this point, curType should be validated and curType
+                //   should not be unknown, throw an error in getMsgLenFromType.
+                if (expectedLength > 0)
                 {
-                    DisplayData("- Valid Parity\n");
-                    CNCRMessage CommMsg = CNCRTools.getMsgFromBytes(msgBytes);
-                    DisplayData("- Type: " + CommMsg.getMessageType().ToString() + "\n");
+                    // Process the current Queue
+                    while (CommBufferQueue.Count >= expectedLength)
+                    {
+                        // We have enough bytes, lets get the message for those bytes.
+                        byte[] msgBytes = new byte[expectedLength];
+                        for (int i = 0; i < msgBytes.Length; i++)
+                        {
+                            msgBytes[i] = CommBufferQueue.Dequeue();
+                        }
+
+                        if (CNCRTools.validateParityByte(msgBytes))
+                        {
+                            DisplayData("- Valid Parity\n");
+                            CNCRMessage CommMsg = CNCRTools.getMsgFromBytes(msgBytes);
+                            DisplayData("- Type: " + CommMsg.getMessageType().ToString() + "\n");
+                        }
+                        else
+                        {
+                            handleError("Invalid Parity Byte.");
+                            return;
+                        }
+                        // Now what do we need something like "Act On Message" that gets run Asynchronously.
+                        // But what about the challenge response?  "WaitingForAck" flag, 
+                        // gets set on message sent (except ack) and cleared when Ack is 
+                        // received.  Can only send Ack while WaitingForAck
+                    }
                 }
                 else
                 {
-                    DisplayData("- Invalid Parity\n");
-                    // Send Failed Ack.
+                    handleError("Expected length was 0 or less.");
+                    return;
                 }
-                // Now what do we need something like "Act On Message" that gets run Asynchronously.
-                // But what about the challenge response?  "WaitingForAck" flag, 
-                // gets set on message sent (except ack) and cleared when Ack is 
-                // received.  Can only send Ack while WaitingForAck
             }
-
-            if (CommBufferQueue.Count > 0)
+            else
             {
-                // We still have bytes in the queue, but not enough for a complete message.
+                // Bad type: log an error, discard bytes.
+                handleError("Invalid message type.");
+                return;
             }
-            
         }
 
+        /// <summary>
+        /// Performs operations nessessary to handle a new error.
+        /// </summary>
+        /// <param name="errorMsg">Error message to log.</param>
+        private void handleError(string errorMsg)
+        {
+            Thread errorHandlerThread = new Thread(new ParameterizedThreadStart(asynchHandleError));
+            errorHandlerThread.Name = "asynchHandleError";
+            errorHandlerThread.Start(errorMsg);
+        }
+
+        /// <summary>
+        /// This function is meant to be called only from "handleError".
+        /// </summary>
+        /// <param name="msg"></param>
+        private void asynchHandleError(object msg)
+        {
+            // Set the "DiscardData" flag, hmm, do we need to move the check up to "Data Received"?
+            setDiscardingData(true);
+            // Empty the Queue
+            CommBufferQueue.Clear();
+            // Sleep 10 ms to allow serial data to finish arriving.
+            Thread.Sleep(CNCRConstants.DISCARD_DELAY_MS);
+            // Log the error
+            DisplayData("error: " + (string)msg + "\n"); // TODO: asynchHandleError: Determine alternate method for logging errors.
+            // Send the failed "Ack"
+            SendMsg(new CNCRMsgCmdAck(true, 0));
+        }
         /// <summary>
         /// method that will be called when there is data waiting in the buffer
         /// </summary>
@@ -302,8 +395,15 @@ namespace CNCRouterCommand
             byte[] comBuffer = new byte[bytes];
             comPort.Read(comBuffer, 0, bytes);
 
-            handleData(comBuffer);
-            DisplayData(CNCRTools.ToString(comBuffer) + "\n");
+            if (getDiscardingData())
+            {
+                DisplayData("Discarded: " + CNCRTools.BytesToHex(comBuffer) + "\n");
+            }
+            else
+            {
+                DisplayData(CNCRTools.BytesToHex(comBuffer) + "\n");
+                handleData(comBuffer);
+            }
 
             /*
             //TODO: Repurpose this method to work for me.
@@ -364,7 +464,7 @@ namespace CNCRouterCommand
                 {
                     _displayLabel.Text = string.Empty;
                     byte[] bytesInQ = CommBufferQueue.ToArray();
-                    _displayLabel.Text = CNCRTools.ToString(bytesInQ);
+                    _displayLabel.Text = CNCRTools.BytesToHex(bytesInQ);
                 }));
         }
         #endregion//*/
