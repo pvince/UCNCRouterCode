@@ -448,7 +448,7 @@ namespace CNCRC_UnitTests
             byte[] bytes = {0xFF, 0x01};
             string expected = "FF01";
             string actual;
-            actual = CNCRTools.ToString(bytes);
+            actual = CNCRTools.BytesToHex(bytes);
             Assert.AreEqual(expected, actual);
         }
 

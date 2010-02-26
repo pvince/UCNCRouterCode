@@ -5,6 +5,7 @@ using System.Text;
 using System.IO.Ports;
 using System.Collections;
 
+// TODO: Add credit for CodeProject Hex conversion code.
 namespace CNCRouterCommand
 {
     public static class CNCRTools
@@ -20,6 +21,7 @@ namespace CNCRouterCommand
         {
             List<string> results = new List<string>();
             string[] temp = SerialPort.GetPortNames();
+            Array.Sort(temp);
             // "Ping" each port and save the ones that "Acknowledge" 
             //    w/ a supported FW version to the "results" list.
 
@@ -276,10 +278,38 @@ namespace CNCRouterCommand
 
             return true; // Parity check passed.
         }
+
+        //TODO: validateParityByte - Write test case.
+        /// <summary>
+        /// Validates ONLY the parity byte of a serialData array.
+        /// </summary>
+        /// <param name="serialBytes">Array of serial data for which to validate
+        /// the parity byte.</param>
+        /// <returns>True if the parity byte passes the check.</returns>
+        public static bool validateParityByte(byte[] serialBytes)
+        {
+            // Create a copy of the passed in array.
+            byte[] tempBytes = new byte[serialBytes.Length];
+            Array.Copy(serialBytes, tempBytes, serialBytes.Length);
+
+            // Generate the parity byte for the copy.
+            generateParityByte(ref tempBytes);
+
+            // Check to make sure copy and original have same parity byte.
+            if (serialBytes[serialBytes.Length - 1] != tempBytes[tempBytes.Length - 1])
+                return false;
+            return true;
+        }
+
         #endregion
 
         #region Message Handling Tools
-        //TODO: getMsgLenFromType: Comment this function 
+        //TODO: getMsgLenFromType: check test runs for this function
+        /// <summary>
+        /// Returns the expected byte message length for a specific message type.
+        /// </summary>
+        /// <param name="msgType">Message type to find length of.</param>
+        /// <returns>The expected byte length of the passed in message type.</returns>
         public static int getMsgLenFromType(CNCRMSG_TYPE msgType)
         {
             switch (msgType)
@@ -301,11 +331,19 @@ namespace CNCRouterCommand
                 case CNCRMSG_TYPE.TOOL_CMD:
                     return CNCRConstants.MSG_TOOL_CMD;
                 default:
-                    return 0; //TODO: getMsgLenFromType: Should we throw an error?
+                    throw new ArgumentException("msgType of " 
+                        + msgType.ToString() + " has no defined length.", 
+                        "msgType");
             }
         }
 
         //TODO: Should this be in CNCRMessage?
+        //TODO: getMsgFromBytes: Generate more test cases for this function, preferable edge cases.
+        /// <summary>
+        /// Returns the message contained in the passed in byte array.
+        /// </summary>
+        /// <param name="msgBytes">Array of bytes containing a CNCRMessage</param>
+        /// <returns>The message contained in the bytes.</returns>
         public static CNCRMessage getMsgFromBytes(byte[] msgBytes)
         {
             // Byte 0 should be 
@@ -395,7 +433,12 @@ namespace CNCRouterCommand
             return bytes;
         }
 
-        public static string ToString(byte[] bytes)
+        /// <summary>
+        /// Converts a byte array to a hex string.
+        /// </summary>
+        /// <param name="bytes">Array of bytes to convert.</param>
+        /// <returns>String of 0-9, A-F characters representing a Hex number.</returns>
+        public static string BytesToHex(byte[] bytes)
         {
             string hexString = "";
             for (int i = 0; i < bytes.Length; i++)
@@ -424,6 +467,7 @@ namespace CNCRouterCommand
             return false;
         }
 
+        //TODO: HexToByte check test runs for this function.
         /// <summary>
         /// Converts 1 or 2 character string into equivalant byte value
         /// </summary>
