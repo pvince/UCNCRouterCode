@@ -34,7 +34,7 @@ namespace CNCRouterCommand
         private SerialPort comPort = new SerialPort();
 
         /// <summary>
-        /// DO NOT ACCESS THIS VARIABLE DIRECTLY.  Use accessDiscardingData.
+        /// DO NOT ACCESS THIS VARIABLE DIRECTLY.  Use the getter and setter.
         /// </summary>
         private bool _discardingData = false;
 
@@ -320,6 +320,7 @@ namespace CNCRouterCommand
                         // But what about the challenge response?  "WaitingForAck" flag, 
                         // gets set on message sent (except ack) and cleared when Ack is 
                         // received.  Can only send Ack while WaitingForAck
+                        // I need to review this code when I am more awake.
                     }
                 }
                 else
@@ -336,6 +337,10 @@ namespace CNCRouterCommand
             }
         }
 
+        public void actOnMessage(CNCRMessage msg)
+        {
+
+        }
         /// <summary>
         /// Performs operations nessessary to handle a new error.
         /// </summary>
