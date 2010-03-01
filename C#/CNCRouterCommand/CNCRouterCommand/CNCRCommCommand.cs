@@ -28,24 +28,76 @@ namespace CNCRouterCommand
         private string _portName = string.Empty;
         //TODO: Figure out what method will be called by "received"
         
-        private Queue<byte> CommBufferQueue = new Queue<byte>();
         private CNCRMSG_TYPE curType = CNCRMSG_TYPE.zNone;
 
         private SerialPort comPort = new SerialPort();
 
-        /// <summary>
-        /// DO NOT ACCESS THIS VARIABLE DIRECTLY.  Use the getter and setter.
-        /// </summary>
-        private bool _discardingData = false;
+        // Ok, so this thing is the question, what is managing this.
+        // And by "this" I mean the list of commands that need to be sent.  Do I
+        // Just call this function and say, "Hey, here are all the commands you 
+        // need to send, go and do work" or do I instead have another function
+        // Managing this?  I say I should just and off everything to this class.
+        // Have two Queues, a priority queue which is the "Send to router" queue
+        // and a "Command Queue" which has a list of all the router commands.
+        // When the router asks for some commands, I drop them in the "Send to Router"
+        // queue.  If the router sends a message that requires immediate action,
+        // Or the user needs to send an E-Stop, it gets jumped to the top of hte
+        // "Send to Router" queue.
+        // I could have a function called "Process Send to Router Queue".  This 
+        // Function would just run down the queue sending messages constantly,
+        // Waiting for the Ack, then send another message.
+        private Queue<CNCRMessage> _commCommandQueue = new Queue<CNCRMessage>();
+       
+        // Received Byte Queue.
+        private Queue<byte> _commBufferQueue = new Queue<byte>();
 
         /// <summary>
-        /// Creates a semaphore to control access to _discardingData.  Only one
-        /// thread is allowed to access discarding data at a time.
+        /// DO NOT ACCESS THESE VARIABLES DIRECTLY.  THEY ARE ACCESSED
+        /// BY MULTIPLE THREADS. ONLY USE THEIR GETTER AND SETTER VARIABLES.
         /// </summary>
-        private static Semaphore discardingDataLock = new Semaphore(1, 1);
+        private bool _discardingData = false;
+        private bool _waitingOnAck = false;
+        private int _numCmdsToSend = 0;
+        
+        // Semephores for accessing the above variables.
+        private static Semaphore _discardingDataLock = new Semaphore(1, 1);
+        private static Semaphore _waitingOnAckLock = new Semaphore(1, 1);
+        private static Semaphore _numCmdsToSendLock = new Semaphore(1, 1);
         #endregion
 
         #region Getter // Setter Properties
+        private bool getWaitingOnAck()
+        {
+            bool result = false;
+            _waitingOnAckLock.WaitOne();
+            result = _waitingOnAck;
+            _waitingOnAckLock.Release();
+            return result;
+        }
+
+        private void setWaitingOnAck(bool waitingOnAck)
+        {
+            _waitingOnAckLock.WaitOne();
+            _waitingOnAck = waitingOnAck;
+            _waitingOnAckLock.Release();
+        }
+
+        private int getNumCmdsToSend()
+        {
+            int result = 0;
+            _numCmdsToSendLock.WaitOne();
+            result = _numCmdsToSend;
+            _numCmdsToSendLock.Release();
+            return result;
+        }
+
+        private void setNumCmdsToSend(int numCmdsToSend)
+        {
+            _numCmdsToSendLock.WaitOne();
+            _numCmdsToSend = numCmdsToSend;
+            _numCmdsToSendLock.Release();
+        }
+
         /// <summary>
         /// Property to hold the BaudRate
         /// of our manager class
@@ -105,9 +157,9 @@ namespace CNCRouterCommand
         private bool getDiscardingData()
         {
             bool result = false;
-            discardingDataLock.WaitOne();
+            _discardingDataLock.WaitOne();
             result = _discardingData;
-            discardingDataLock.Release();
+            _discardingDataLock.Release();
             return result;
         }
 
@@ -118,9 +170,9 @@ namespace CNCRouterCommand
         /// data.</param>
         private void setDiscardingData(bool discardingData)
         {
-            discardingDataLock.WaitOne();
+            _discardingDataLock.WaitOne();
             _discardingData = discardingData;
-            discardingDataLock.Release();
+            _discardingDataLock.Release();
         }
         #endregion
 
@@ -266,7 +318,7 @@ namespace CNCRouterCommand
         public void handleData(byte[] commBuffer)
         {
             // Are we currently in the middle of a type?
-            if (CommBufferQueue.Count == 0)
+            if (_commBufferQueue.Count == 0)
             {
                 // No, so grab the type in the next byte.
                 curType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4);
@@ -279,7 +331,7 @@ namespace CNCRouterCommand
                 for (int i = 0; i < commBuffer.Length; i++)
                 {
                     if (CNCRTools.validateParityBit(commBuffer[i]))
-                        CommBufferQueue.Enqueue(commBuffer[i]);
+                        _commBufferQueue.Enqueue(commBuffer[i]);
                     else
                     {
                         // TODO: Bad Parity bit, Log an error, and discard data.
@@ -296,13 +348,13 @@ namespace CNCRouterCommand
                 if (expectedLength > 0)
                 {
                     // Process the current Queue
-                    while (CommBufferQueue.Count >= expectedLength)
+                    while (_commBufferQueue.Count >= expectedLength)
                     {
                         // We have enough bytes, lets get the message for those bytes.
                         byte[] msgBytes = new byte[expectedLength];
                         for (int i = 0; i < msgBytes.Length; i++)
                         {
-                            msgBytes[i] = CommBufferQueue.Dequeue();
+                            msgBytes[i] = _commBufferQueue.Dequeue();
                         }
 
                         if (CNCRTools.validateParityByte(msgBytes))
@@ -339,7 +391,40 @@ namespace CNCRouterCommand
 
         public void actOnMessage(CNCRMessage msg)
         {
-
+            switch (msg.getMessageType())
+            {
+                case CNCRMSG_TYPE.CMD_ACKNOWLEDGE:
+                    if (((CNCRMsgCmdAck)msg).getError())
+                    {
+                        // if error, resend last message
+                    }
+                    else
+                    {
+                        // if not error, clear "Waiting for Ack"
+                    }
+                    break;
+                case CNCRMSG_TYPE.E_STOP:
+                    // Send Ack.
+                    // Set the "Stop Sending Messages variable" 
+                    break;
+                case CNCRMSG_TYPE.REQUEST_COMMAND:
+                    // Send Ack.
+                    // Set the "Send Commands" variable to the # of messages.
+                    // If it is not already started, kick off the "SendMessages" method.
+                    break;
+                case CNCRMSG_TYPE.MOVE:
+                    break;
+                case CNCRMSG_TYPE.PING:
+                    break;
+                case CNCRMSG_TYPE.SET_SPEED:
+                    break;
+                case CNCRMSG_TYPE.START_QUEUE:
+                    break;
+                case CNCRMSG_TYPE.TOOL_CMD:
+                    break;
+                default:
+                    throw new ArgumentException("CNCRMessage has an invalid type");
+            }
         }
         /// <summary>
         /// Performs operations nessessary to handle a new error.
@@ -361,7 +446,7 @@ namespace CNCRouterCommand
             // Set the "DiscardData" flag, hmm, do we need to move the check up to "Data Received"?
             setDiscardingData(true);
             // Empty the Queue
-            CommBufferQueue.Clear();
+            _commBufferQueue.Clear();
             // Sleep 10 ms to allow serial data to finish arriving.
             Thread.Sleep(CNCRConstants.DISCARD_DELAY_MS);
             // Log the error
@@ -374,7 +459,7 @@ namespace CNCRouterCommand
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void comPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        public void comPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             //TODO: comPort_DataReceived: Think about receiving messages.
             /* What are the possiblities here?
@@ -468,7 +553,7 @@ namespace CNCRouterCommand
             _displayLabel.Invoke(new EventHandler(delegate
                 {
                     _displayLabel.Text = string.Empty;
-                    byte[] bytesInQ = CommBufferQueue.ToArray();
+                    byte[] bytesInQ = _commBufferQueue.ToArray();
                     _displayLabel.Text = CNCRTools.BytesToHex(bytesInQ);
                 }));
         }
