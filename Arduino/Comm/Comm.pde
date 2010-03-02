@@ -10,13 +10,19 @@
 
 int MessageFilter(PacketContainer* Packet)
 {
-  switch(Packet->array[0] & 0b11110000)
+  //Serial.write(Packet->array[0]);
+  byte Message=Packet->array[0];
+  switch(Message & 0b11110000)  //looks at the type bits
   {
     case (0):  //Ping
       Packet->length=PingLength;
-      AcknowledgeMessage(0);
+      //AcknowledgeMessage(0);
       if(Serial.available()==Packet->length-1)
       {
+        for(int x=1; x<Packet->length; x++)
+        {
+          Packet->array[x]=Serial.read();          
+        }
         RecievePing(Packet);
         MessageInProgress=0;
       }
@@ -116,12 +122,14 @@ int AcknowledgeMessage(boolean Error)
 {
   if(Error==0)
   {
-    Serial.write(0x11);
+    Serial.write(0x11);  //No error
   }
   else
   {
-    Serial.write(0x12);
+    Serial.write(0x12);  //Error
+    Serial.flush();
   }
+  return(0);
 }
 
 int RequestCMD(byte Number)
@@ -132,7 +140,7 @@ int RequestCMD(byte Number)
   
 }
 
-boolean HorParityGen(byte Message)
+boolean HorParityGen(char Message)
 {
   boolean CheckBit=0;
   for(int x=1; x<8; x++)
@@ -142,39 +150,35 @@ boolean HorParityGen(byte Message)
   return bitRead(CheckBit,0);
 }
 
-byte VertParityGen(PacketContainer* Packet)
+unsigned char VertParityGen(PacketContainer* Packet)
 {
-  int CheckByte = 0;
+  unsigned char CheckByte = 0;
   for(int x=0; x<8; x++)
   {
-    int CheckBit = 0;
+    unsigned char CheckBit = 0;
     for(int y=0; y<Packet->length-1; y++)
     {
-      CheckBit = CheckBit + bitRead(lowByte(Packet->array[y]),x);
+      CheckBit = CheckBit + bitRead(Packet->array[y],x);
     }
     bitWrite(CheckByte,x,bitRead(CheckBit,0));
   }
   return(CheckByte);
 }
 
-int ParityChecker(PacketContainer* Packet, int Length)
+unsigned char ParityChecker(PacketContainer* Packet)
 {
    if(HorParityCheck(Packet->array[0]) !=0)
   {
     return(-1);
   }
+  
   for(int x=1; x<Packet->length; x++)
   {
-    Packet->array[x]=Serial.read();
     if(HorParityCheck(Packet->array[x]) !=0)
     {
       return(-1);
     }
   }
-    //*******************TESTING********************
-    Packet->array[1]=(114);            //used to test message structure
-    Packet->array[2]=(65);            //used to test VirtParityCheck()
-    //***************END TESTING********************
   return(VertParityCheck(Packet));
 }
 
@@ -184,7 +188,7 @@ int ParityChecker(PacketContainer* Packet, int Length)
 //**                     Parity Checks                                    **
 //**************************************************************************
 //**************************************************************************
-int HorParityCheck(int Message)
+int HorParityCheck(char Message)
 {
   if(HorParityGen(Message)==bitRead(Message,0))
   {
@@ -193,6 +197,11 @@ int HorParityCheck(int Message)
   else
   {
     Serial.write(0xFF);
+    Serial.write(Message);
+    delay(10);
+    Serial.write(bitRead(Message,0));
+    delay(10);
+    Serial.write(HorParityGen(Message));
     return(-1);
   }
 
@@ -206,7 +215,12 @@ int VertParityCheck(PacketContainer *Packet)  //Checks the parity packet with th
   }
   else  
   {
-    Serial.write(0xFF);
+    Serial.write(0xEE);
+    Serial.write(Packet->length-1);
+    delay(10);
+    Serial.write(Packet->array[(Packet->length)-1]);
+    delay(10);
+    Serial.write(VertParityGen(Packet));
     return(-1);
   }
 }

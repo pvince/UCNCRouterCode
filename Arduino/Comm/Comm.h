@@ -13,8 +13,9 @@ int ToolCMDLength=2;
 
 struct PacketContainer{
   char array[8];
-  int length;
+  unsigned char length;
 };
+
 
 #endif
 
