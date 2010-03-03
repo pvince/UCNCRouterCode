@@ -19,6 +19,13 @@ namespace CNCRouterCommand
         zNone           //If we ever get this type, it is an error.
     };
 
+    public enum CNCRMSG_PRIORITY
+    {
+        HIGH,           // Messages that need to be sent right now, E-Stop
+        MEDIUM,         // Messages that can wait a couple milliseconds, CmdAck, Ping
+        STANDARD        // Standard messages, Move, ToolCmd, SetSpeed
+    };
+
     public class CNCRConstants
     {
         // Constants for checking to ensure correct serial message length.

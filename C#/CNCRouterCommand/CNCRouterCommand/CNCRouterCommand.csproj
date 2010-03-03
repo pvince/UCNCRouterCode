@@ -66,6 +66,7 @@
       <DependentUpon>CNCRouterCommand.cs</DependentUpon>
     </Compile>
     <Compile Include="CNCRTools.cs" />
+    <Compile Include="PriorityQueue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="CNCRouterCommand.resx">
