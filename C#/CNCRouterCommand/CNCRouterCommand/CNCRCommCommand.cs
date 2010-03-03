@@ -21,15 +21,9 @@ namespace CNCRouterCommand
     public class CNCRCommCommand
     {
         #region Local Variables
+        // Property Variables
         private string _baudRate = string.Empty;
-        private string _parity = string.Empty;
-        private string _stopBits = string.Empty;
-        private string _dataBits = string.Empty;
         private string _portName = string.Empty;
-        //TODO: Figure out what method will be called by "received"
-        
-        private CNCRMSG_TYPE curType = CNCRMSG_TYPE.zNone;
-
         private SerialPort comPort = new SerialPort();
 
         // Ok, so this thing is the question, what is managing this.
@@ -47,7 +41,8 @@ namespace CNCRouterCommand
         // Function would just run down the queue sending messages constantly,
         // Waiting for the Ack, then send another message.
         private Queue<CNCRMessage> _commCommandQueue = new Queue<CNCRMessage>();
-       
+        private PriorityQueue<CNCRMessage> _commToRouterQueue = new PriorityQueue<CNCRMessage>();
+
         // Received Byte Queue.
         private Queue<byte> _commBufferQueue = new Queue<byte>();
 
@@ -55,11 +50,14 @@ namespace CNCRouterCommand
         /// DO NOT ACCESS THESE VARIABLES DIRECTLY.  THEY ARE ACCESSED
         /// BY MULTIPLE THREADS. ONLY USE THEIR GETTER AND SETTER VARIABLES.
         /// </summary>
+        /// 
+        private CNCRMSG_TYPE _curType = CNCRMSG_TYPE.zNone;
         private bool _discardingData = false;
         private bool _waitingOnAck = false;
         private int _numCmdsToSend = 0;
         
         // Semephores for accessing the above variables.
+        private static Semaphore _curTypeLock = new Semaphore(1, 1);
         private static Semaphore _discardingDataLock = new Semaphore(1, 1);
         private static Semaphore _waitingOnAckLock = new Semaphore(1, 1);
         private static Semaphore _numCmdsToSendLock = new Semaphore(1, 1);
@@ -98,6 +96,22 @@ namespace CNCRouterCommand
             _numCmdsToSendLock.Release();
         }
 
+        private CNCRMSG_TYPE getCurType()
+        {
+            CNCRMSG_TYPE result = CNCRMSG_TYPE.zNone;
+            _curTypeLock.WaitOne();
+            result = _curType;
+            _curTypeLock.Release();
+            return result;
+        }
+
+        private void setCurType(CNCRMSG_TYPE curType)
+        {
+            _curTypeLock.WaitOne();
+            _curType = curType;
+            _curTypeLock.Release();
+        }
+
         /// <summary>
         /// Property to hold the BaudRate
         /// of our manager class
@@ -106,36 +120,6 @@ namespace CNCRouterCommand
         {
             get { return _baudRate; }
             set { _baudRate = value; }
-        }
-
-        /// <summary>
-        /// property to hold the Parity
-        /// of our manager class
-        /// </summary>
-        public string Parity
-        {
-            get { return _parity; }
-            set { _parity = value; }
-        }
-
-        /// <summary>
-        /// property to hold the StopBits
-        /// of our manager class
-        /// </summary>
-        public string StopBits
-        {
-            get { return _stopBits; }
-            set { _stopBits = value; }
-        }
-
-        /// <summary>
-        /// property to hold the DataBits
-        /// of our manager class
-        /// </summary>
-        public string DataBits
-        {
-            get { return _dataBits; }
-            set { _dataBits = value; }
         }
 
         /// <summary>
@@ -181,16 +165,13 @@ namespace CNCRouterCommand
         /// Constructor to set the properties of our Manager Class
         /// </summary>
         /// <param name="baud">Desired BaudRate</param>
-        /// <param name="par">Desired Parity</param>
-        /// <param name="sBits">Desired StopBits</param>
-        /// <param name="dBits">Desired DataBits</param>
+        /// 
+        /// 
+        /// 
         /// <param name="name">Desired PortName</param>
-        public CNCRCommCommand(string baud, string par, string sBits, string dBits, string name)
+        public CNCRCommCommand(string baud, string name)
         {
             _baudRate = baud;
-            _parity = par;
-            _stopBits = sBits;
-            _dataBits = dBits;
             _portName = name;
 
             //now add an event handler
@@ -203,10 +184,7 @@ namespace CNCRouterCommand
         /// </summary>
         public CNCRCommCommand()
         {
-            _baudRate = string.Empty;
-            _parity = string.Empty;
-            _stopBits = string.Empty;
-            _dataBits = string.Empty;
+            _baudRate = "9600";
             _portName = "COM1";
             //add event handler
             comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
@@ -214,7 +192,7 @@ namespace CNCRouterCommand
         #endregion
 
         #region Send Data
-        public void WriteData(string msg)
+        public void WriteString(string msg)
         {
             if (!(comPort.IsOpen == true)) comPort.Open();
             //send the message to the port
@@ -223,6 +201,7 @@ namespace CNCRouterCommand
 
         public void SendMsg(CNCRMessage msg)
         {
+            //TODO: SendMsg: Should this function really be doing this check?  Shouldnt the function errorhandler do this?
             if (getDiscardingData() // If we are discarding data.
                 && msg.getMessageType() == CNCRMSG_TYPE.CMD_ACKNOWLEDGE // and sending an acknowledge
                 && ((CNCRMsgCmdAck)msg).getError() == true)             // and that acknowledge is saying we have an error.
@@ -258,9 +237,6 @@ namespace CNCRouterCommand
 
                 //set the properties of our SerialPort Object
                 comPort.BaudRate = int.Parse(_baudRate);    //BaudRate
-                //comPort.DataBits = int.Parse(_dataBits);    //DataBits
-                //comPort.StopBits = (StopBits)Enum.Parse(typeof(StopBits), _stopBits);    //StopBits
-                //comPort.Parity = (Parity)Enum.Parse(typeof(Parity), _parity);    //Parity
                 comPort.PortName = _portName;   //PortName
                 //now open the port
                 comPort.Open();
@@ -298,20 +274,6 @@ namespace CNCRouterCommand
         }
         #endregion
 
-        #region GetParityValues
-        public string[] GetParityValues()
-        {
-            return Enum.GetNames(typeof(Parity));
-        }
-        #endregion
-
-        #region GetStopBitValues
-        public string[] GetStopBitValues()
-        {
-            return Enum.GetNames(typeof(StopBits));
-        }
-        #endregion
-
         #region comPort_DataReceived
         // Process received messages.
         [STAThread]
@@ -321,11 +283,11 @@ namespace CNCRouterCommand
             if (_commBufferQueue.Count == 0)
             {
                 // No, so grab the type in the next byte.
-                curType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4);
+                _curType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4);
             }
 
             // TODO: handleData: this is a hack, figure out a better way to validate the type.
-            if (curType <= CNCRMSG_TYPE.TOOL_CMD)
+            if (_curType <= CNCRMSG_TYPE.TOOL_CMD)
             {
                 // Drop all incoming bytes into the queue
                 for (int i = 0; i < commBuffer.Length; i++)
@@ -341,7 +303,7 @@ namespace CNCRouterCommand
                 }
 
                 // Check how long of a message we are expecting
-                int expectedLength = CNCRTools.getMsgLenFromType(curType);
+                int expectedLength = CNCRTools.getMsgLenFromType(_curType);
                 // Uh, Oh, what about expectedLength = 0, AKA, bad type?
                 // - At this point, curType should be validated and curType
                 //   should not be unknown, throw an error in getMsgLenFromType.
@@ -461,26 +423,6 @@ namespace CNCRouterCommand
         /// <param name="e"></param>
         public void comPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            //TODO: comPort_DataReceived: Think about receiving messages.
-            /* What are the possiblities here?
-             * 1. These are the first bytes we are receiving.  Need to add them to a buffer queue.
-             * 2. We have already received some bytes of the command, but not all of them.
-             * 3. We have received multiple commands.
-             * 4. Some combination of 1, 2, or 3.
-             * 
-             * How to handle this?  Pass off all bytes to an apartment thread that
-             * will keep track of the current status of the incoming bytes.
-             * 1. First data arrives, check type.
-             * 2. Using type, check length of bytes in buffer.
-             * 3. If length of bytes in buffer is not long enough, drop current bytes into a 2nd queue.
-             * 3.1 More data arrives.
-             * 3.2 Add data to queue, check length again.  If length is > number of bytes needed, read
-             *     the needed number of bytes, and check to make sure that the final byte is 255.
-             * 
-             * For now, for simple testing I am keeping the code below.
-             * 
-             * Also, we need 
-             */
             int bytes = comPort.BytesToRead;
             byte[] comBuffer = new byte[bytes];
             comPort.Read(comBuffer, 0, bytes);
@@ -494,42 +436,10 @@ namespace CNCRouterCommand
                 DisplayData(CNCRTools.BytesToHex(comBuffer) + "\n");
                 handleData(comBuffer);
             }
-
-            /*
-            //TODO: Repurpose this method to work for me.
-            //determine the mode the user selected (binary/string)
-            switch (CurrentTransmissionType)
-            {
-                //user chose string
-                case TransmissionType.Text:
-                    //read data waiting in the buffer
-                    string msg = comPort.ReadExisting();
-                    //display the data to the user
-                    //DisplayData(MessageType.Incoming, msg + "\n");
-                    break;
-                //user chose binary
-                case TransmissionType.Hex:
-                    //retrieve number of bytes in the buffer
-                    int bytes = comPort.BytesToRead;
-                    //create a byte array to hold the awaiting data
-                    byte[] comBuffer = new byte[bytes];
-                    //read the data and store it
-                    comPort.Read(comBuffer, 0, bytes);
-                    //display the data to the user
-                    //DisplayData(MessageType.Incoming, ByteToHex(comBuffer) + "\n");
-                    break;
-                default:
-                    //read data waiting in the buffer
-                    string str = comPort.ReadExisting();
-                    //display the data to the user
-                    //DisplayData(MessageType.Incoming, str + "\n");
-                    break;
-            }//*/
         }
         #endregion
 
         //* Display Data Stub
-        //TODO: Review how DisplayData works, primarily what STAthread refers too.
         #region DisplayData
         public RichTextBox _displayWindow;
         public Label _displayLabel;
