@@ -11,10 +11,7 @@ int RecievePing(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
-    for(int x=0; x<Packet->length; x++)
-    {
-      Serial.write(Packet->array[x]);
-    }
+    AcknowledgeMessage(0);
   }
   else
   {

@@ -45,6 +45,7 @@ int MessageFilter(PacketContainer* Packet)
       break;
     case(2):  //EStop
       Packet->length=EStopLength;
+      Serial.write(0xDD);
       if(Serial.available()==Packet->length-1)
       {
         RecieveEStop(Packet);

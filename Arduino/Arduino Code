@@ -82,8 +82,42 @@ d	1101
 e	1110
 f	1111
 
-0x11	00010001	Acknoledge with no Error
-0x12	00010010	Acknoledge with Error
+Ping
+0x00	00000000
+0x00	00000000
+Acknoledge with no Error
+0x11	00010001	
+0x00	00000000
+0x11	00010001
+Acknoledge with Error
+0x12	00010010
+0x00	00000000	
+0x12	00010010
+E-Stop
+0x21	00100001	
+0x21	00100001
+Request Commands
+0x30	00110000
+0x	[#Comands P]
+0x	Parity
+Start Queue
+0x41	01000001
+0x41	01000001
+SetSpeed
+0x50	01010000
+	[UpperX P]
+	[LowerX P]
+	[~X_botBits P]
+	[UpperY P]
+	[LowerY P]
+	[~Y_botBits P]
+	[UpperZ P]
+	[LowerZ P]
+	[~Z_botBits P]
+	[Parity]
+ToolCommand
+	[011100(OnOFF)P]
+	[Parity]
 
 0xFF	11111111	Parity Error
 
