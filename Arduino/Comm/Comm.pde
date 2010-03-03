@@ -5,7 +5,7 @@
 #include "Main.h"
 #include "Queue.h"
 #include "Comm.h"
-
+PacketContainer *AckPacket;
 
 
 int MessageFilter(PacketContainer* Packet)
@@ -45,7 +45,6 @@ int MessageFilter(PacketContainer* Packet)
       break;
     case(2):  //EStop
       Packet->length=EStopLength;
-      Serial.write(0xDD);
       if(Serial.available()==Packet->length-1)
       {
         RecieveEStop(Packet);
@@ -121,14 +120,22 @@ int MessageFilter(PacketContainer* Packet)
 }
 int AcknowledgeMessage(boolean Error)
 {
-  if(Error==0)
+  Serial.write(0xD1);
+  Firmware=Firmware<<1;
+  char type = 0x10 | (2*Error);
+  AckPacket->length=AcknowledgeLength;
+  Serial.write(type);
+  Serial.write(type | HorParityGen(type));
+  Serial.write(Firmware | HorParityGen(Firmware));
+  
+  AckPacket->array[0]=(type | HorParityGen(type));
+  AckPacket->array[1]=Firmware | HorParityGen(Firmware);
+  AckPacket->array[2]=VertParityGen(AckPacket);
+  Serial.write(AckPacket->array[0]);
+  Serial.write(AckPacket->array[0]);
+  for (int x=0; x<AcknowledgeLength; x++)
   {
-    Serial.write(0x11);  //No error
-  }
-  else
-  {
-    Serial.write(0x12);  //Error
-    Serial.flush();
+    Serial.write(AckPacket->array[x]);
   }
   return(0);
 }
@@ -197,7 +204,7 @@ int HorParityCheck(char Message)
   }
   else
   {
-    Serial.write(0xFF);
+    //Serial.write(0xFF);
     Serial.write(Message);
     delay(10);
     Serial.write(bitRead(Message,0));
@@ -216,7 +223,7 @@ int VertParityCheck(PacketContainer *Packet)  //Checks the parity packet with th
   }
   else  
   {
-    Serial.write(0xEE);
+    //Serial.write(0xEE);
     Serial.write(Packet->length-1);
     delay(10);
     Serial.write(Packet->array[(Packet->length)-1]);

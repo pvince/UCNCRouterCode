@@ -49,15 +49,15 @@ void loop()
   else if(QueueLength<250 && FlagMotorDelay)
   {
     //Serial.print("MoreMessages");  //Ask computer for more messages.
-    PacketContainer* Packet;
-    Packet->length=3;
-    Packet->array[0]=(0x30);
-    char Amount = RequestNumber*2 + HorParityGen(RequestNumber*2);
-    Packet->array[1]=Amount;
-    Packet->array[2]=VertParityGen(Packet);
-    Serial.write(Packet->array[0]);
-    Serial.write(Packet->array[1]);
-    Serial.write(Packet->array[2]);
+//    PacketContainer* Packet;
+//    Packet->length=3;
+//    Packet->array[0]=(0x30);
+//    char Amount = RequestNumber*2 + HorParityGen(RequestNumber*2);
+//    Packet->array[1]=Amount;
+//    Packet->array[2]=VertParityGen(Packet);
+//    Serial.write(Packet->array[0]);
+//    Serial.write(Packet->array[1]);
+//    Serial.write(Packet->array[2]);
   }
 }
 
