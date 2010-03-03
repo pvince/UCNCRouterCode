@@ -17,7 +17,7 @@ namespace CNCRouterCommand
     public class CNCRMsgRequestCommands : CNCRMessage
     {
         // Stored internally in the class as 0 to 127 for bit reasons.
-        private byte _commandCount = 0;
+        private byte _cmdCnt = 0;
 
         /// <summary>
         /// Number of commands to send to the router.  This value can be from 1
@@ -25,7 +25,7 @@ namespace CNCRouterCommand
         /// </summary>
         public int getCommandCount()
         {
-            return _commandCount + 1;
+            return _cmdCnt + 1;
         }
 
         private CNCRMsgRequestCommands() : base(CNCRMSG_TYPE.REQUEST_COMMAND) { }
@@ -42,14 +42,14 @@ namespace CNCRouterCommand
                     "Command count must be 128 or less");
             else if (commandCount < 1)
                 commandCount = 1;
-            _commandCount = --commandCount; //TODO: CNCRMsgRequestCommands: validate --commandCount works.
+            _cmdCnt = --commandCount; //TODO: CNCRMsgRequestCommands: validate --commandCount works.
         }
         public CNCRMsgRequestCommands(byte[] msgBytes)
             : this()
         {
             // TODO: Validate byte constructor
             // CommandCount is stored in the top 7 bits of the 2nd byte.
-            this._commandCount = Convert.ToByte(msgBytes[1] >> 1);
+            this._cmdCnt = Convert.ToByte(msgBytes[1] >> 1);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace CNCRouterCommand
         public override byte[] toSerial()
         {
             byte Type = getMsgTypeByte();
-            byte CmdCount = Convert.ToByte(_commandCount << 1);
+            byte CmdCount = Convert.ToByte(_cmdCnt << 1);
             byte[] result = { Type, CmdCount, 0 };   // Build the result array.
             // generate parity
             CNCRTools.generateParity(ref result);
