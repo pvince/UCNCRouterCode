@@ -73,9 +73,7 @@ int RecieveSetSpeed(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
-    //****************************************
-    //**    Set Speed Logic                 **
-    //****************************************
+    QueueAdd(Packet);
     AcknowledgeMessage(0);
   }
   else
@@ -89,9 +87,7 @@ int RecieveMove(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
-    //****************************************
-    //**    Alot of Move Logic goes here    **
-    //****************************************
+    QueueAdd(Packet);
     AcknowledgeMessage(0);
   }
   else
@@ -105,9 +101,7 @@ int RecieveToolCMD(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
-    //****************************************
-    //**      Tool Command Logic            **
-    //****************************************
+    QueueAdd(Packet);
     AcknowledgeMessage(0);
   }
   else

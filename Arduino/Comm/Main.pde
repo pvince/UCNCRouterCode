@@ -24,32 +24,32 @@ void loop()
   if(FlagEStop)
   {
     FlagStart = 0;  //Stop proccessing the queue
+    FlagMotorRunning = 0; //The motors are not running anymore
     //**************************
     //Stop Everything
     //**************************
   }
-  else if(!FlagMotorDelay &&  FlagStart) //if the motors are not doing anything and are ready to move again.
+  else if(!FlagMotorRunning &&  FlagStart) //if the motors are not doing anything and are ready to move again.
   {
-    FlagMotorDelay=1;  //set the motor flag as not being ready.
     //********************************
     //Process Queue
     //somehow figure out when the motors are done, delay?
     //FlagMotorDelay=0;
     //********************************
-    
+    FlagMotorRunning=1;  //set the motor flag as not being ready.
   }
-  else if(QueueLength<250 && FlagMotorDelay)
+  else if(QueueLength<250 && FlagMotorRunning)
   {
-    //Serial.print("MoreMessages");  //Ask computer for more messages.
-//    PacketContainer* Packet;
-//    Packet->length=3;
-//    Packet->array[0]=(0x30);
-//    char Amount = RequestNumber*2 + HorParityGen(RequestNumber*2);
-//    Packet->array[1]=Amount;
-//    Packet->array[2]=VertParityGen(Packet);
-//    Serial.write(Packet->array[0]);
-//    Serial.write(Packet->array[1]);
-//    Serial.write(Packet->array[2]);
+      Serial.print("MoreMessages");  //Ask computer for more messages.
+      PacketContainer Packet;
+      Packet.length=3;
+      Packet.array[0]=(0x30);
+      char Amount = RequestNumber<<2 + HorParityGen(RequestNumber<<2);
+      Packet.array[1]=Amount;
+      Packet.array[2]=VertParityGen(&Packet);
+      Serial.write(Packet.array[0]);
+      Serial.write(Packet.array[1]);
+      Serial.write(Packet.array[2]);
   }
   if(Serial.available()) //get message on serial buffer if one exists
   {
