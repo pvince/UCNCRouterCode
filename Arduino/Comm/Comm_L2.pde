@@ -40,6 +40,9 @@ int RecieveStartQueue(PacketContainer* Packet)
   {
     FlagStart=1;
     FlagEStop=0;
+    //****************************************
+    //**  Start Queue Logic                 **
+    //****************************************
     AcknowledgeMessage(0);
   }
   else
@@ -54,6 +57,9 @@ int RecieveRequestCommands(PacketContainer* Packet)
 
   if(ParityChecker(Packet)==0)
   {
+    //****************************************
+    //**    Start Request Commands Logic    **
+    //****************************************
     AcknowledgeMessage(0);
   }
   else
@@ -67,6 +73,9 @@ int RecieveSetSpeed(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
+    //****************************************
+    //**    Set Speed Logic                 **
+    //****************************************
     AcknowledgeMessage(0);
   }
   else
@@ -80,6 +89,9 @@ int RecieveMove(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
+    //****************************************
+    //**    Alot of Move Logic goes here    **
+    //****************************************
     AcknowledgeMessage(0);
   }
   else
@@ -93,6 +105,9 @@ int RecieveToolCMD(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
+    //****************************************
+    //**      Tool Command Logic            **
+    //****************************************
     AcknowledgeMessage(0);
   }
   else

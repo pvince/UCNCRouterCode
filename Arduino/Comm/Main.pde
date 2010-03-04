@@ -4,7 +4,7 @@
 #include "Main.h"
 #include "Comm.h"
 #include "Queue.h"
-static PacketContainer Packet;
+
 
 void setup()
 {
@@ -38,14 +38,6 @@ void loop()
     //********************************
     
   }
-  else if(Serial.available()) //get message on serial buffer if one exists
-  {
-    if(MessageInProgress==0)  //if this is a "type" message read it into the array at index 0
-    {
-      Packet.array[0] = Serial.read();
-    }
-      MessageFilter(&Packet);
-  }
   else if(QueueLength<250 && FlagMotorDelay)
   {
     //Serial.print("MoreMessages");  //Ask computer for more messages.
@@ -58,6 +50,15 @@ void loop()
 //    Serial.write(Packet->array[0]);
 //    Serial.write(Packet->array[1]);
 //    Serial.write(Packet->array[2]);
+  }
+  if(Serial.available()) //get message on serial buffer if one exists
+  {
+    PacketContainer Packet;
+    if(MessageInProgress==0)  //if this is a "type" message read it into the array at index 0
+    {
+      Packet.array[0] = Serial.read();
+    }
+      MessageFilter(&Packet);
   }
 }
 

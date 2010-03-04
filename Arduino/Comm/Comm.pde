@@ -5,14 +5,14 @@
 #include "Main.h"
 #include "Queue.h"
 #include "Comm.h"
-PacketContainer *AckPacket;
+
 
 
 int MessageFilter(PacketContainer* Packet)
 {
   //Serial.write(Packet->array[0]);
   byte Message=Packet->array[0];
-  switch(Message & 0b11110000)  //looks at the type bits
+  switch((Message & 0b11110000)>>4)  //looks at the type bits
   {
     case (0):  //Ping
       Packet->length=PingLength;
@@ -35,6 +35,10 @@ int MessageFilter(PacketContainer* Packet)
       Packet->length=2;
       if(Serial.available()==Packet->length-1)
       {
+        for(int x=1; x<Packet->length; x++)
+        {
+          Packet->array[x]=Serial.read();          
+        }
         RecievePing(Packet);
         MessageInProgress=0;
       }
@@ -47,6 +51,10 @@ int MessageFilter(PacketContainer* Packet)
       Packet->length=EStopLength;
       if(Serial.available()==Packet->length-1)
       {
+        for(int x=1; x<Packet->length; x++)
+        {
+          Packet->array[x]=Serial.read();          
+        }
         RecieveEStop(Packet);
         MessageInProgress=0;
       }
@@ -59,6 +67,10 @@ int MessageFilter(PacketContainer* Packet)
       Packet->length=RequestCommandsLength;
       if(Serial.available()==Packet->length-1)
       {
+        for(int x=1; x<Packet->length; x++)
+        {
+          Packet->array[x]=Serial.read();          
+        }
         RecieveRequestCommands(Packet);
         MessageInProgress=0;
       }
@@ -71,6 +83,10 @@ int MessageFilter(PacketContainer* Packet)
       Packet->length=StartQueueLength;
       if(Serial.available()==Packet->length-1)
       {
+        for(int x=1; x<Packet->length; x++)
+        {
+          Packet->array[x]=Serial.read();          
+        }
         RecieveStartQueue(Packet);
         MessageInProgress=0;
       }
@@ -83,6 +99,10 @@ int MessageFilter(PacketContainer* Packet)
       Packet->length=SetSpeedLength;
       if(Serial.available()==Packet->length-1)
       {
+        for(int x=1; x<Packet->length; x++)
+        {
+          Packet->array[x]=Serial.read();          
+        }
         RecieveSetSpeed(Packet);
         MessageInProgress=0;
       }
@@ -95,6 +115,10 @@ int MessageFilter(PacketContainer* Packet)
       Packet->length=MoveLength;
       if(Serial.available()==Packet->length-1)
       {
+        for(int x=1; x<Packet->length; x++)
+        {
+          Packet->array[x]=Serial.read();          
+        }
         RecieveMove(Packet);
         MessageInProgress=0;
       }
@@ -107,6 +131,10 @@ int MessageFilter(PacketContainer* Packet)
       Packet->length=ToolCMDLength;
       if(Serial.available()==Packet->length-1)
       {
+        for(int x=1; x<Packet->length; x++)
+        {
+          Packet->array[x]=Serial.read();          
+        }
         RecieveToolCMD(Packet);
         MessageInProgress=0;
       }
@@ -116,26 +144,20 @@ int MessageFilter(PacketContainer* Packet)
       }
       break;
   }
-
+return(0);
 }
 int AcknowledgeMessage(boolean Error)
 {
-  Serial.write(0xD1);
-  Firmware=Firmware<<1;
+  PacketContainer AckPacket;
+  char FW=Firmware<<1;
   char type = 0x10 | (2*Error);
-  AckPacket->length=AcknowledgeLength;
-  Serial.write(type);
-  Serial.write(type | HorParityGen(type));
-  Serial.write(Firmware | HorParityGen(Firmware));
-  
-  AckPacket->array[0]=(type | HorParityGen(type));
-  AckPacket->array[1]=Firmware | HorParityGen(Firmware);
-  AckPacket->array[2]=VertParityGen(AckPacket);
-  Serial.write(AckPacket->array[0]);
-  Serial.write(AckPacket->array[0]);
+  AckPacket.length=AcknowledgeLength;
+  AckPacket.array[0]=(type | HorParityGen(type));
+  AckPacket.array[1]=FW | HorParityGen(FW);
+  AckPacket.array[2]=VertParityGen(&AckPacket);
   for (int x=0; x<AcknowledgeLength; x++)
   {
-    Serial.write(AckPacket->array[x]);
+    Serial.write(AckPacket.array[x]);
   }
   return(0);
 }
@@ -204,12 +226,6 @@ int HorParityCheck(char Message)
   }
   else
   {
-    //Serial.write(0xFF);
-    Serial.write(Message);
-    delay(10);
-    Serial.write(bitRead(Message,0));
-    delay(10);
-    Serial.write(HorParityGen(Message));
     return(-1);
   }
 
@@ -223,12 +239,6 @@ int VertParityCheck(PacketContainer *Packet)  //Checks the parity packet with th
   }
   else  
   {
-    //Serial.write(0xEE);
-    Serial.write(Packet->length-1);
-    delay(10);
-    Serial.write(Packet->array[(Packet->length)-1]);
-    delay(10);
-    Serial.write(VertParityGen(Packet));
     return(-1);
   }
 }

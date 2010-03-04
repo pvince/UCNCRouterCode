@@ -1,5 +1,6 @@
 #ifndef _Comm_h
 #define _Comm_h
+#include "WProgram.h"
 
 int MessageRate = 9600;
 int AcknowledgeLength=3;
