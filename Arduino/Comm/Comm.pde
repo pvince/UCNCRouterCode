@@ -155,10 +155,16 @@ int AcknowledgeMessage(boolean Error)
   AckPacket.array[0]=(type | HorParityGen(type));
   AckPacket.array[1]=FW | HorParityGen(FW);
   AckPacket.array[2]=VertParityGen(&AckPacket);
+  if( Error==1)
+  {
+    delay(50);
+    Serial.flush();
+  }
   for (int x=0; x<AcknowledgeLength; x++)
   {
     Serial.write(AckPacket.array[x]);
   }
+  
   return(0);
 }
 
