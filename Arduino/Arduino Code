@@ -87,12 +87,12 @@ Ping
 0x00	00000000
 Acknoledge with no Error
 0x11	00010001	
-0x00	00000000
-0x11	00010001
+0x06	00000110
+0x17	00010111
 Acknoledge with Error
 0x12	00010010
-0x00	00000000	
-0x12	00010010
+0x06	00000110	
+0x14	00010100
 E-Stop
 0x21	00100001	
 0x21	00100001
@@ -116,8 +116,8 @@ SetSpeed
 	[~Z_botBits P]
 	[Parity]
 ToolCommand
-	[011100(OnOFF)P]
-	[Parity]
+0x72 0x71 [011100(OnOFF)P]
+0x72 0x71 [Parity]
 
 0xFF	11111111	Parity Error
 
