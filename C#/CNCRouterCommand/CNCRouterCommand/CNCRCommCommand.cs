@@ -40,8 +40,27 @@ namespace CNCRouterCommand
         // I could have a function called "Process Send to Router Queue".  This 
         // Function would just run down the queue sending messages constantly,
         // Waiting for the Ack, then send another message.
+
+        /// <summary>
+        /// This queue is used to store the commands needed to drive the router.
+        /// 
+        /// It is possible that once the build is started, this variable
+        /// might be accessed from multiple threads.
+        /// </summary>
         private Queue<CNCRMessage> _commCommandQueue = new Queue<CNCRMessage>();
-        private PriorityQueue<CNCRMessage> _commToRouterQueue = new PriorityQueue<CNCRMessage>();
+        private static Semaphore _commCmdQLock = new Semaphore(1, 1);
+
+        /// <summary>
+        /// This queue is used for commands that need to be sent sooner rather
+        /// than later.  It is sorted via two parameters.
+        /// 1. Priority of message (Standard, Medium, High)
+        /// 2. MsgID (Message created earlier have lower ID's)
+        /// 
+        /// It is accessed from multiple threads, therefore use the provided
+        /// functions for enqueueing and dequeueing data.
+        /// </summary>
+        private PriorityQueue<CNCRMessage> _commPriorityQueue = new PriorityQueue<CNCRMessage>();
+        private static Semaphore _commPriorityQLock = new Semaphore(1, 1);
 
         // Received Byte Queue.
         private Queue<byte> _commBufferQueue = new Queue<byte>();
@@ -52,18 +71,70 @@ namespace CNCRouterCommand
         /// </summary>
         /// 
         private CNCRMSG_TYPE _curType = CNCRMSG_TYPE.zNone;
+        private CNCRMessage _lastMessage;
         private bool _discardingData = false;
         private bool _waitingOnAck = false;
+        private bool _eStopActive = false;
         private int _numCmdsToSend = 0;
-        
+
         // Semephores for accessing the above variables.
         private static Semaphore _curTypeLock = new Semaphore(1, 1);
+        private static Semaphore _lastMessageLock = new Semaphore(1, 1);
         private static Semaphore _discardingDataLock = new Semaphore(1, 1);
         private static Semaphore _waitingOnAckLock = new Semaphore(1, 1);
         private static Semaphore _numCmdsToSendLock = new Semaphore(1, 1);
+        private static Semaphore _eStopActiveLock = new Semaphore(1, 1);
+
+        private Thread _processQueues;
         #endregion
 
         #region Getter // Setter Properties
+        private CNCRMessage commCommandQueueDequeue()
+        {
+            CNCRMessage result;
+            _commCmdQLock.WaitOne();
+            result = _commCommandQueue.Dequeue();
+            _commCmdQLock.Release();
+            return result;
+        }
+        private void commCommandQueueEnqueue(CNCRMessage enqueue)
+        {
+            _commCmdQLock.WaitOne();
+            _commCommandQueue.Enqueue(enqueue);
+            _commCmdQLock.Release();
+        }
+        private int commCommandQueueCount()
+        {
+            int result;
+            _commCmdQLock.WaitOne();
+            result = _commCommandQueue.Count;
+            _commCmdQLock.Release();
+            return result;
+        }
+
+        private CNCRMessage commPriorityQueueDequeue()
+        {
+            CNCRMessage result;
+            _commPriorityQLock.WaitOne();
+            result = _commPriorityQueue.Dequeue();
+            _commPriorityQLock.Release();
+            return result;
+        }
+        private void commPriorityQueueEnqueue(CNCRMessage enqueue)
+        {
+            _commPriorityQLock.WaitOne();
+            _commCommandQueue.Enqueue(enqueue);
+            _commPriorityQLock.Release();
+        }
+        private int commPriorityQueueCount()
+        {
+            int result;
+            _commPriorityQLock.WaitOne();
+            result = _commPriorityQueue.Count;
+            _commPriorityQLock.Release();
+            return result;
+        }
+
         private bool getWaitingOnAck()
         {
             bool result = false;
@@ -72,7 +143,6 @@ namespace CNCRouterCommand
             _waitingOnAckLock.Release();
             return result;
         }
-
         private void setWaitingOnAck(bool waitingOnAck)
         {
             _waitingOnAckLock.WaitOne();
@@ -88,7 +158,6 @@ namespace CNCRouterCommand
             _numCmdsToSendLock.Release();
             return result;
         }
-
         private void setNumCmdsToSend(int numCmdsToSend)
         {
             _numCmdsToSendLock.WaitOne();
@@ -104,12 +173,41 @@ namespace CNCRouterCommand
             _curTypeLock.Release();
             return result;
         }
-
         private void setCurType(CNCRMSG_TYPE curType)
         {
             _curTypeLock.WaitOne();
             _curType = curType;
             _curTypeLock.Release();
+        }
+
+        private bool getEStopActive()
+        {
+            bool result = false;
+            _eStopActiveLock.WaitOne();
+            result = _eStopActive;
+            _eStopActiveLock.Release();
+            return result;
+        }
+        private void setEStopActive(bool eStopActive)
+        {
+            _eStopActiveLock.WaitOne();
+            _eStopActive = eStopActive;
+            _eStopActiveLock.Release();
+        }
+
+        private CNCRMessage getLastMessage()
+        {
+            CNCRMessage result;
+            _lastMessageLock.WaitOne();
+            result = _lastMessage;
+            _lastMessageLock.Release();
+            return result;
+        }
+        private void setLastMessage(CNCRMessage lastMessage)
+        {
+            _lastMessageLock.WaitOne();
+            _lastMessage = lastMessage;
+            _lastMessageLock.Release();
         }
 
         /// <summary>
@@ -175,6 +273,7 @@ namespace CNCRouterCommand
             _portName = name;
 
             //now add an event handler
+            _processQueues = new Thread(new ThreadStart(processQueues));
             comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
         }
 
@@ -186,6 +285,7 @@ namespace CNCRouterCommand
         {
             _baudRate = "9600";
             _portName = "COM1";
+            _processQueues = new Thread(new ThreadStart(processQueues));
             //add event handler
             comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
         }
@@ -202,12 +302,16 @@ namespace CNCRouterCommand
         public void SendMsg(CNCRMessage msg)
         {
             //TODO: SendMsg: Should this function really be doing this check?  Shouldnt the function errorhandler do this?
-            if (getDiscardingData() // If we are discarding data.
+            if (getDiscardingData()                                     // If we are discarding data.
                 && msg.getMessageType() == CNCRMSG_TYPE.CMD_ACKNOWLEDGE // and sending an acknowledge
                 && ((CNCRMsgCmdAck)msg).getError() == true)             // and that acknowledge is saying we have an error.
             {
                 setDiscardingData(false);   // Then clear the discard data bit so we can see the response.
                 DisplayData("Sent Ack\n");
+            }
+            if (msg.getMessageType() != CNCRMSG_TYPE.CMD_ACKNOWLEDGE)
+            {
+                setWaitingOnAck(true);
             }
             SendBytes(msg.toSerial());
         }
@@ -276,6 +380,10 @@ namespace CNCRouterCommand
 
         #region comPort_DataReceived
         // Process received messages.
+        /// <summary>
+        /// Builds messages from the received data.
+        /// </summary>
+        /// <param name="commBuffer">Array of bytes just received over serial.</param>
         [STAThread]
         public void handleData(byte[] commBuffer)
         {
@@ -283,11 +391,11 @@ namespace CNCRouterCommand
             if (_commBufferQueue.Count == 0)
             {
                 // No, so grab the type in the next byte.
-                _curType = (CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4);
+                setCurType((CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4));
             }
 
             // TODO: handleData: this is a hack, figure out a better way to validate the type.
-            if (_curType <= CNCRMSG_TYPE.TOOL_CMD)
+            if (getCurType() <= CNCRMSG_TYPE.TOOL_CMD)
             {
                 // Drop all incoming bytes into the queue
                 for (int i = 0; i < commBuffer.Length; i++)
@@ -303,7 +411,7 @@ namespace CNCRouterCommand
                 }
 
                 // Check how long of a message we are expecting
-                int expectedLength = CNCRTools.getMsgLenFromType(_curType);
+                int expectedLength = CNCRTools.getMsgLenFromType(getCurType());
                 // Uh, Oh, what about expectedLength = 0, AKA, bad type?
                 // - At this point, curType should be validated and curType
                 //   should not be unknown, throw an error in getMsgLenFromType.
@@ -323,7 +431,9 @@ namespace CNCRouterCommand
                         {
                             DisplayData("- Valid Parity\n");
                             CNCRMessage CommMsg = CNCRTools.getMsgFromBytes(msgBytes);
-                            DisplayData("- Type: " + CommMsg.getMessageType().ToString() + "\n");
+                            DisplayData("- Type: " + CommMsg.ToString() + "\n");
+                            Thread runActOnMessage = new Thread(new ParameterizedThreadStart(actOnMessage));
+                            runActOnMessage.Start(CommMsg);
                         }
                         else
                         {
@@ -351,42 +461,94 @@ namespace CNCRouterCommand
             }
         }
 
-        public void actOnMessage(CNCRMessage msg)
+        /// <summary>
+        /// Takes the passed in message and performs the nessessary actions
+        /// required by that message.
+        /// </summary>
+        /// <param name="msg">Message to act on.</param>
+        public void actOnMessage(object msgObj)
         {
+            CNCRMessage msg = (CNCRMessage)msgObj;
+            if (msg == null)
+                throw new ArgumentNullException();
+
             switch (msg.getMessageType())
             {
                 case CNCRMSG_TYPE.CMD_ACKNOWLEDGE:
                     if (((CNCRMsgCmdAck)msg).getError())
                     {
                         // if error, resend last message
+                        CNCRMessage lastMsg = getLastMessage();
+                        lastMsg.setPriority(CNCRMSG_PRIORITY.HIGH);
+                        commPriorityQueueEnqueue(lastMsg);
                     }
                     else
                     {
                         // if not error, clear "Waiting for Ack"
+                        setWaitingOnAck(false);
                     }
+                    launchProcessQueues();
                     break;
                 case CNCRMSG_TYPE.E_STOP:
                     // Send Ack.
+                    CNCRMessage ack = new CNCRMsgCmdAck(false, 0);
+                    ack.setPriority(CNCRMSG_PRIORITY.MEDIUM);
+                    commPriorityQueueEnqueue(ack);
+
                     // Set the "Stop Sending Messages variable" 
+                    setEStopActive(true);
                     break;
                 case CNCRMSG_TYPE.REQUEST_COMMAND:
                     // Send Ack.
+                    CNCRMessage ack2 = new CNCRMsgCmdAck(false, 0);
+                    ack2.setPriority(CNCRMSG_PRIORITY.MEDIUM);
+                    commPriorityQueueEnqueue(ack2);
+
                     // Set the "Send Commands" variable to the # of messages.
+                    CNCRMsgRequestCommands msgRC = (CNCRMsgRequestCommands)msg;
+                    setNumCmdsToSend(msgRC.getCommandCount());
+
                     // If it is not already started, kick off the "SendMessages" method.
+                    launchProcessQueues();
                     break;
                 case CNCRMSG_TYPE.MOVE:
-                    break;
                 case CNCRMSG_TYPE.PING:
-                    break;
                 case CNCRMSG_TYPE.SET_SPEED:
-                    break;
                 case CNCRMSG_TYPE.START_QUEUE:
-                    break;
                 case CNCRMSG_TYPE.TOOL_CMD:
-                    break;
+                    // We should not be receiving any of these messages.
+                    // TODO: ActOnMessage: The following is not really an error, look into how to throw "warnings"
+                    throw new ArgumentException("Received a valid message that should not have been sent by router.");
                 default:
                     throw new ArgumentException("CNCRMessage has an invalid type");
             }
+        }
+
+        private void launchProcessQueues()
+        {
+            if (_processQueues.ThreadState == ThreadState.Stopped ||
+                _processQueues.ThreadState == ThreadState.Unstarted)
+                _processQueues.Start(); //TODO: Figure out why this fails saying that it is still running.
+        }
+
+        private void processQueues()
+        {
+            // If waiting for Ack or EStopped, exit thread, we cant send any commands.
+            if (!getWaitingOnAck() && !getEStopActive())
+            {
+                int numCmdsToSend = getNumCmdsToSend();
+                // Check the priority queue
+                if (commPriorityQueueCount() > 0)
+                    SendMsg(commPriorityQueueDequeue());
+                else if (numCmdsToSend > 0 && commCommandQueueCount() > 0)
+                {
+                    // Check if we need to send some commands
+                    SendMsg(commCommandQueueDequeue());
+                    numCmdsToSend--;
+                    setNumCmdsToSend(numCmdsToSend);
+                }
+            }
+
         }
         /// <summary>
         /// Performs operations nessessary to handle a new error.
@@ -409,7 +571,7 @@ namespace CNCRouterCommand
             setDiscardingData(true);
             // Empty the Queue
             _commBufferQueue.Clear();
-            // Sleep 10 ms to allow serial data to finish arriving.
+            // Sleep 50 ms to allow serial data to finish arriving.
             Thread.Sleep(CNCRConstants.DISCARD_DELAY_MS);
             // Log the error
             DisplayData("error: " + (string)msg + "\n"); // TODO: asynchHandleError: Determine alternate method for logging errors.
@@ -435,6 +597,7 @@ namespace CNCRouterCommand
             {
                 DisplayData(CNCRTools.BytesToHex(comBuffer) + "\n");
                 handleData(comBuffer);
+                DisplayDataQueue();
             }
         }
         #endregion
@@ -459,13 +622,16 @@ namespace CNCRouterCommand
                 _displayWindow.AppendText(msg);
                 _displayWindow.ScrollToCaret();
             }));
-
+        }
+        [STAThread]
+        private void DisplayDataQueue()
+        {
             _displayLabel.Invoke(new EventHandler(delegate
-                {
-                    _displayLabel.Text = string.Empty;
-                    byte[] bytesInQ = _commBufferQueue.ToArray();
-                    _displayLabel.Text = CNCRTools.BytesToHex(bytesInQ);
-                }));
+            {
+                _displayLabel.Text = string.Empty;
+                byte[] bytesInQ = _commBufferQueue.ToArray();
+                _displayLabel.Text = CNCRTools.BytesToHex(bytesInQ);
+            }));
         }
         #endregion//*/
     }

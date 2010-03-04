@@ -44,7 +44,7 @@ namespace CNCRouterCommand
             commCmd.PortName = cmbPorts.SelectedItem.ToString();
             //commCmd.DisplayWindow = richTextBox1;
             //commCmd.CurrentTransmissionType = CNCRCommCommand.TransmissionType.Text;
-            rtbTraffic.AppendText("@@ Opening " + commCmd.PortName + " @@\n");
+            rtbTraffic.AppendText("@ Opening " + commCmd.PortName + " @\n");
             rtbTraffic.ScrollToCaret();
             if (commCmd.OpenPort())
             {
@@ -122,7 +122,7 @@ namespace CNCRouterCommand
                 btnClosePort.Enabled = false;
                 btnSndMsg.Enabled = false;
 
-                rtbTraffic.AppendText("@@@@@@@@@@@@@@@@@@@@@@\n");
+                rtbTraffic.AppendText("@@@@@@@@@@@@@@@@@@@@\n");
                 rtbTraffic.ScrollToCaret();
             }
 
@@ -133,6 +133,27 @@ namespace CNCRouterCommand
             cmbPorts.Items.Clear();
             cmbPorts.Items.AddRange(CNCRTools.GetCNCRouterPorts());
             cmbPorts.SelectedIndex = 0;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //CNCRMessage bob = new CNCRMessage(CNCRMSG_TYPE.E_STOP);
+            //*
+            PriorityQueue<CNCRMessage> testQ = new PriorityQueue<CNCRMessage>();
+            testQ.Enqueue(new CNCRMsgSetSpeed(true, true, false, 300));
+            testQ.Enqueue(new CNCRMsgSetSpeed(false, false, true, 100));
+            testQ.Enqueue(new CNCRMsgMove(0, 0, 5));
+            testQ.Enqueue(new CNCRMsgToolCmd(true));
+            testQ.Enqueue(new CNCRMsgMove(0, 0, 0));
+            CNCRMessage testM = new CNCRMsgCmdAck(false, 0);
+            testM.setPriority(CNCRMSG_PRIORITY.MEDIUM);
+            testQ.Enqueue(testM);
+
+            label1.Text = "";
+            while (testQ.Count > 0)
+            {
+                label1.Text += testQ.Dequeue().ToString() + "\n";
+            }//*/
         }
     }
 }
