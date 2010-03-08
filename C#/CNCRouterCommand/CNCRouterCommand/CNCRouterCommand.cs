@@ -69,7 +69,7 @@ namespace CNCRouterCommand
             }//*/
 
             byte[] sendBytes = {0};
-            CNCRMessage sendMsg;
+            CNCRMessage sendMsg = null;
             switch (cmbMsgs.SelectedIndex)
             {
                 case 0:
@@ -110,7 +110,10 @@ namespace CNCRouterCommand
                     break;
             }
             rtbTraffic.AppendText(CNCRTools.BytesToHex(sendBytes) + "\n");
-            commCmd.SendBytes(sendBytes);
+            if (sendMsg == null)
+                commCmd.SendBytes(sendBytes);
+            else
+                commCmd.SendMsg(sendMsg);
         }
 
         private void btnClosePort_Click(object sender, EventArgs e)

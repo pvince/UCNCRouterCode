@@ -273,7 +273,6 @@ namespace CNCRouterCommand
             _portName = name;
 
             //now add an event handler
-            _processQueues = new Thread(new ThreadStart(processQueues));
             comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
         }
 
@@ -285,7 +284,6 @@ namespace CNCRouterCommand
         {
             _baudRate = "9600";
             _portName = "COM1";
-            _processQueues = new Thread(new ThreadStart(processQueues));
             //add event handler
             comPort.DataReceived += new SerialDataReceivedEventHandler(comPort_DataReceived);
         }
@@ -313,6 +311,7 @@ namespace CNCRouterCommand
             {
                 setWaitingOnAck(true);
             }
+            setLastMessage(msg);
             SendBytes(msg.toSerial());
         }
 
@@ -526,9 +525,13 @@ namespace CNCRouterCommand
 
         private void launchProcessQueues()
         {
+
             if (_processQueues.ThreadState == ThreadState.Stopped ||
                 _processQueues.ThreadState == ThreadState.Unstarted)
-                _processQueues.Start(); //TODO: Figure out why this fails saying that it is still running.
+            {
+                _processQueues = new Thread(new ThreadStart(processQueues));
+                _processQueues.Start();
+            }
         }
 
         private void processQueues()
