@@ -526,7 +526,8 @@ namespace CNCRouterCommand
         private void launchProcessQueues()
         {
 
-            if (_processQueues.ThreadState == ThreadState.Stopped ||
+            if (_processQueues == null ||
+                _processQueues.ThreadState == ThreadState.Stopped ||
                 _processQueues.ThreadState == ThreadState.Unstarted)
             {
                 _processQueues = new Thread(new ThreadStart(processQueues));
