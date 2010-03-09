@@ -620,6 +620,9 @@ namespace CNCRouterCommand
                         setNumCmdsToSend(numCmdsToSend);
                     }
                     //TODO: processQueues, should I send a "Queue Tapped out" message?
+                    // - Well currently I do not even reach this level if there 
+                    //   is a discrepency between commCommandQueueCount and 
+                    //   getNumCmdsToSend due to the while loop.  Figure this out.
                 }
             }
 
