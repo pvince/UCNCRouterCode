@@ -10,30 +10,55 @@ namespace CNCRouterCommand
     /// its queue of commands.
     /// 
     /// Command Structure:
-    /// [Type 000P] [Parity]
-    /// - Type: 4
+    /// [Type 00 isStopQueue P] [Parity]
+    /// -        Type: 4
+    /// - isStopQueue: Set to 1 to indicate an end of the build process.
     /// </summary>
     public class CNCRMsgStartQueue : CNCRMessage
     {
+        private bool _isEndQueue = false;
+
         /// <summary>
         /// Default constructor.
         /// </summary>
-        public CNCRMsgStartQueue()
+        private CNCRMsgStartQueue()
             : base(CNCRMSG_TYPE.START_QUEUE)
         { }
 
+        public CNCRMsgStartQueue(bool isEndQueue)
+            : this()
+        {
+            _isEndQueue = isEndQueue;
+        }
+
+        public CNCRMsgStartQueue(byte[] msgBytes)
+            : this()
+        {
+            //TODO: CNCRMsgStartQueue: msgBytes constructor needs to validate msgBytes.
+            if ((msgBytes[0] & 0x02) != 0)
+                _isEndQueue = true;
+        }
+
+        public bool isEndQueue()
+        {
+            return _isEndQueue;
+        }
         /// <summary>
         /// Transfers the message data to a byte array for transfer.
         /// </summary>
         /// <returns>
         /// Command Structure:
-        /// [Type 000P] [Parity]
-        /// - Type: 4
+        /// [Type 00 isEndQueue P] [Parity]
+        /// -        Type: 4
+        /// - isStopQueue: Set to 1 to indicate an end of the build process.
         /// </returns>
         public override byte[] toSerial()
         {
-            byte type = getMsgTypeByte();
-            byte[] result = { type, 0 };
+            byte typeEndQueue = getMsgTypeByte();
+            if (_isEndQueue)
+                typeEndQueue |= 0x02; // Set the EndQueue bit.
+
+            byte[] result = { typeEndQueue, 0 };
             CNCRTools.generateParity(ref result);
             return result;
         }

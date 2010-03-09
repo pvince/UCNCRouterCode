@@ -379,7 +379,7 @@ namespace CNCRouterCommand
                     resultMsg = new CNCRMsgSetSpeed(msgBytes);
                     break;
                 case CNCRMSG_TYPE.START_QUEUE:
-                    resultMsg = new CNCRMsgStartQueue();
+                    resultMsg = new CNCRMsgStartQueue(msgBytes);
                     break;
                 case CNCRMSG_TYPE.TOOL_CMD:
                     resultMsg = new CNCRMsgToolCmd(msgBytes);

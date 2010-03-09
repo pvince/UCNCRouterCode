@@ -68,7 +68,7 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void toSerialTest()
         {
-            CNCRMsgStartQueue target = new CNCRMsgStartQueue();
+            CNCRMsgStartQueue target = new CNCRMsgStartQueue(false);
             byte[] expected = { 0x41, 0x41 };
             byte[] actual;
             actual = target.toSerial();
@@ -83,7 +83,7 @@ namespace CNCRC_UnitTests
         [TestMethod()]
         public void CNCRMsgStartQueueConstructorTest()
         {
-            CNCRMsgStartQueue target = new CNCRMsgStartQueue();
+            CNCRMsgStartQueue target = new CNCRMsgStartQueue(false);
             Assert.AreEqual(CNCRMSG_TYPE.START_QUEUE, target.getMessageType());
             Assert.AreEqual(0x40, target.getMsgTypeByte());
         }

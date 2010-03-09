@@ -93,7 +93,7 @@ namespace CNCRouterCommand
                     sendBytes = sendMsg.toSerial();
                     break;
                 case 5:
-                    sendMsg = new CNCRMsgStartQueue();
+                    sendMsg = new CNCRMsgStartQueue(false);
                     sendBytes = sendMsg.toSerial();
                     break;
                 case 6:
