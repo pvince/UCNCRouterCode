@@ -38,10 +38,23 @@ namespace CNCRouterCommand
         public const int MSG_LEN_MOVE = 11;
         public const int MSG_TOOL_CMD = 2;
 
+        // Constants for the serial communication
+
+        /// <summary>
+        /// After receiving an error, how long should we ignore messages?
+        /// </summary>
         public const int DISCARD_DELAY_MS = 50;
 
+        /// <summary>
+        /// How long should we wait after sending a message before reporting an 
+        /// error?
+        /// </summary>
+        public const int TIMEOUT_MS = 500; //TODO: TIMEOUT_MS: tweak this setting
+
         // Constants for checking firmware compatibility.
-        public const int CNCROUTER_CURRENTFW = 0;
+        public const int CNCROUTER_CURRENTFW = 3;
+
+
 
         // Constants for error messages
         public const string ERRMESG_INCOMPATFIRMWARE = "The firmware version of the CNCRouter is not compatible with this version of the software.";

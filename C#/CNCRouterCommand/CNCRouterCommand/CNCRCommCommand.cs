@@ -41,20 +41,45 @@ namespace CNCRouterCommand
         // Function would just run down the queue sending messages constantly,
         // Waiting for the Ack, then send another message.
 
-        /// <summary>
+        /// <summary> _commCommandQueue Description and Guide 
+        /// <para>
         /// This queue is used to store the commands needed to drive the router.
+        /// These commands are as follows:
+        /// 4. CNCRMsgStartQueue
+        /// 5. CNCRMsgSetSpeed
+        /// 6. CNCRMsgMove
+        /// 7. CNCRMsgMove
+        /// 
+        /// This queue is only accessed after the priority queue is empty.  It is
+        /// processed according to the number of commands requested by the router.
+        /// The number of commands requested by the router is stored in 
+        /// _numCmdsToSend.
         /// 
         /// It is possible that once the build is started, this variable
         /// might be accessed from multiple threads.
+        /// </para>
         /// </summary>
         private Queue<CNCRMessage> _commCommandQueue = new Queue<CNCRMessage>();
         private static Semaphore _commCmdQLock = new Semaphore(1, 1);
 
         /// <summary>
+        /// This variable should only be used via its accessor methods.  It is
+        /// used in multiple threads and direct access is NOT thread safe.
+        /// 
+        /// This variable is used to keep counter of the current number of commands
+        /// the router is requesting.  These commands will be sent from the
+        /// commCommandQueue.
+        /// </summary>
+        private int _numCmdsToSend = 0;
+        private static Semaphore _numCmdsToSendLock = new Semaphore(1, 1);
+
+        /// <summary> _commPriorityQueue Description and Guide
         /// This queue is used for commands that need to be sent sooner rather
         /// than later.  It is sorted via two parameters.
         /// 1. Priority of message (Standard, Medium, High)
         /// 2. MsgID (Message created earlier have lower ID's)
+        /// 
+        /// This queue is emptied before reverting to the commCommandQueue.
         /// 
         /// It is accessed from multiple threads, therefore use the provided
         /// functions for enqueueing and dequeueing data.
@@ -62,7 +87,13 @@ namespace CNCRouterCommand
         private PriorityQueue<CNCRMessage> _commPriorityQueue = new PriorityQueue<CNCRMessage>();
         private static Semaphore _commPriorityQLock = new Semaphore(1, 1);
 
-        // Received Byte Queue.
+        /// <summary> _commBufferQueue Description and Guide
+        /// This queue should only be accessed by the "handleData" method or
+        /// non-asynchronous child methods.  "handleData" is a [STAThread] method
+        /// which means only one thread can access it at a time, hence as long
+        /// as it is the only method (or its child methods) accessing this queue
+        /// it should remain threadsafe.
+        /// </summary>
         private Queue<byte> _commBufferQueue = new Queue<byte>();
 
         /// <summary>
@@ -75,21 +106,23 @@ namespace CNCRouterCommand
         private bool _discardingData = false;
         private bool _waitingOnAck = false;
         private bool _eStopActive = false;
-        private int _numCmdsToSend = 0;
 
         // Semephores for accessing the above variables.
         private static Semaphore _curTypeLock = new Semaphore(1, 1);
         private static Semaphore _lastMessageLock = new Semaphore(1, 1);
         private static Semaphore _discardingDataLock = new Semaphore(1, 1);
         private static Semaphore _waitingOnAckLock = new Semaphore(1, 1);
-        private static Semaphore _numCmdsToSendLock = new Semaphore(1, 1);
         private static Semaphore _eStopActiveLock = new Semaphore(1, 1);
 
         private Thread _processQueues;
         #endregion
 
         #region Getter // Setter Properties
-        private CNCRMessage commCommandQueueDequeue()
+        /// <summary>
+        /// Dequeue a router build command.
+        /// </summary>
+        /// <returns>The CNCRMessage at the head of the build queue</returns>
+        public CNCRMessage commCommandQueueDequeue()
         {
             CNCRMessage result;
             _commCmdQLock.WaitOne();
@@ -97,13 +130,23 @@ namespace CNCRouterCommand
             _commCmdQLock.Release();
             return result;
         }
-        private void commCommandQueueEnqueue(CNCRMessage enqueue)
+        /// <summary>
+        /// Enqueue a router build command.
+        /// </summary>
+        /// <param name="enqueue">CNCRMessage to add to the build queue.  This
+        /// is generally one of the following commands: CNCRMsgStartQueue,
+        /// CNCRMsgSetSpeed, CNCRMsgMove, CNCRMsgToolCmd</param>
+        public void commCommandQueueEnqueue(CNCRMessage enqueue)
         {
             _commCmdQLock.WaitOne();
             _commCommandQueue.Enqueue(enqueue);
             _commCmdQLock.Release();
         }
-        private int commCommandQueueCount()
+        /// <summary>
+        /// Find the number of commands currently in the build queue.
+        /// </summary>
+        /// <returns></returns>
+        public int commCommandQueueCount()
         {
             int result;
             _commCmdQLock.WaitOne();
@@ -112,7 +155,12 @@ namespace CNCRouterCommand
             return result;
         }
 
-        private CNCRMessage commPriorityQueueDequeue()
+        /// <summary>
+        /// Dequeue the most important message in the priority message queue.
+        /// </summary>
+        /// <returns>The most important CNCRMessage in the current priority
+        /// queue.</returns>
+        public CNCRMessage commPriorityQueueDequeue()
         {
             CNCRMessage result;
             _commPriorityQLock.WaitOne();
@@ -120,13 +168,19 @@ namespace CNCRouterCommand
             _commPriorityQLock.Release();
             return result;
         }
-        private void commPriorityQueueEnqueue(CNCRMessage enqueue)
+        /// <summary>
+        /// Enqueue a message in the current priority queue.  If you have not
+        /// set the priority of the message it is enqueued according to its
+        /// creation status.
+        /// </summary>
+        /// <param name="enqueue"></param>
+        public void commPriorityQueueEnqueue(CNCRMessage enqueue)
         {
             _commPriorityQLock.WaitOne();
             _commCommandQueue.Enqueue(enqueue);
             _commPriorityQLock.Release();
         }
-        private int commPriorityQueueCount()
+        public int commPriorityQueueCount()
         {
             int result;
             _commPriorityQLock.WaitOne();
@@ -135,22 +189,8 @@ namespace CNCRouterCommand
             return result;
         }
 
-        private bool getWaitingOnAck()
-        {
-            bool result = false;
-            _waitingOnAckLock.WaitOne();
-            result = _waitingOnAck;
-            _waitingOnAckLock.Release();
-            return result;
-        }
-        private void setWaitingOnAck(bool waitingOnAck)
-        {
-            _waitingOnAckLock.WaitOne();
-            _waitingOnAck = waitingOnAck;
-            _waitingOnAckLock.Release();
-        }
 
-        private int getNumCmdsToSend()
+        public int getNumCmdsToSend()
         {
             int result = 0;
             _numCmdsToSendLock.WaitOne();
@@ -158,7 +198,7 @@ namespace CNCRouterCommand
             _numCmdsToSendLock.Release();
             return result;
         }
-        private void setNumCmdsToSend(int numCmdsToSend)
+        public void setNumCmdsToSend(int numCmdsToSend)
         {
             _numCmdsToSendLock.WaitOne();
             _numCmdsToSend = numCmdsToSend;
@@ -178,6 +218,21 @@ namespace CNCRouterCommand
             _curTypeLock.WaitOne();
             _curType = curType;
             _curTypeLock.Release();
+        }
+
+        private bool getWaitingOnAck()
+        {
+            bool result = false;
+            _waitingOnAckLock.WaitOne();
+            result = _waitingOnAck;
+            _waitingOnAckLock.Release();
+            return result;
+        }
+        private void setWaitingOnAck(bool waitingOnAck)
+        {
+            _waitingOnAckLock.WaitOne();
+            _waitingOnAck = waitingOnAck;
+            _waitingOnAckLock.Release();
         }
 
         private bool getEStopActive()
@@ -403,7 +458,7 @@ namespace CNCRouterCommand
                         _commBufferQueue.Enqueue(commBuffer[i]);
                     else
                     {
-                        // TODO: Bad Parity bit, Log an error, and discard data.
+                        // Bad Parity bit, Discard the data and log an error.
                         handleError("Invalid Parity Bit.");
                         return;
                     }
@@ -439,11 +494,6 @@ namespace CNCRouterCommand
                             handleError("Invalid Parity Byte.");
                             return;
                         }
-                        // Now what do we need something like "Act On Message" that gets run Asynchronously.
-                        // But what about the challenge response?  "WaitingForAck" flag, 
-                        // gets set on message sent (except ack) and cleared when Ack is 
-                        // received.  Can only send Ack while WaitingForAck
-                        // I need to review this code when I am more awake.
                     }
                 }
                 else
@@ -505,7 +555,7 @@ namespace CNCRouterCommand
 
                     // Set the "Send Commands" variable to the # of messages.
                     CNCRMsgRequestCommands msgRC = (CNCRMsgRequestCommands)msg;
-                    setNumCmdsToSend(msgRC.getCommandCount());
+                    setNumCmdsToSend(msgRC.getCommandCount() + getNumCmdsToSend());
 
                     // If it is not already started, kick off the "SendMessages" method.
                     launchProcessQueues();
@@ -537,19 +587,39 @@ namespace CNCRouterCommand
 
         private void processQueues()
         {
-            // If waiting for Ack or EStopped, exit thread, we cant send any commands.
-            if (!getWaitingOnAck() && !getEStopActive())
+
+            DateTime lastMsg = DateTime.Now;
+            TimeSpan timeout = new TimeSpan(CNCRConstants.TIMEOUT_MS * TimeSpan.TicksPerMillisecond);
+
+            while (!getEStopActive() // While eStop is not active.
+                 && ((commPriorityQueueCount() > 0) || (commCommandQueueCount() > 0 && getNumCmdsToSend() > 0))  // And this stuff
+                 && ((DateTime.Now - lastMsg) < timeout)) // And we are not timed out.
             {
-                int numCmdsToSend = getNumCmdsToSend();
-                // Check the priority queue
-                if (commPriorityQueueCount() > 0)
-                    SendMsg(commPriorityQueueDequeue());
-                else if (numCmdsToSend > 0 && commCommandQueueCount() > 0)
+                // If waiting for Ack or EStopped, exit thread, we cant send any commands.
+                if (!getWaitingOnAck() && !getEStopActive())
                 {
-                    // Check if we need to send some commands
-                    SendMsg(commCommandQueueDequeue());
-                    numCmdsToSend--;
-                    setNumCmdsToSend(numCmdsToSend);
+                    // reset the timeout
+                    lastMsg = DateTime.Now;
+
+                    int numCmdsToSend = getNumCmdsToSend();
+
+                    // Check the priority queue first, it has preference.
+                    if (commPriorityQueueCount() > 0)
+                        SendMsg(commPriorityQueueDequeue());
+                    // Check to see if the router is requesting commands and then
+                    // Check to ensure we actually have commands to send.
+                    else if (numCmdsToSend > 0 && commCommandQueueCount() > 0)
+                    {
+                        // Grab the next router command in the queue.
+                        SendMsg(commCommandQueueDequeue());
+
+                        // Decrement the command counter
+                        numCmdsToSend--;
+
+                        // Set the new numCmdsToSend safely.
+                        setNumCmdsToSend(numCmdsToSend);
+                    }
+                    //TODO: processQueues, should I send a "Queue Tapped out" message?
                 }
             }
 
@@ -560,6 +630,11 @@ namespace CNCRouterCommand
         /// <param name="errorMsg">Error message to log.</param>
         private void handleError(string errorMsg)
         {
+
+            // Empty the Queue.  We clear the buffer here because we are a child
+            // of an [STAThread] method, and therefore can only be called 
+            _commBufferQueue.Clear();
+
             Thread errorHandlerThread = new Thread(new ParameterizedThreadStart(asynchHandleError));
             errorHandlerThread.Name = "asynchHandleError";
             errorHandlerThread.Start(errorMsg);
@@ -573,8 +648,6 @@ namespace CNCRouterCommand
         {
             // Set the "DiscardData" flag, hmm, do we need to move the check up to "Data Received"?
             setDiscardingData(true);
-            // Empty the Queue
-            _commBufferQueue.Clear();
             // Sleep 50 ms to allow serial data to finish arriving.
             Thread.Sleep(CNCRConstants.DISCARD_DELAY_MS);
             // Log the error
