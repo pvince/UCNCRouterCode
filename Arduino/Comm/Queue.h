@@ -10,7 +10,6 @@ struct Linklist
 };
 
 int QueueLength = 0;
-//int Queue[500];
 Linklist* StartPointer = 0;
 Linklist* WriteLocation = 0;
 

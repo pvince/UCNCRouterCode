@@ -36,7 +36,8 @@ void loop()
     //somehow figure out when the motors are done, delay?
     //FlagMotorDelay=0;
     //********************************
-    FlagMotorRunning=1;  //set the motor flag as not being ready.
+    QueueRead();
+    //FlagMotorRunning=1;  //set the motor flag as not being ready.
   }
   else if(QueueLength<250 && FlagMotorRunning)
   {
