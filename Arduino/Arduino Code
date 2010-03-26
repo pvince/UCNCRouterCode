@@ -105,6 +105,9 @@ Start Queue
 0x41	01000001
 SetSpeed
 0x50	01010000
+
+Move
+0x60	01100000
 	[UpperX P]
 	[LowerX P]
 	[~X_botBits P]
