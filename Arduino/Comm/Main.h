@@ -16,4 +16,7 @@ unsigned int  ZPort = 23;
 unsigned int  XPosition = 0;  //Keeps track of the current position
 unsigned int  YPosition = 0;
 unsigned int  ZPosition = 0;
+unsigned int  XSpeed=1;
+unsigned int  YSpeed=1;
+unsigned int  ZSpeed=1;
 #endif

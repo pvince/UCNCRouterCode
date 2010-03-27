@@ -65,6 +65,20 @@ int QueueRead()  //Reads the oldest link off the queue and sends it to the requi
 
 int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
 {
+  int temp;
+  temp = ((TempHolder->Message[1] & 0b11111110) << 8) | ((TempHolder->Message[3] & 0b00000100) << 6) | (TempHolder->Message[2] & 0b11111110) | ((TempHolder->Message[3] & 0b00000010) >> 1);
+  if (TempHolder->Message[0] & 0b00001000)
+  {
+    XSpeed = temp;
+  }
+  if (TempHolder->Message[0] & 0b00000100)
+  {
+    XSpeed = temp;
+  }
+  if (TempHolder->Message[0] & 0b00000010)
+  {
+    ZSpeed = temp;
+  }
   return(0);
 }
 
@@ -88,19 +102,28 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
     done = 1;
     if(XDiff > 0 )
     {
-      digitalWrite(XPort,1);
+      for(int x=0; x< XSpeed;x++)  //sends multiple signals for the speed setting.
+      {
+        digitalWrite(XPort,1);
+      }
       XDiff--;
       done = 0;
     }
     if (YDiff > 0)
     {
-      digitalWrite(YPort,1);
+      for(int x=0; x< YSpeed;x++)
+      {
+        digitalWrite(YPort,1);
+      }
       YDiff--;
       done = 0;
     }
     if( ZDiff > 0)
     {
-      digitalWrite(ZPort,1);
+      for(int x=0; x< ZSpeed;x++)
+      {
+        digitalWrite(ZPort,1);
+      }
       ZDiff--;
       done = 0;
     }
