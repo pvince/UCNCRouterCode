@@ -7,8 +7,8 @@
 ;PIN 10 => RB4 => A* Coil					;
 ;PIN 9  => RB3 => B Coil					;
 ;PIN 8  => RB2 => B* Coil					;
-;PIN 13 => RB7 => Enable A Coil				;
-;PIN 12 => RB6 => Enable B Coil				;
+;PIN 12 => RB6 => Enable A Coil				;
+;PIN 13 => RB7 => Enable B Coil				;
 ;PIN 2 	=> RA3 => Busy						;
 ;											;
 ;Program waits for the rising edge of a 	;
