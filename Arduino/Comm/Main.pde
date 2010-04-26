@@ -4,16 +4,15 @@
 #include "Main.h"
 #include "Comm.h"
 #include "Queue.h"
-
+#include "TimerOne.h"
 
 void setup()
 {
+  Timer1.initialize(MotorSpeed);
+  Timer1.attachInterrupt(QueueRead);
   Serial.begin(MessageRate);
   pinMode(12,OUTPUT);
-  for (int x=0;x<500;x++)  //Makes sure the Queue is blank.
-  {
-    //Queue[x]=0;
-  }
+  attachInterrupt(0,Motor,RISING);
 }
 
 void loop()
@@ -23,23 +22,24 @@ void loop()
   
   if(FlagEStop)
   {
+    noInterrupts();
     FlagStart = 0;  //Stop proccessing the queue
     FlagMotorRunning = 0; //The motors are not running anymore
     //**************************
     //Stop Everything
     //**************************
   }
-  else if(!FlagMotorRunning &&  FlagStart) //if the motors are not doing anything and are ready to move again.
+    if(!FlagEStop ) //if the queue us supposed to be executed.
   {
     //********************************
     //Process Queue
     //somehow figure out when the motors are done, delay?
     //FlagMotorDelay=0;
     //********************************
-    QueueRead();
+    interrupts();
     //FlagMotorRunning=1;  //set the motor flag as not being ready.
   }
-  else if(QueueLength<250 && FlagMotorRunning)
+  if(QueueLength<250)
   {
       Serial.print("MoreMessages");  //Ask computer for more messages.
       PacketContainer Packet;
@@ -63,3 +63,8 @@ void loop()
   }
 }
 
+
+void Motor()
+{
+  QueueRead();
+}
