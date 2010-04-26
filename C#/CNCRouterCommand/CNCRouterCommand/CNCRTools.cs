@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO.Ports;
+using System.IO;
 using System.Collections;
 
 // TODO: Add credit for CodeProject Hex conversion code.
@@ -479,6 +480,46 @@ namespace CNCRouterCommand
                 throw new ArgumentException("hex must be 1 or 2 characters in length");
             byte newByte = byte.Parse(hex, System.Globalization.NumberStyles.HexNumber);
             return newByte;
+        }
+
+        public static double getAngleFromLines(int x11, int y11, int x12, int y12, int x21, int y21, int x22, int y22)
+        {
+            Double radianAngle = Math.Atan2(y12 - y11, x12 - x11) 
+                                    - Math.Atan2(y22 - y21, x22 - x21);
+            Double degreeAngle = (radianAngle * (180 / Math.PI));
+            return degreeAngle;
+        }
+        #endregion
+
+        #region GCode Parsing
+        public static string readTextFile(string path)
+        {
+            TextReader tr = new StreamReader(path);
+            string result = tr.ReadToEnd();
+            tr.Close();
+            return result;
+        }
+
+        public static Queue<CNCRMessage> parseGCode(string gcode)
+        {
+            // Split the gCode into liines
+            char[] charDelimiters = { '\r', '\n' };
+            string[] gcodeLines = gcode.Split(charDelimiters,
+                                        StringSplitOptions.RemoveEmptyEntries);
+
+            // Split the lines into words
+            List<string[]> gcodeLineWords = new List<string[]>();
+            for (int i = 0; i < gcodeLines.Length; i++)
+            {
+                string[] lineSplit = gcodeLines[i].Split(null);
+
+                // Discard comment lines
+                if(!lineSplit[0].StartsWith("("))
+                    gcodeLineWords.Add(lineSplit);
+            }
+
+            Queue<CNCRMessage> testbob = null;
+            return testbob;
         }
         #endregion
     }
