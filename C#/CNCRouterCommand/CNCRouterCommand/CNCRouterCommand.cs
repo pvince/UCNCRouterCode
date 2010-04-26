@@ -159,7 +159,9 @@ namespace CNCRouterCommand
             }//*/
             //C:\Users\vincenpt\Documents\SeniorDesign\trunk\Docs\Drawings\DXF_Drawings\Square_40x40mm.nc"
             string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesign/trunk/Docs/Drawings/DXF_Drawings/Square_40x40mm.nc");
-            CNCRTools.parseGCode(gcode);
+            string logMessages = "";
+            CNCRTools.parseGCode(gcode, ref logMessages);
+            label1.Text = logMessages;
         }
 
         private void tcInterface_SelectedIndexChanged(object sender, EventArgs e)

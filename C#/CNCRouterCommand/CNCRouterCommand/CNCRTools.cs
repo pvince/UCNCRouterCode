@@ -500,7 +500,7 @@ namespace CNCRouterCommand
             return result;
         }
 
-        public static Queue<CNCRMessage> parseGCode(string gcode)
+        public static Queue<CNCRMessage> parseGCode(string gcode, ref string LogMessages)
         {
             // Split the gCode into liines
             char[] charDelimiters = { '\r', '\n' };
@@ -513,9 +513,45 @@ namespace CNCRouterCommand
             {
                 string[] lineSplit = gcodeLines[i].Split(null);
 
-                // Discard comment lines
-                if(!lineSplit[0].StartsWith("("))
+                bool inComment = false;
+                string curCodeLetter = "";
+                int curCodeNumber = "";
+
+                for (int j = 0; j < lineSplit.Length; j++)
+                {
+                    if (lineSplit[j].StartsWith("("))
+                    {
+                        inComment = true;
+                        LogMessages += "Line " + (i + 1) + ": Discarding Comment.\n";
+                    }
+                    if (lineSplit[j].Contains(")"))
+                        inComment = false;
+
+                    if (!inComment)
+                    {
+                        if(lineSplit[0]
+                        // Do other parsing things
+                        //lineSplit[j] will be of the format [Letter][Number]
+                        // - [Letter] can be G, T, M, S, X, Y, Z, I, J, K, F
+                        // - [Number] can be either an int or a float.
+                        // We need a flow chart, G -> G# -> parameters for G# <- Back to start
+                        //                                  -> X -> X# -> Set new X coord
+                        //                                  -> Y -> Y# -> Set new Y Coord
+                        //                                  -> F -> F# -> Add set Speed command
+                        //                                             -> Add Move command
+                        //                            <------------------
+                    }
+                }
+                /*
+                // Discard comment lines, more complicated than this, comments can be anywhere.
+                if (lineSplit[0].StartsWith("("))
+                {
+                    LogMessages += "Line " + (i + 1) + ": Discarding Comment.\n";
+                }
+                else
+                {
                     gcodeLineWords.Add(lineSplit);
+                }//*/
             }
 
             Queue<CNCRMessage> testbob = null;
