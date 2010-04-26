@@ -141,7 +141,7 @@ namespace CNCRouterCommand
         private void button1_Click(object sender, EventArgs e)
         {
             //CNCRMessage bob = new CNCRMessage(CNCRMSG_TYPE.E_STOP);
-            //*
+            /*
             PriorityQueue<CNCRMessage> testQ = new PriorityQueue<CNCRMessage>();
             testQ.Enqueue(new CNCRMsgSetSpeed(true, true, false, 300));
             testQ.Enqueue(new CNCRMsgSetSpeed(false, false, true, 100));
@@ -157,6 +157,14 @@ namespace CNCRouterCommand
             {
                 label1.Text += testQ.Dequeue().ToString() + "\n";
             }//*/
+            //C:\Users\vincenpt\Documents\SeniorDesign\trunk\Docs\Drawings\DXF_Drawings\Square_40x40mm.nc"
+            string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesign/trunk/Docs/Drawings/DXF_Drawings/Square_40x40mm.nc");
+            CNCRTools.parseGCode(gcode);
+        }
+
+        private void tcInterface_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // TODO: Stuff to run when the tab changes.
         }
     }
 }

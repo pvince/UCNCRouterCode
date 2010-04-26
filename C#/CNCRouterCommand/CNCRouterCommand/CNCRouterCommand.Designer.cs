@@ -32,7 +32,11 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsPortStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tpCommDebug = new System.Windows.Forms.TabPage();
             this.btnRefreshPorts = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.lblQueue = new System.Windows.Forms.Label();
@@ -49,22 +53,53 @@
             this.btnOpenPort = new System.Windows.Forms.Button();
             this.lblDbgOut = new System.Windows.Forms.Label();
             this.btnSndMsg = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
+            this.tcInterface = new System.Windows.Forms.TabControl();
+            this.tpAuto = new System.Windows.Forms.TabPage();
+            this.lblStatusBuild = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.rtbRCOutput = new System.Windows.Forms.RichTextBox();
+            this.btnAbortBuild = new System.Windows.Forms.Button();
+            this.label16 = new System.Windows.Forms.Label();
+            this.btnStartBuild = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.lblStatusFile = new System.Windows.Forms.Label();
+            this.btnLoadGCode = new System.Windows.Forms.Button();
+            this.tpManual = new System.Windows.Forms.TabPage();
+            this.btnZm = new System.Windows.Forms.Button();
+            this.btnZp = new System.Windows.Forms.Button();
+            this.btnXm = new System.Windows.Forms.Button();
+            this.btnYm = new System.Windows.Forms.Button();
+            this.btnXp = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.btnYp = new System.Windows.Forms.Button();
+            this.tpSettings = new System.Windows.Forms.TabPage();
+            this.cmbRouterPort = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tpGenDebug = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.tpCommDebug.SuspendLayout();
+            this.tcInterface.SuspendLayout();
+            this.tpAuto.SuspendLayout();
+            this.tpManual.SuspendLayout();
+            this.tpSettings.SuspendLayout();
+            this.tpGenDebug.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
-            this.tsPortStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 208);
+            this.tsPortStatus,
+            this.toolStripStatusLabel2,
+            this.toolStripStatusLabel3,
+            this.toolStripStatusLabel4,
+            this.toolStripStatusLabel5});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 271);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(541, 22);
             this.statusStrip1.TabIndex = 14;
@@ -73,47 +108,71 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(67, 17);
-            this.toolStripStatusLabel1.Text = "Port Status:";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(80, 17);
+            this.toolStripStatusLabel1.Text = "Router Status:";
             // 
             // tsPortStatus
             // 
             this.tsPortStatus.Name = "tsPortStatus";
-            this.tsPortStatus.Size = new System.Drawing.Size(61, 17);
-            this.tsPortStatus.Text = "Port Open";
+            this.tsPortStatus.Size = new System.Drawing.Size(110, 17);
+            this.tsPortStatus.Text = "No router detected.";
             // 
-            // tabPage1
+            // toolStripStatusLabel2
             // 
-            this.tabPage1.Controls.Add(this.btnRefreshPorts);
-            this.tabPage1.Controls.Add(this.label7);
-            this.tabPage1.Controls.Add(this.lblQueue);
-            this.tabPage1.Controls.Add(this.label5);
-            this.tabPage1.Controls.Add(this.txtHex);
-            this.tabPage1.Controls.Add(this.rtbTraffic);
-            this.tabPage1.Controls.Add(this.label6);
-            this.tabPage1.Controls.Add(this.label4);
-            this.tabPage1.Controls.Add(this.btnClosePort);
-            this.tabPage1.Controls.Add(this.cmbMsgs);
-            this.tabPage1.Controls.Add(this.label3);
-            this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.cmbPorts);
-            this.tabPage1.Controls.Add(this.btnOpenPort);
-            this.tabPage1.Controls.Add(this.lblDbgOut);
-            this.tabPage1.Controls.Add(this.btnSndMsg);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(509, 167);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Comm Tab";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(194, 17);
+            this.toolStripStatusLabel3.Spring = true;
+            this.toolStripStatusLabel3.Text = " ";
+            // 
+            // toolStripStatusLabel4
+            // 
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(79, 17);
+            this.toolStripStatusLabel4.Text = "Router Mode:";
+            // 
+            // toolStripStatusLabel5
+            // 
+            this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
+            this.toolStripStatusLabel5.Size = new System.Drawing.Size(63, 17);
+            this.toolStripStatusLabel5.Text = "Automatic";
+            // 
+            // tpCommDebug
+            // 
+            this.tpCommDebug.Controls.Add(this.btnRefreshPorts);
+            this.tpCommDebug.Controls.Add(this.label7);
+            this.tpCommDebug.Controls.Add(this.lblQueue);
+            this.tpCommDebug.Controls.Add(this.label5);
+            this.tpCommDebug.Controls.Add(this.txtHex);
+            this.tpCommDebug.Controls.Add(this.rtbTraffic);
+            this.tpCommDebug.Controls.Add(this.label6);
+            this.tpCommDebug.Controls.Add(this.label4);
+            this.tpCommDebug.Controls.Add(this.btnClosePort);
+            this.tpCommDebug.Controls.Add(this.cmbMsgs);
+            this.tpCommDebug.Controls.Add(this.label3);
+            this.tpCommDebug.Controls.Add(this.label2);
+            this.tpCommDebug.Controls.Add(this.cmbPorts);
+            this.tpCommDebug.Controls.Add(this.btnOpenPort);
+            this.tpCommDebug.Controls.Add(this.lblDbgOut);
+            this.tpCommDebug.Controls.Add(this.btnSndMsg);
+            this.tpCommDebug.Location = new System.Drawing.Point(4, 22);
+            this.tpCommDebug.Name = "tpCommDebug";
+            this.tpCommDebug.Padding = new System.Windows.Forms.Padding(3);
+            this.tpCommDebug.Size = new System.Drawing.Size(509, 230);
+            this.tpCommDebug.TabIndex = 0;
+            this.tpCommDebug.Text = "Comm Debug";
+            this.tpCommDebug.UseVisualStyleBackColor = true;
             // 
             // btnRefreshPorts
             // 
             this.btnRefreshPorts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRefreshPorts.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnRefreshPorts.BackgroundImage")));
             this.btnRefreshPorts.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnRefreshPorts.Location = new System.Drawing.Point(477, 38);
+            this.btnRefreshPorts.Location = new System.Drawing.Point(468, 49);
             this.btnRefreshPorts.Name = "btnRefreshPorts";
             this.btnRefreshPorts.Size = new System.Drawing.Size(26, 23);
             this.btnRefreshPorts.TabIndex = 27;
@@ -124,7 +183,7 @@
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(265, 22);
+            this.label7.Location = new System.Drawing.Point(256, 22);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(65, 13);
             this.label7.TabIndex = 26;
@@ -134,7 +193,7 @@
             // 
             this.lblQueue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblQueue.AutoSize = true;
-            this.lblQueue.Location = new System.Drawing.Point(333, 22);
+            this.lblQueue.Location = new System.Drawing.Point(324, 22);
             this.lblQueue.Name = "lblQueue";
             this.lblQueue.Size = new System.Drawing.Size(16, 13);
             this.lblQueue.TabIndex = 25;
@@ -152,7 +211,7 @@
             // txtHex
             // 
             this.txtHex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtHex.Location = new System.Drawing.Point(336, 91);
+            this.txtHex.Location = new System.Drawing.Point(327, 102);
             this.txtHex.Name = "txtHex";
             this.txtHex.Size = new System.Drawing.Size(167, 20);
             this.txtHex.TabIndex = 24;
@@ -165,7 +224,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbTraffic.Location = new System.Drawing.Point(6, 22);
             this.rtbTraffic.Name = "rtbTraffic";
-            this.rtbTraffic.Size = new System.Drawing.Size(256, 139);
+            this.rtbTraffic.Size = new System.Drawing.Size(247, 202);
             this.rtbTraffic.TabIndex = 15;
             this.rtbTraffic.Text = "";
             // 
@@ -173,7 +232,7 @@
             // 
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(301, 94);
+            this.label6.Location = new System.Drawing.Point(292, 105);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(29, 13);
             this.label6.TabIndex = 23;
@@ -183,7 +242,7 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(268, 117);
+            this.label4.Location = new System.Drawing.Point(259, 128);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(62, 13);
             this.label4.TabIndex = 22;
@@ -193,7 +252,7 @@
             // 
             this.btnClosePort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClosePort.Enabled = false;
-            this.btnClosePort.Location = new System.Drawing.Point(428, 138);
+            this.btnClosePort.Location = new System.Drawing.Point(419, 149);
             this.btnClosePort.Name = "btnClosePort";
             this.btnClosePort.Size = new System.Drawing.Size(75, 23);
             this.btnClosePort.TabIndex = 21;
@@ -217,7 +276,7 @@
             "5: SetSpeed",
             "6: Move",
             "7: ToolCmd"});
-            this.cmbMsgs.Location = new System.Drawing.Point(336, 64);
+            this.cmbMsgs.Location = new System.Drawing.Point(327, 75);
             this.cmbMsgs.Name = "cmbMsgs";
             this.cmbMsgs.Size = new System.Drawing.Size(167, 21);
             this.cmbMsgs.TabIndex = 20;
@@ -226,7 +285,7 @@
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(277, 64);
+            this.label3.Location = new System.Drawing.Point(268, 75);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(53, 13);
             this.label3.TabIndex = 19;
@@ -236,7 +295,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(301, 43);
+            this.label2.Location = new System.Drawing.Point(292, 54);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(29, 13);
             this.label2.TabIndex = 18;
@@ -247,7 +306,7 @@
             this.cmbPorts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbPorts.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbPorts.FormattingEnabled = true;
-            this.cmbPorts.Location = new System.Drawing.Point(336, 40);
+            this.cmbPorts.Location = new System.Drawing.Point(327, 51);
             this.cmbPorts.Name = "cmbPorts";
             this.cmbPorts.Size = new System.Drawing.Size(135, 21);
             this.cmbPorts.TabIndex = 17;
@@ -255,7 +314,7 @@
             // btnOpenPort
             // 
             this.btnOpenPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenPort.Location = new System.Drawing.Point(266, 138);
+            this.btnOpenPort.Location = new System.Drawing.Point(257, 149);
             this.btnOpenPort.Name = "btnOpenPort";
             this.btnOpenPort.Size = new System.Drawing.Size(75, 23);
             this.btnOpenPort.TabIndex = 16;
@@ -267,7 +326,7 @@
             // 
             this.lblDbgOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDbgOut.AutoSize = true;
-            this.lblDbgOut.Location = new System.Drawing.Point(336, 117);
+            this.lblDbgOut.Location = new System.Drawing.Point(327, 128);
             this.lblDbgOut.Name = "lblDbgOut";
             this.lblDbgOut.Size = new System.Drawing.Size(19, 13);
             this.lblDbgOut.TabIndex = 14;
@@ -277,7 +336,7 @@
             // 
             this.btnSndMsg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSndMsg.Enabled = false;
-            this.btnSndMsg.Location = new System.Drawing.Point(347, 138);
+            this.btnSndMsg.Location = new System.Drawing.Point(338, 149);
             this.btnSndMsg.Name = "btnSndMsg";
             this.btnSndMsg.Size = new System.Drawing.Size(75, 23);
             this.btnSndMsg.TabIndex = 13;
@@ -285,29 +344,293 @@
             this.btnSndMsg.UseVisualStyleBackColor = true;
             this.btnSndMsg.Click += new System.EventHandler(this.btnSndMsg_Click);
             // 
-            // tabControl1
+            // tcInterface
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.tcInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(517, 193);
-            this.tabControl1.TabIndex = 13;
+            this.tcInterface.Controls.Add(this.tpAuto);
+            this.tcInterface.Controls.Add(this.tpManual);
+            this.tcInterface.Controls.Add(this.tpSettings);
+            this.tcInterface.Controls.Add(this.tpCommDebug);
+            this.tcInterface.Controls.Add(this.tpGenDebug);
+            this.tcInterface.Location = new System.Drawing.Point(12, 12);
+            this.tcInterface.Name = "tcInterface";
+            this.tcInterface.SelectedIndex = 0;
+            this.tcInterface.Size = new System.Drawing.Size(517, 256);
+            this.tcInterface.TabIndex = 13;
+            this.tcInterface.SelectedIndexChanged += new System.EventHandler(this.tcInterface_SelectedIndexChanged);
             // 
-            // tabPage2
+            // tpAuto
             // 
-            this.tabPage2.Controls.Add(this.label1);
-            this.tabPage2.Controls.Add(this.button1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(509, 167);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "General Debug";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tpAuto.Controls.Add(this.lblStatusBuild);
+            this.tpAuto.Controls.Add(this.label17);
+            this.tpAuto.Controls.Add(this.rtbRCOutput);
+            this.tpAuto.Controls.Add(this.btnAbortBuild);
+            this.tpAuto.Controls.Add(this.label16);
+            this.tpAuto.Controls.Add(this.btnStartBuild);
+            this.tpAuto.Controls.Add(this.label11);
+            this.tpAuto.Controls.Add(this.label10);
+            this.tpAuto.Controls.Add(this.label8);
+            this.tpAuto.Controls.Add(this.lblStatusFile);
+            this.tpAuto.Controls.Add(this.btnLoadGCode);
+            this.tpAuto.Location = new System.Drawing.Point(4, 22);
+            this.tpAuto.Name = "tpAuto";
+            this.tpAuto.Padding = new System.Windows.Forms.Padding(3);
+            this.tpAuto.Size = new System.Drawing.Size(509, 230);
+            this.tpAuto.TabIndex = 2;
+            this.tpAuto.Text = "Automatic";
+            this.tpAuto.UseVisualStyleBackColor = true;
+            // 
+            // lblStatusBuild
+            // 
+            this.lblStatusBuild.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblStatusBuild.Location = new System.Drawing.Point(285, 40);
+            this.lblStatusBuild.Name = "lblStatusBuild";
+            this.lblStatusBuild.Size = new System.Drawing.Size(218, 23);
+            this.lblStatusBuild.TabIndex = 18;
+            this.lblStatusBuild.Text = "Build not started.";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 73);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(127, 13);
+            this.label17.TabIndex = 17;
+            this.label17.Text = "Router Command Output:";
+            // 
+            // rtbRCOutput
+            // 
+            this.rtbRCOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtbRCOutput.Location = new System.Drawing.Point(6, 89);
+            this.rtbRCOutput.Name = "rtbRCOutput";
+            this.rtbRCOutput.Size = new System.Drawing.Size(497, 135);
+            this.rtbRCOutput.TabIndex = 16;
+            this.rtbRCOutput.Text = "";
+            // 
+            // btnAbortBuild
+            // 
+            this.btnAbortBuild.Location = new System.Drawing.Point(119, 35);
+            this.btnAbortBuild.Name = "btnAbortBuild";
+            this.btnAbortBuild.Size = new System.Drawing.Size(88, 23);
+            this.btnAbortBuild.TabIndex = 15;
+            this.btnAbortBuild.Text = "Abort Build";
+            this.btnAbortBuild.UseVisualStyleBackColor = true;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(213, 40);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(66, 13);
+            this.label16.TabIndex = 14;
+            this.label16.Text = "Build Status:";
+            // 
+            // btnStartBuild
+            // 
+            this.btnStartBuild.Location = new System.Drawing.Point(25, 35);
+            this.btnStartBuild.Name = "btnStartBuild";
+            this.btnStartBuild.Size = new System.Drawing.Size(88, 23);
+            this.btnStartBuild.TabIndex = 13;
+            this.btnStartBuild.Text = "Start Build";
+            this.btnStartBuild.UseVisualStyleBackColor = true;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 38);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(19, 13);
+            this.label11.TabIndex = 7;
+            this.label11.Text = "2.)";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 11);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(19, 13);
+            this.label10.TabIndex = 5;
+            this.label10.Text = "1.)";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(219, 11);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(60, 13);
+            this.label8.TabIndex = 4;
+            this.label8.Text = "Current file:";
+            // 
+            // lblStatusFile
+            // 
+            this.lblStatusFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblStatusFile.Location = new System.Drawing.Point(285, 11);
+            this.lblStatusFile.Name = "lblStatusFile";
+            this.lblStatusFile.Size = new System.Drawing.Size(218, 23);
+            this.lblStatusFile.TabIndex = 3;
+            this.lblStatusFile.Text = "G-code file not loaded.";
+            // 
+            // btnLoadGCode
+            // 
+            this.btnLoadGCode.Location = new System.Drawing.Point(25, 6);
+            this.btnLoadGCode.Name = "btnLoadGCode";
+            this.btnLoadGCode.Size = new System.Drawing.Size(141, 23);
+            this.btnLoadGCode.TabIndex = 0;
+            this.btnLoadGCode.Text = "Load G-Code File.";
+            this.btnLoadGCode.UseVisualStyleBackColor = true;
+            // 
+            // tpManual
+            // 
+            this.tpManual.Controls.Add(this.btnZm);
+            this.tpManual.Controls.Add(this.btnZp);
+            this.tpManual.Controls.Add(this.btnXm);
+            this.tpManual.Controls.Add(this.btnYm);
+            this.tpManual.Controls.Add(this.btnXp);
+            this.tpManual.Controls.Add(this.label9);
+            this.tpManual.Controls.Add(this.comboBox1);
+            this.tpManual.Controls.Add(this.btnYp);
+            this.tpManual.Location = new System.Drawing.Point(4, 22);
+            this.tpManual.Name = "tpManual";
+            this.tpManual.Padding = new System.Windows.Forms.Padding(3);
+            this.tpManual.Size = new System.Drawing.Size(509, 230);
+            this.tpManual.TabIndex = 3;
+            this.tpManual.Text = "Manual";
+            this.tpManual.UseVisualStyleBackColor = true;
+            // 
+            // btnZm
+            // 
+            this.btnZm.Location = new System.Drawing.Point(202, 125);
+            this.btnZm.Name = "btnZm";
+            this.btnZm.Size = new System.Drawing.Size(52, 37);
+            this.btnZm.TabIndex = 28;
+            this.btnZm.Text = "Z-";
+            this.btnZm.UseVisualStyleBackColor = true;
+            // 
+            // btnZp
+            // 
+            this.btnZp.Location = new System.Drawing.Point(202, 82);
+            this.btnZp.Name = "btnZp";
+            this.btnZp.Size = new System.Drawing.Size(52, 37);
+            this.btnZp.TabIndex = 27;
+            this.btnZp.Text = "Z+";
+            this.btnZp.UseVisualStyleBackColor = true;
+            // 
+            // btnXm
+            // 
+            this.btnXm.Location = new System.Drawing.Point(16, 102);
+            this.btnXm.Name = "btnXm";
+            this.btnXm.Size = new System.Drawing.Size(52, 37);
+            this.btnXm.TabIndex = 26;
+            this.btnXm.Text = "X-";
+            this.btnXm.UseVisualStyleBackColor = true;
+            // 
+            // btnYm
+            // 
+            this.btnYm.Location = new System.Drawing.Point(65, 145);
+            this.btnYm.Name = "btnYm";
+            this.btnYm.Size = new System.Drawing.Size(52, 37);
+            this.btnYm.TabIndex = 25;
+            this.btnYm.Text = "Y-";
+            this.btnYm.UseVisualStyleBackColor = true;
+            // 
+            // btnXp
+            // 
+            this.btnXp.Location = new System.Drawing.Point(114, 102);
+            this.btnXp.Name = "btnXp";
+            this.btnXp.Size = new System.Drawing.Size(52, 37);
+            this.btnXp.TabIndex = 24;
+            this.btnXp.Text = "X+";
+            this.btnXp.UseVisualStyleBackColor = true;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 14);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(52, 13);
+            this.label9.TabIndex = 23;
+            this.label9.Text = "Distance:";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "0.1 mm",
+            "0.5 mm",
+            "1 mm",
+            "5 mm",
+            "10 mm",
+            "20 mm",
+            "50 mm",
+            "100 mm"});
+            this.comboBox1.Location = new System.Drawing.Point(64, 11);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(95, 21);
+            this.comboBox1.TabIndex = 22;
+            // 
+            // btnYp
+            // 
+            this.btnYp.Location = new System.Drawing.Point(65, 59);
+            this.btnYp.Name = "btnYp";
+            this.btnYp.Size = new System.Drawing.Size(52, 37);
+            this.btnYp.TabIndex = 21;
+            this.btnYp.Text = "Y+";
+            this.btnYp.UseVisualStyleBackColor = true;
+            // 
+            // tpSettings
+            // 
+            this.tpSettings.Controls.Add(this.cmbRouterPort);
+            this.tpSettings.Controls.Add(this.label12);
+            this.tpSettings.Location = new System.Drawing.Point(4, 22);
+            this.tpSettings.Name = "tpSettings";
+            this.tpSettings.Padding = new System.Windows.Forms.Padding(3);
+            this.tpSettings.Size = new System.Drawing.Size(509, 230);
+            this.tpSettings.TabIndex = 4;
+            this.tpSettings.Text = "Settings";
+            this.tpSettings.UseVisualStyleBackColor = true;
+            // 
+            // cmbRouterPort
+            // 
+            this.cmbRouterPort.FormattingEnabled = true;
+            this.cmbRouterPort.Location = new System.Drawing.Point(106, 10);
+            this.cmbRouterPort.Name = "cmbRouterPort";
+            this.cmbRouterPort.Size = new System.Drawing.Size(107, 21);
+            this.cmbRouterPort.TabIndex = 11;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 13);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(97, 13);
+            this.label12.TabIndex = 10;
+            this.label12.Text = "Select Router Port:";
+            // 
+            // tpGenDebug
+            // 
+            this.tpGenDebug.Controls.Add(this.label1);
+            this.tpGenDebug.Controls.Add(this.button1);
+            this.tpGenDebug.Location = new System.Drawing.Point(4, 22);
+            this.tpGenDebug.Name = "tpGenDebug";
+            this.tpGenDebug.Size = new System.Drawing.Size(509, 230);
+            this.tpGenDebug.TabIndex = 1;
+            this.tpGenDebug.Text = "General Debug";
+            this.tpGenDebug.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(101, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "label1";
             // 
             // button1
             // 
@@ -319,33 +642,30 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(101, 25);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "label1";
-            // 
             // CNCRouterCommand
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(541, 230);
+            this.ClientSize = new System.Drawing.Size(541, 293);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.tabControl1);
-            this.MinimumSize = new System.Drawing.Size(557, 268);
+            this.Controls.Add(this.tcInterface);
+            this.MinimumSize = new System.Drawing.Size(557, 331);
             this.Name = "CNCRouterCommand";
-            this.Text = "Comm Debug";
+            this.Text = "Router Command";
             this.Load += new System.EventHandler(this.CNCRouterCommand_Load);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.tpCommDebug.ResumeLayout(false);
+            this.tpCommDebug.PerformLayout();
+            this.tcInterface.ResumeLayout(false);
+            this.tpAuto.ResumeLayout(false);
+            this.tpAuto.PerformLayout();
+            this.tpManual.ResumeLayout(false);
+            this.tpManual.PerformLayout();
+            this.tpSettings.ResumeLayout(false);
+            this.tpSettings.PerformLayout();
+            this.tpGenDebug.ResumeLayout(false);
+            this.tpGenDebug.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -356,7 +676,7 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel tsPortStatus;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tpCommDebug;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox txtHex;
         private System.Windows.Forms.RichTextBox rtbTraffic;
@@ -370,13 +690,41 @@
         private System.Windows.Forms.Button btnOpenPort;
         private System.Windows.Forms.Label lblDbgOut;
         private System.Windows.Forms.Button btnSndMsg;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tcInterface;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label lblQueue;
         private System.Windows.Forms.Button btnRefreshPorts;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tpGenDebug;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TabPage tpAuto;
+        private System.Windows.Forms.TabPage tpManual;
+        private System.Windows.Forms.Label lblStatusFile;
+        private System.Windows.Forms.Button btnLoadGCode;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.RichTextBox rtbRCOutput;
+        private System.Windows.Forms.Button btnAbortBuild;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Button btnStartBuild;
+        private System.Windows.Forms.Label lblStatusBuild;
+        private System.Windows.Forms.TabPage tpSettings;
+        private System.Windows.Forms.ComboBox cmbRouterPort;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button btnZm;
+        private System.Windows.Forms.Button btnZp;
+        private System.Windows.Forms.Button btnXm;
+        private System.Windows.Forms.Button btnYm;
+        private System.Windows.Forms.Button btnXp;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Button btnYp;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
     }
 }
 
