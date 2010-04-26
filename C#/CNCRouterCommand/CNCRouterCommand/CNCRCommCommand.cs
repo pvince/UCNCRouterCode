@@ -624,10 +624,12 @@ namespace CNCRouterCommand
                     //   is a discrepency between commCommandQueueCount and 
                     //   getNumCmdsToSend due to the while loop.  Figure this out.
                 }
+                Thread.Sleep(10);
             }
 
         }
-        /// <summary>
+
+        /// <summary> Handles errors
         /// Performs operations nessessary to handle a new error.
         /// </summary>
         /// <param name="errorMsg">Error message to log.</param>
