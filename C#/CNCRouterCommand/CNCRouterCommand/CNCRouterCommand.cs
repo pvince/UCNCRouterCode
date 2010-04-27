@@ -158,7 +158,9 @@ namespace CNCRouterCommand
                 label1.Text += testQ.Dequeue().ToString() + "\n";
             }//*/
             //C:\Users\vincenpt\Documents\SeniorDesign\trunk\Docs\Drawings\DXF_Drawings\Square_40x40mm.nc"
-            string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesign/trunk/Docs/Drawings/DXF_Drawings/Square_40x40mm.nc");
+            //string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesign/trunk/Docs/Drawings/DXF_Drawings/Square_40x40mm.nc");
+            string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesignSVN/SeniorDesign/Docs/Drawings/DXF_Drawings/Square_40x40mm.nc");
+            
             string logMessages = "";
             CNCRTools.parseGCode(gcode, ref logMessages);
             label1.Text = logMessages;

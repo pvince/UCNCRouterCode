@@ -92,7 +92,7 @@ namespace CNCRouterCommand
                 throw new ArgumentOutOfRangeException("bytes",
                     "Input byte array must have a length of exactly two.");
 
-            byte[] result = {0, 0, 0}; // Takes 3 bytes to hold a paritized int16
+            byte[] result = { 0, 0, 0 }; // Takes 3 bytes to hold a paritized int16
             result[0] = Convert.ToByte(bytes[1] & 254); // grab top 7 bits.
             result[1] = Convert.ToByte(bytes[0] & 254); // Grab to 7 bits.
             // Grab the lowest bit for both bytes and place them in the final byte.
@@ -116,7 +116,7 @@ namespace CNCRouterCommand
                 throw new ArgumentOutOfRangeException("startIndex",
                     "startIndex does not allow for 3 bytes.");
 
-            byte[] result = {0, 0};
+            byte[] result = { 0, 0 };
             // The microcontroller is expecting the bytes to be inverted.
             // The computer writes out          [Lower Bits] [Upper Bits]
             // The microcontroller is expecting [Upper Bits] [Lower Bits]
@@ -332,8 +332,8 @@ namespace CNCRouterCommand
                 case CNCRMSG_TYPE.TOOL_CMD:
                     return CNCRConstants.MSG_TOOL_CMD;
                 default:
-                    throw new ArgumentException("msgType of " 
-                        + msgType.ToString() + " has no defined length.", 
+                    throw new ArgumentException("msgType of "
+                        + msgType.ToString() + " has no defined length.",
                         "msgType");
             }
         }
@@ -352,7 +352,7 @@ namespace CNCRouterCommand
             int msgLen = getMsgLenFromType(msgType);
 
             // Validate the message length.
-            if(msgLen != msgBytes.Length)
+            if (msgLen != msgBytes.Length)
                 throw new RankException("MsgCommandAcknowledge is "
                     + CNCRConstants.MSG_LEN_CMD_ACK + " not "
                     + msgBytes.Length + " bytes long.");
@@ -484,7 +484,7 @@ namespace CNCRouterCommand
 
         public static double getAngleFromLines(int x11, int y11, int x12, int y12, int x21, int y21, int x22, int y22)
         {
-            Double radianAngle = Math.Atan2(y12 - y11, x12 - x11) 
+            Double radianAngle = Math.Atan2(y12 - y11, x12 - x11)
                                     - Math.Atan2(y22 - y21, x22 - x21);
             Double degreeAngle = (radianAngle * (180 / Math.PI));
             return degreeAngle;
@@ -515,33 +515,81 @@ namespace CNCRouterCommand
 
                 bool inComment = false;
                 string curCodeLetter = "";
-                int curCodeNumber = "";
+                int curCodeNumber = -1;
 
                 for (int j = 0; j < lineSplit.Length; j++)
                 {
+                    // Check if we are starting a comment.
                     if (lineSplit[j].StartsWith("("))
                     {
+                        // If so, mark that we are in a comment and start discarding.
                         inComment = true;
                         LogMessages += "Line " + (i + 1) + ": Discarding Comment.\n";
                     }
-                    if (lineSplit[j].Contains(")"))
-                        inComment = false;
 
-                    if (!inComment)
+                    // Check if we are out of a comment.
+                    if (lineSplit[j].Contains(")"))
+                        inComment = false;  // Stop discarding.
+                    else if (!inComment)
                     {
-                        if(lineSplit[0]
-                        // Do other parsing things
-                        //lineSplit[j] will be of the format [Letter][Number]
-                        // - [Letter] can be G, T, M, S, X, Y, Z, I, J, K, F
-                        // - [Number] can be either an int or a float.
-                        // We need a flow chart, G -> G# -> parameters for G# <- Back to start
-                        //                                  -> X -> X# -> Set new X coord
-                        //                                  -> Y -> Y# -> Set new Y Coord
-                        //                                  -> F -> F# -> Add set Speed command
-                        //                                             -> Add Move command
-                        //                            <------------------
+                        if (curCodeLetter == "")
+                        {
+                            curCodeLetter = lineSplit[j].Substring(0, 1);
+                            curCodeNumber = Int32.Parse(lineSplit[j].Substring(1));
+                            continue;
+                        }
+
+                        switch (curCodeLetter)
+                        {
+                            case "G":
+                                switch (curCodeNumber)
+                                {
+                                    case 0:
+                                        break;
+                                    case 1:
+                                        break;
+                                    case 2:
+                                        break;
+                                    case 3:
+                                        break;
+                                    default:
+                                        // Log the error.
+                                        LogMessages += "Line " + (i + 1) + ": Error:" +
+                                            " Unknown command '" + curCodeLetter +
+                                            curCodeNumber + "'\n";
+
+                                        // Clear the current codes
+                                        curCodeLetter = "";
+                                        curCodeNumber = -1;
+                                        break;
+                                }
+                                break;
+                            case "T":
+                                break;
+                            case "M":
+                                break;
+                            default:
+                                // Log an error.
+                                LogMessages += "Line " + (i + 1) + ": Error: Unknown command letter '" + curCodeLetter + "'.\n";
+
+                                // Clear the current codes
+                                curCodeLetter = "";
+                                curCodeNumber = -1;
+                                break;
+                        }
                     }
                 }
+
+                // Do other parsing things
+                //lineSplit[j] will be of the format [Letter][Number]
+                // - [Letter] can be G, T, M, S, X, Y, Z, I, J, K, F
+                // - [Number] can be either an int or a float.
+                // We need a flow chart, G -> G# -> parameters for G# <- Back to start
+                //                                  -> X -> X# -> Set new X coord
+                //                                  -> Y -> Y# -> Set new Y Coord
+                //                                  -> F -> F# -> Add set Speed command
+                //                                             -> Add Move command
+                //                            <------------------
                 /*
                 // Discard comment lines, more complicated than this, comments can be anywhere.
                 if (lineSplit[0].StartsWith("("))
