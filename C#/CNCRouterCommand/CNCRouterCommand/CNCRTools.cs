@@ -489,9 +489,57 @@ namespace CNCRouterCommand
             Double degreeAngle = (radianAngle * (180 / Math.PI));
             return degreeAngle;
         }
+
+        public static bool getMsgInt16FromFloat(string input, ref Int16 output)
+        {
+            float tempFloat;
+            bool result = float.TryParse(input, out tempFloat);
+            if (result)
+            {
+                try
+                {
+                    output = Convert.ToInt16((Math.Round(tempFloat, 1) * 10));
+                }
+                catch (Exception ex)
+                {
+                    result = false;
+                }
+            }
+
+            return result;
+        }
+
+        public static bool getMsgUInt16FromFloat(string input, ref UInt16 output)
+        {
+            float tempFloat;
+            bool result = float.TryParse(input, out tempFloat);
+            if (result)
+            {
+                try
+                {
+                    output = Convert.ToUInt16((Math.Round(tempFloat, 1) * 10));
+                }
+                catch (Exception ex)
+                {
+                    result = false;
+                }
+            }
+
+            return result;
+        }
         #endregion
 
         #region GCode Parsing
+        // gCode Parsing Variables
+        private static bool _bInMetricMode = true;          // G21, G71 = Metric, G20, G70 = Inch
+        private static float _fCutterCompensationAmt = 0;   // G40, G41, G42 = Cutter Compensation
+        private static bool _bCutterComensationLeft = false;// G41 = Left, G42 = Right
+        private static bool _bAbsolutePosMode = true;       // G90 = Absolute, G91 = Incremental (then false)
+
+        // We start at 0,0,0
+        private static Int16 curX = 0, curY = 0, curZ = 0;
+        private static UInt16 curSpeed = 0;
+
         /// <summary> Reads the contents of a text file.
         /// Simple function that just reads in a text file at the target
         /// path.
@@ -521,31 +569,195 @@ namespace CNCRouterCommand
                     {
                         case 0:
                         case 1:
-                        case 2:
-                        case 3:
+                        case 20:
+                        case 21:
+                        case 70:
+                        case 71:
+                        case 40:
+                        case 41:
+                        case 42:
+                        case 64:
+                        case 90:
                             return true;
                         default:
                             return false;
                     }
-                    break;
+                    //break;
                 case "T":
                     switch (number)
                     {
                         default:
                             return false;
                     }
-                    break;
+                    //break;
                 case "M":
                     switch (number)
                     {
                         default:
                             return false;
                     }
-                    break;
+                    //break;
                 default:
                     return false;
             }
-            return false;
+            //return false;
+        }
+
+        private static List<CNCRMessage> parseGCodeCommand(string curCmdLetter,
+            int curCmdNum, string[] splitLine, ref int i, 
+            ref string eventLog, int line)
+        {
+            List<CNCRMessage> resultMsgs = new List<CNCRMessage>();
+            string curParam = "";
+
+            switch (curCmdLetter)
+            {
+                case "G":
+                    switch (curCmdNum)
+                    {
+                        case 0: // G0: Rapid move to position.
+                            resultMsgs.Add(new CNCRMsgSetSpeed(ushort.MaxValue));
+                            char[] g0Targets = { 'X', 'Y', 'Z' };
+                            string g0Param = "";
+                            i++;
+                            while (i < splitLine.Length && (g0Param = splitLine[i].Substring(0, 1)).IndexOfAny(g0Targets) == 0)
+                            {
+                                bool bResult = true;
+                                if (g0Param.Equals("X"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref curX);
+                                if (g0Param.Equals("Y"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref curY);
+                                if (g0Param.Equals("Z"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref curZ);
+
+                                if (!bResult)
+                                {
+                                    // Error: Failed to convert param 'X0.01' to router message.
+                                    eventLog += "Line " + line + ": Error: " +
+                                        " Failed to convert param '" + splitLine[i] +
+                                        "' to router message.\n";
+                                }
+                                i++;
+                            }
+                            i--;
+
+                            resultMsgs.Add(new CNCRMsgMove(curX, curY, curZ));
+                            resultMsgs.Add(new CNCRMsgSetSpeed(curSpeed));
+                            break;
+                        case 1: // G1: Routing Move
+                            char[] g1targets = { 'X', 'Y', 'Z', 'F' };
+                            string g1Param = "";
+                            i++;
+                            while (i < splitLine.Length && (curParam = splitLine[i].Substring(0, 1)).IndexOfAny(g1targets) == 0)
+                            {
+                                bool bResult = true;
+                                if (g1Param.Equals("X"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref curX);
+                                if (g1Param.Equals("Y"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref curY);
+                                if (g1Param.Equals("Z"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref curZ);
+                                if (g1Param.Equals("F"))
+                                {
+                                    bResult &= getMsgUInt16FromFloat(splitLine[i].Substring(1), ref curSpeed);
+                                    if (bResult)
+                                        resultMsgs.Add(new CNCRMsgSetSpeed(curSpeed));
+                                }
+
+                                if (!bResult)
+                                {
+                                    // Error: Failed to convert param 'X0.01' to router message.
+                                    eventLog += "Line " + line + ": Error: " +
+                                        " Failed to convert param '" + splitLine[i] +
+                                        "' to router message.\n";
+                                }
+                                i++;
+                            }
+                            i--;
+
+                            resultMsgs.Add(new CNCRMsgMove(curX, curY, curZ));
+                            break;
+                        case 20:
+                        case 70: // G20 & G70 = Inch Mode.
+                            _bInMetricMode = false;
+                            break;
+                        case 21:
+                        case 71: // G21 & G70 = Metric Mode
+                            _bInMetricMode = true;
+                            break;
+                        case 40: // G40 = Cancel any cutter compensation.
+                            _fCutterCompensationAmt = 0;
+                            break;
+                        case 41: // G41 = Cutter Compensation Left
+                            _bCutterComensationLeft = true;
+                            break;
+                        case 42: // G42 = Cutter Compensaiton Right
+                            _bCutterComensationLeft = true;
+                            break;
+                        case 64: // G64 = Cutting Mode?
+                            // TODO: gcode: Cutting Mode? I think I can ignore this.
+                            break;
+                        case 90: // G90 = Absolute Positioning.
+                            _bAbsolutePosMode = true;
+                            break;
+                        default:
+                            // Severe Error: Command 'Q17' was accepted but is not implemented.
+                            eventLog += "Line " + line + ": Severe Error: Command '" +
+                                curCmdLetter + curCmdNum + "' was accepted but is not" +
+                                " implemented.\n";
+                            break;
+                    }
+                    break;
+                case "T":
+                    break;
+                case "M":
+                    break;
+                default:
+                    // Severe Error: Command 'Q17' was accepted but is not implemented.
+                    eventLog += "Line " + line + ": Severe Error: Command '" +
+                        curCmdLetter + curCmdNum + "' was accepted but is not" +
+                        " implemented.\n";
+                    break;
+            }
+            
+            return resultMsgs;
+        }
+
+        private static List<CNCRMessage> parseGCodeLine(string[] splitLine, 
+            ref string eventLog, int line)
+        {
+            List<CNCRMessage> resultMsgs = new List<CNCRMessage>();
+
+            for (int i = 0; i < splitLine.Length; i++)
+            {
+                // Find the current command letter.
+                string _curCmdLetter = splitLine[i].Substring(0,1);
+                int _curCmdNum;
+
+                // Try to find the current command number.
+                if (!int.TryParse(splitLine[i].Substring(1), out _curCmdNum))
+                {
+                    // Error: Invalid number '0.1', command 'X0.1' discarded.
+                    eventLog += "Line " + line + ": Error: Invalid number '" +
+                        splitLine[i].Substring(1) + "', command '" +
+                        splitLine[i] + "' discarded.\n";
+                } // Validate the current Letter & number
+                else if (!validCode(_curCmdLetter, _curCmdNum))
+                {
+                    // Error: Unknown command 'Q17'.
+                    eventLog += "Line " + line + ": Error: Unknown command '" +
+                        _curCmdLetter + _curCmdNum + "'.\n";
+                }
+                else
+                { // All looks good, parse the next command
+                    resultMsgs.AddRange(
+                        parseGCodeCommand(_curCmdLetter, _curCmdNum, splitLine,
+                                          ref i, ref eventLog, line));
+                }
+
+            }
+
+            return resultMsgs;
         }
 
         /// <summary> Parses the passed in gcode into CNCRMessages.
@@ -557,9 +769,11 @@ namespace CNCRouterCommand
         /// <param name="LogMessages">An output parameter that is used
         /// to log events that occur during the parsing.</param>
         /// <returns>A queue of CNCRMessages rendered from the gcode.</returns>
-        public static Queue<CNCRMessage> parseGCode(string gcode, ref string LogMessages)
+        public static Queue<CNCRMessage> parseGCode(string gcode, ref string eventLog)
         {
-            // Split the gCode into liines
+            List<CNCRMessage> _resultList = new List<CNCRMessage>();
+
+            // Split the gCode into lines
             char[] charDelimiters = { '\r', '\n' };
             string[] gcodeLines = gcode.Split(charDelimiters,
                                         StringSplitOptions.RemoveEmptyEntries);
@@ -568,123 +782,37 @@ namespace CNCRouterCommand
             List<string[]> gcodeLineWords = new List<string[]>();
             for (int i = 0; i < gcodeLines.Length; i++)
             {
+                // Trim comments from the line.
+                int commentStart = -1;
+                // First look for any comment starts.
+                while((commentStart = gcodeLines[i].IndexOf('(')) >= 0)
+                {
+                    // Now look for any comment ends after the start.
+                    int commentEnd = gcodeLines[i].IndexOf(')', commentStart);
+
+                    // Verify it found an end, if not remove end of string.
+                    if (commentEnd >= 0)
+                        gcodeLines[i] = gcodeLines[i].Remove(commentStart, (commentEnd - commentStart) + 1);
+                    else
+                        gcodeLines[i] = gcodeLines[i].Remove(commentStart);
+
+                    // Log the comment removal.
+                    eventLog += "Line " + (i + 1) + ": Removed comment.\n";
+                }
+
+                // Check if there is anything left on the line.
+                if (gcodeLines[i].Length == 0)
+                    continue;
+
+                // Split the line into the component G-codes.
                 string[] lineSplit = gcodeLines[i].Split(null);
 
-                bool inComment = false;
-                string curCodeLetter = "";
-                int curCodeNumber = -1;
-
-                for (int j = 0; j < lineSplit.Length; j++)
-                {
-                    // Check if we are starting a comment.
-                    if (lineSplit[j].StartsWith("("))
-                    {
-                        // If so, mark that we are in a comment and start discarding.
-                        inComment = true;
-                        LogMessages += "Line " + (i + 1) + ": Discarding Comment.\n";
-                    }
-
-                    // Check if we are out of a comment.
-                    if (lineSplit[j].Contains(")"))
-                        inComment = false;  // Stop discarding.
-                    else if (!inComment)
-                    {
-                        // Check if we have a code letter (G, T, M)
-                        if (curCodeLetter == "")
-                        {
-                            // No code letter, lets check the next block.
-                            curCodeLetter = lineSplit[j].Substring(0, 1);
-                            curCodeNumber = int.Parse(lineSplit[j].Substring(1));
-
-                            // Check if it is a valid code letter.
-                            if (!validCode(curCodeLetter, curCodeNumber))
-                            {
-                                LogMessages += "Line " + (i + 1) + ": Error:" +
-                                    " Unknown command '" + curCodeLetter +
-                                    curCodeNumber + "'\n";
-
-                                // Clear the current codes
-                                curCodeLetter = "";
-                                curCodeNumber = -1;
-                            }
-                        }
-                        else
-                        {
-                            // Go to the correct letter interpretation.
-                            switch (curCodeLetter)
-                            {
-                                case "G":
-                                    // Go to the G# interpretation.
-                                    switch (curCodeNumber)
-                                    {
-                                        case 0:
-                                            break;
-                                        case 1:
-                                            break;
-                                        case 2:
-                                            break;
-                                        case 3:
-                                            break;
-                                        default:
-                                            // Log the error.
-                                            // If this error is thrown it means
-                                            //  that validCode() needs to be updated.
-                                            //  or that a gCode was not implemented that should have been.
-                                            LogMessages += "Line " + (i + 1) +
-                                                ": Severe Error:  Command '" +
-                                                curCodeLetter + curCodeNumber +
-                                                "' was accepted but is not implemented.";
-
-                                            // Clear the current codes
-                                            curCodeLetter = "";
-                                            curCodeNumber = -1;
-                                            break;
-                                    }
-                                    break;
-                                case "T":
-                                    break;
-                                case "M":
-                                    break;
-                                default:
-                                    // Log an error.
-                                    LogMessages += "Line " + (i + 1) +
-                                        ": Severe Error:  Command '" +
-                                        curCodeLetter + curCodeNumber +
-                                        "' was accepted but is not implemented.";
-
-                                    // Clear the current codes
-                                    curCodeLetter = "";
-                                    curCodeNumber = -1;
-                                    break;
-                            }
-                        }
-                    }
-                }
-
-                // Do other parsing things
-                //lineSplit[j] will be of the format [Letter][Number]
-                // - [Letter] can be G, T, M, S, X, Y, Z, I, J, K, F
-                // - [Number] can be either an int or a float.
-                // We need a flow chart, G -> G# -> parameters for G# <- Back to start
-                //                                  -> X -> X# -> Set new X coord
-                //                                  -> Y -> Y# -> Set new Y Coord
-                //                                  -> F -> F# -> Add set Speed command
-                //                                             -> Add Move command
-                //                            <------------------
-                /*
-                // Discard comment lines, more complicated than this, comments can be anywhere.
-                if (lineSplit[0].StartsWith("("))
-                {
-                    LogMessages += "Line " + (i + 1) + ": Discarding Comment.\n";
-                }
-                else
-                {
-                    gcodeLineWords.Add(lineSplit);
-                }//*/
+                // Parse the line
+                _resultList.AddRange(parseGCodeLine(lineSplit, ref eventLog, i+1));
             }
 
-            Queue<CNCRMessage> testbob = null;
-            return testbob;
+            Queue<CNCRMessage> resultQueue = new Queue<CNCRMessage>(_resultList);
+            return resultQueue;
         }
         #endregion
     }
