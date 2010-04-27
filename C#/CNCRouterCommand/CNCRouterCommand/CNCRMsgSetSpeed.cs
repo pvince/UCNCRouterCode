@@ -51,6 +51,16 @@ namespace CNCRouterCommand
             _speed = speed;
         }
 
+        public CNCRMsgSetSpeed(UInt16 speed)
+            : this()
+        {
+            _X = true;
+            _Y = true;
+            _Z = true;
+
+            _speed = speed;
+        }
+
         public CNCRMsgSetSpeed(byte[] msgBytes)
             : this()
         {
