@@ -17,9 +17,9 @@ unsigned int  YPort = 24;
 unsigned int  ZPort = 26;
 
 //Port that the direction signal will be provided
-unsigned int  XDirection = 23;  
-unsigned int  YDirection = 25;
-unsigned int  ZDirection = 27;
+unsigned int  XDirectionPort = 23;  
+unsigned int  YDirectionPort = 25;
+unsigned int  ZDirectionPort = 27;
 
 //Slowest the motor can go
 unsigned int  MotorSpeed = 20000; 
@@ -35,6 +35,10 @@ unsigned int  ZPosition = 0;
 unsigned int  XDestination = 0;  
 unsigned int  YDestination = 0;
 unsigned int  ZDestination = 0;
+unsigned int  XDirection = 0;  
+unsigned int  YDirection = 0;
+unsigned int  ZDirection = 0;
+//Number of times for the motor to move
 unsigned int  XPulseCount = 0;  
 unsigned int  YPulseCount = 0;
 unsigned int  ZPulseCount = 0;

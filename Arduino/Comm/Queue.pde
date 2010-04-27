@@ -2,7 +2,7 @@
 #include "Main.h"
 #include "Comm.h"
 #include "Queue.h"
-
+#include "TimerOne.h"
 
 
 //
@@ -44,8 +44,7 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
      break;
    case (6):
      Move(TempHolder);
-     //Start interupts
-     //
+     
      break;
    case (7):
      ToolCMD(TempHolder);
@@ -86,6 +85,7 @@ int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
 
 int Move(Linklist* TempHolder)  //Sends signal to disired ports
 {
+  Timer2.initialize(65000);
   int done;
   int XDestination = (int) TempHolder->Message[1]<<13;              //converts the message into positions
   XDestination = XDestination & (int) TempHolder->Message[2]<<6;
@@ -99,39 +99,30 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
   int XDiff = XDestination - XPosition;
   int YDiff = YDestination - YPosition;
   int ZDiff = ZDestination - ZPosition;
-  do
-  {
-    done = 1;
-    if(XDiff > 0 )
-    {
-      for(int x=0; x< XSpeed;x++)  //sends multiple signals for the speed setting.
-      {
-        digitalWrite(XPort,1);
-      }
-      XDiff--;
-      done = 0;
-    }
-    if (YDiff > 0)
-    {
-      for(int x=0; x< YSpeed;x++)
-      {
-        digitalWrite(YPort,1);
-      }
-      YDiff--;
-      done = 0;
-    }
-    if( ZDiff > 0)
-    {
-      for(int x=0; x< ZSpeed;x++)
-      {
-        digitalWrite(ZPort,1);
-      }
-      ZDiff--;
-      done = 0;
-    }
-  }
-  while(done == 1);
-  return(0);
+ if (XDiff>=0)
+ {
+   XDirection=1;
+ }
+ else
+ {
+   XDirection=0;
+ }
+ if (YDiff>=0)
+ {
+   YDirection=1;
+ }
+ else
+ {
+   YDirection=0;
+ }
+ if (ZDiff>=0)
+ {
+   ZDirection=1;
+ }
+ else
+ {
+   ZDirection=0;
+ }
 }
 
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
@@ -145,12 +136,12 @@ void XAxisISR()
   if(XPulseCount>0)
   {
     XPulseCount--;
-    digitalWrite(XDirection,HIGH);
-    digitalWrite(XDirection,HIGH);
-    digitalWrite(XDirection,HIGH);
-    digitalWrite(XDirection,HIGH);
-    digitalWrite(XDirection,HIGH);  //done to make sure the signal is not to fast for the PICS
-    digitalWrite(XDirection,LOW);
+    digitalWrite(XDirectionPort,XDirection);
+    digitalWrite(XPort,HIGH);
+    digitalWrite(XPort,HIGH);
+    digitalWrite(XPort,HIGH);
+    digitalWrite(XPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(XPort,LOW);
   }
   else
   {
@@ -165,12 +156,12 @@ void YAxisISR()
   if(YPulseCount>0)
   {
     YPulseCount--;
-    digitalWrite(YDirection,HIGH);
-    digitalWrite(YDirection,HIGH);
-    digitalWrite(YDirection,HIGH);
-    digitalWrite(YDirection,HIGH);
-    digitalWrite(YDirection,HIGH);  //done to make sure the signal is not to fast for the PICS
-    digitalWrite(YDirection,LOW);
+    digitalWrite(YDirectionPort,YDirection);
+    digitalWrite(YPort,HIGH);
+    digitalWrite(YPort,HIGH);
+    digitalWrite(YPort,HIGH);
+    digitalWrite(YPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(YPort,LOW);
   }
   else
   {
@@ -185,12 +176,12 @@ void ZAxisISR()
   if(ZPulseCount>0)
   {
     ZPulseCount--;
-    digitalWrite(ZDirection,HIGH);
-    digitalWrite(ZDirection,HIGH);
-    digitalWrite(ZDirection,HIGH);
-    digitalWrite(ZDirection,HIGH);
-    digitalWrite(ZDirection,HIGH);  //done to make sure the signal is not to fast for the PICS
-    digitalWrite(ZDirection,LOW);
+    digitalWrite(ZDirection,ZDirection);
+    digitalWrite(ZPort,HIGH);
+    digitalWrite(ZPort,HIGH);
+    digitalWrite(ZPort,HIGH);
+    digitalWrite(ZPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(ZPort,LOW);
   }
   else
   {
