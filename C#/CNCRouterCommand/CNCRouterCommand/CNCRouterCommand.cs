@@ -141,7 +141,8 @@ namespace CNCRouterCommand
         private void button1_Click(object sender, EventArgs e)
         {
             //CNCRMessage bob = new CNCRMessage(CNCRMSG_TYPE.E_STOP);
-            /*
+
+            /* For testing the priority Queue
             PriorityQueue<CNCRMessage> testQ = new PriorityQueue<CNCRMessage>();
             testQ.Enqueue(new CNCRMsgSetSpeed(true, true, false, 300));
             testQ.Enqueue(new CNCRMsgSetSpeed(false, false, true, 100));
@@ -157,18 +158,50 @@ namespace CNCRouterCommand
             {
                 label1.Text += testQ.Dequeue().ToString() + "\n";
             }//*/
-            //C:\Users\vincenpt\Documents\SeniorDesign\trunk\Docs\Drawings\DXF_Drawings\Square_40x40mm.nc"
-            //string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesign/trunk/Docs/Drawings/DXF_Drawings/Square_40x40mm.nc");
-            string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesignSVN/SeniorDesign/Docs/Drawings/DXF_Drawings/Square_40x40mm.nc");
+
             
-            string logMessages = "";
-            CNCRTools.parseGCode(gcode, ref logMessages);
-            label1.Text = logMessages;
+
+            /* For testing queue joining.
+
+            List<int> bob = new List<int>();
+            bob.Add(1);
+            bob.Add(2);
+            bob.Add(3);
+            bob.Add(4);
+
+            List<int> bob2 = new List<int>();
+            bob2.Add(5);
+            bob2.Add(6);
+            bob2.Add(7);
+            bob2.Add(8);
+
+            bob.AddRange(bob2);
+
+            Queue<int> jim = new Queue<int>(bob);
+
+            label1.Text = "";
+            while (jim.Count > 0)
+            {
+                label1.Text += jim.Dequeue().ToString() + "\n";
+            }//*/
+
         }
 
         private void tcInterface_SelectedIndexChanged(object sender, EventArgs e)
         {
             // TODO: Stuff to run when the tab changes.
+        }
+
+        private void btnLoadGCode_Click(object sender, EventArgs e)
+        {
+            //* For testing gcode reading.
+            //C:\Users\vincenpt\Documents\SeniorDesign\trunk\Docs\Drawings\DXF_Drawings\Square_40x40mm.nc"
+            string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesign/trunk/Docs/Drawings/DXF_Drawings/SquareArc_40mm.nc");
+            //string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesignSVN/SeniorDesign/Docs/Drawings/DXF_Drawings/SquareArc_40mm.nc");
+
+            string logMessages = "";
+            CNCRTools.parseGCode(gcode, ref logMessages);
+            rtbRCOutput.AppendText(logMessages);//*/
         }
     }
 }

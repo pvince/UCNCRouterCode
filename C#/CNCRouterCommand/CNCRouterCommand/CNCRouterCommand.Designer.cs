@@ -484,6 +484,7 @@
             this.btnLoadGCode.TabIndex = 0;
             this.btnLoadGCode.Text = "Load G-Code File.";
             this.btnLoadGCode.UseVisualStyleBackColor = true;
+            this.btnLoadGCode.Click += new System.EventHandler(this.btnLoadGCode_Click);
             // 
             // tpManual
             // 
