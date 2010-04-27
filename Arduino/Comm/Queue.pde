@@ -40,10 +40,12 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
  switch(Type)
  {
    case (5):
-     SetSpeed(TempHolder);
+     SetSpeed(TempHolder);  //Reads packet and insterst speed into axis speed variables.
      break;
    case (6):
      Move(TempHolder);
+     //Start interupts
+     //
      break;
    case (7):
      ToolCMD(TempHolder);
@@ -66,19 +68,19 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
 int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
 {
   int temp;
-//  temp = ((TempHolder->Message[1] & 0b11111110) << 8) | ((TempHolder->Message[3] & 0b00000100) << 6) | (TempHolder->Message[2] & 0b11111110) | ((TempHolder->Message[3] & 0b00000010) >> 1);
-//  if (TempHolder->Message[0] & 0b00001000)
-//  {
-//    XSpeed = temp;
-//  }
-//  if (TempHolder->Message[0] & 0b00000100)
-//  {
-//    XSpeed = temp;
-//  }
-//  if (TempHolder->Message[0] & 0b00000010)
-//  {
-//    ZSpeed = temp;
-//  }
+  temp = ((TempHolder->Message[1] & 0b11111110) << 8) | ((TempHolder->Message[3] & 0b00000100) << 6) | (TempHolder->Message[2] & 0b11111110) | ((TempHolder->Message[3] & 0b00000010) >> 1);
+  if (TempHolder->Message[0] & 0b00001000)
+  {
+    XSpeed = temp;
+  }
+  if (TempHolder->Message[0] & 0b00000100)
+  {
+    XSpeed = temp;
+  }
+  if (TempHolder->Message[0] & 0b00000010)
+  {
+    ZSpeed = temp;
+  }
   return(0);
 }
 
@@ -136,4 +138,64 @@ int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
 {
   digitalWrite(PowerPort,TempHolder->Message[7]); //bit 7 holds the on or off signal
   return(0);
+}
+
+void XAxisISR()
+{
+  if(XPulseCount>0)
+  {
+    XPulseCount--;
+    digitalWrite(XDirection,HIGH);
+    digitalWrite(XDirection,HIGH);
+    digitalWrite(XDirection,HIGH);
+    digitalWrite(XDirection,HIGH);
+    digitalWrite(XDirection,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(XDirection,LOW);
+  }
+  else
+  {
+    ExecutionStep++;
+    detachInterrupt(0);
+  }
+  
+}
+
+void YAxisISR()
+{
+  if(YPulseCount>0)
+  {
+    YPulseCount--;
+    digitalWrite(YDirection,HIGH);
+    digitalWrite(YDirection,HIGH);
+    digitalWrite(YDirection,HIGH);
+    digitalWrite(YDirection,HIGH);
+    digitalWrite(YDirection,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(YDirection,LOW);
+  }
+  else
+  {
+    ExecutionStep++;
+    detachInterrupt(1);
+  }
+  
+}
+
+void ZAxisISR()
+{
+  if(ZPulseCount>0)
+  {
+    ZPulseCount--;
+    digitalWrite(ZDirection,HIGH);
+    digitalWrite(ZDirection,HIGH);
+    digitalWrite(ZDirection,HIGH);
+    digitalWrite(ZDirection,HIGH);
+    digitalWrite(ZDirection,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(ZDirection,LOW);
+  }
+  else
+  {
+    ExecutionStep++;
+    detachInterrupt(2);
+  }
+  
 }

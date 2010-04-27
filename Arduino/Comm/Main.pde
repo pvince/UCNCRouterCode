@@ -25,19 +25,13 @@ void loop()
     noInterrupts();
     FlagStart = 0;  //Stop proccessing the queue
     FlagMotorRunning = 0; //The motors are not running anymore
-    //**************************
-    //Stop Everything
-    //**************************
   }
-    if(!FlagEStop ) //if the queue us supposed to be executed.
+  if(!FlagEStop ) //if the queue us supposed to be executed.
   {
-    //********************************
-    //Process Queue
-    //somehow figure out when the motors are done, delay?
-    //FlagMotorDelay=0;
-    //********************************
-    interrupts();
-    //FlagMotorRunning=1;  //set the motor flag as not being ready.
+    if(ExecutionStep==3)
+    {
+      QueueRead();
+    }
   }
   if(QueueLength<250)
   {
