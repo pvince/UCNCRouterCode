@@ -22,8 +22,11 @@ namespace CNCRouterCommand
         private Int16 _Z = 0;
 
         public Int16 getX() { return _X; }
+        public void setX(Int16 X) { _X = X; }
         public Int16 getY() { return _Y; }
+        public void setY(Int16 Y) { _Y = Y; }
         public Int16 getZ() { return _Z; }
+        public void setZ(Int16 Z) { _Z = Z; }
 
         #region Constructors
         private CNCRMsgMove()
