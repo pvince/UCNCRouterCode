@@ -492,6 +492,12 @@ namespace CNCRouterCommand
         #endregion
 
         #region GCode Parsing
+        /// <summary> Reads the contents of a text file.
+        /// Simple function that just reads in a text file at the target
+        /// path.
+        /// </summary>
+        /// <param name="path">Path to a text file.</param>
+        /// <returns>The string contents of the text file.</returns>
         public static string readTextFile(string path)
         {
             TextReader tr = new StreamReader(path);
@@ -500,6 +506,57 @@ namespace CNCRouterCommand
             return result;
         }
 
+        /// <summary>Validates the passed in Code
+        /// 
+        /// </summary>
+        /// <param name="code">The letter code to validate.</param>
+        /// <param name="number">The number of the letter code to validate.</param>
+        /// <returns>True if it is a valid code, False if it is not.</returns>
+        public static bool validCode(string code, int number)
+        {
+            switch (code)
+            {
+                case "G":
+                    switch (number)
+                    {
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                            return true;
+                        default:
+                            return false;
+                    }
+                    break;
+                case "T":
+                    switch (number)
+                    {
+                        default:
+                            return false;
+                    }
+                    break;
+                case "M":
+                    switch (number)
+                    {
+                        default:
+                            return false;
+                    }
+                    break;
+                default:
+                    return false;
+            }
+            return false;
+        }
+
+        /// <summary> Parses the passed in gcode into CNCRMessages.
+        /// Parses the passed in gcode into CNCRMessages.  Events are logged
+        /// to the LogMessages string.
+        /// </summary>
+        /// <param name="gcode">A string containing the contents of a gcode
+        /// file.</param>
+        /// <param name="LogMessages">An output parameter that is used
+        /// to log events that occur during the parsing.</param>
+        /// <returns>A queue of CNCRMessages rendered from the gcode.</returns>
         public static Queue<CNCRMessage> parseGCode(string gcode, ref string LogMessages)
         {
             // Split the gCode into liines
@@ -532,50 +589,74 @@ namespace CNCRouterCommand
                         inComment = false;  // Stop discarding.
                     else if (!inComment)
                     {
+                        // Check if we have a code letter (G, T, M)
                         if (curCodeLetter == "")
                         {
+                            // No code letter, lets check the next block.
                             curCodeLetter = lineSplit[j].Substring(0, 1);
-                            curCodeNumber = Int32.Parse(lineSplit[j].Substring(1));
-                            continue;
-                        }
+                            curCodeNumber = int.Parse(lineSplit[j].Substring(1));
 
-                        switch (curCodeLetter)
-                        {
-                            case "G":
-                                switch (curCodeNumber)
-                                {
-                                    case 0:
-                                        break;
-                                    case 1:
-                                        break;
-                                    case 2:
-                                        break;
-                                    case 3:
-                                        break;
-                                    default:
-                                        // Log the error.
-                                        LogMessages += "Line " + (i + 1) + ": Error:" +
-                                            " Unknown command '" + curCodeLetter +
-                                            curCodeNumber + "'\n";
-
-                                        // Clear the current codes
-                                        curCodeLetter = "";
-                                        curCodeNumber = -1;
-                                        break;
-                                }
-                                break;
-                            case "T":
-                                break;
-                            case "M":
-                                break;
-                            default:
-                                // Log an error.
-                                LogMessages += "Line " + (i + 1) + ": Error: Unknown command letter '" + curCodeLetter + "'.\n";
+                            // Check if it is a valid code letter.
+                            if (!validCode(curCodeLetter, curCodeNumber))
+                            {
+                                LogMessages += "Line " + (i + 1) + ": Error:" +
+                                    " Unknown command '" + curCodeLetter +
+                                    curCodeNumber + "'\n";
 
                                 // Clear the current codes
                                 curCodeLetter = "";
                                 curCodeNumber = -1;
-                                break;
+                            }
+                        }
+                        else
+                        {
+                            // Go to the correct letter interpretation.
+                            switch (curCodeLetter)
+                            {
+                                case "G":
+                                    // Go to the G# interpretation.
+                                    switch (curCodeNumber)
+                                    {
+                                        case 0:
+                                            break;
+                                        case 1:
+                                            break;
+                                        case 2:
+                                            break;
+                                        case 3:
+                                            break;
+                                        default:
+                                            // Log the error.
+                                            // If this error is thrown it means
+                                            //  that validCode() needs to be updated.
+                                            //  or that a gCode was not implemented that should have been.
+                                            LogMessages += "Line " + (i + 1) +
+                                                ": Severe Error:  Command '" +
+                                                curCodeLetter + curCodeNumber +
+                                                "' was accepted but is not implemented.";
+
+                                            // Clear the current codes
+                                            curCodeLetter = "";
+                                            curCodeNumber = -1;
+                                            break;
+                                    }
+                                    break;
+                                case "T":
+                                    break;
+                                case "M":
+                                    break;
+                                default:
+                                    // Log an error.
+                                    LogMessages += "Line " + (i + 1) +
+                                        ": Severe Error:  Command '" +
+                                        curCodeLetter + curCodeNumber +
+                                        "' was accepted but is not implemented.";
+
+                                    // Clear the current codes
+                                    curCodeLetter = "";
+                                    curCodeNumber = -1;
+                                    break;
+                            }
                         }
                     }
                 }
