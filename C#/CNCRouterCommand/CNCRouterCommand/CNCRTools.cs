@@ -569,6 +569,7 @@ namespace CNCRouterCommand
                     {
                         case 0:
                         case 1:
+                        case 3:
                         case 20:
                         case 21:
                         case 70:
@@ -602,6 +603,58 @@ namespace CNCRouterCommand
             }
             //return false;
         }
+
+        public static List<CNCRMessage> generateCurveMove(Int16 xs, Int16 ys, Int16 zs,
+            Int16 xc, Int16 yc, Int16 zc, Int16 xd, Int16 yd, Int16 zd)
+        {
+            List<CNCRMessage> resultMsgs = new List<CNCRMessage>();
+            double angle = getAngleFromLines(xc, yc, xd, yd, xc, yc, xs, ys);
+            double radius = Math.Sqrt(Math.Pow((xc - xd), 2) + Math.Pow((yc - yd), 2));
+
+            double arcLength = (angle / 360) * 2 * Math.PI * radius;
+            double arcResolution = 0.1;
+            double arcSegments = Math.Floor(arcLength / arcResolution);
+            double angleSegment = angle / arcSegments;
+
+            Int16 oldX = xs;
+            Int16 oldY = ys;
+            Int16 oldZ = zd;
+            for (int i = 1; i <= arcSegments; i++)
+            {
+                double curAngle = (Math.PI * (angleSegment * i) / 180);
+
+                // Move the xc, yc -> xs, ys line to the origin.
+                double tempXs = xs - xc;
+                double tempYs = ys - yc;
+
+                // Rotate the line by curAngle && back to original offset.
+                double nTempXs = (tempXs * Math.Cos(curAngle) - tempYs * Math.Sin(curAngle)) + xc;
+                double nTempYs = (tempXs * Math.Sin(curAngle) + tempYs * Math.Cos(curAngle)) + yc;
+
+                tempXs = nTempXs;
+                tempYs = nTempYs;
+                
+                Int16 newX = Convert.ToInt16(Math.Round(tempXs, 0));
+                Int16 newY = Convert.ToInt16(Math.Round(tempYs, 0));
+
+                // Check to make sure it is a new point.
+                if (newX != oldX || newY != oldY)
+                {
+                    // Add the new move point.
+                    resultMsgs.Add(new CNCRMsgMove(newX, newY, zd));
+
+                    // Set the reference points for the next iteration.
+                    oldX = newX;
+                    oldY = newY;
+                }
+            }
+           
+            if(oldX != xd || oldY != yd || oldZ != zd)
+                resultMsgs.Add(new CNCRMsgMove(xd, yd, zd));
+
+            return resultMsgs;
+        }
+
 
         private static List<CNCRMessage> parseGCodeCommand(string curCmdLetter,
             int curCmdNum, string[] splitLine, ref int i, 
@@ -648,7 +701,7 @@ namespace CNCRouterCommand
                             char[] g1targets = { 'X', 'Y', 'Z', 'F' };
                             string g1Param = "";
                             i++;
-                            while (i < splitLine.Length && (curParam = splitLine[i].Substring(0, 1)).IndexOfAny(g1targets) == 0)
+                            while (i < splitLine.Length && (g1Param = splitLine[i].Substring(0, 1)).IndexOfAny(g1targets) == 0)
                             {
                                 bool bResult = true;
                                 if (g1Param.Equals("X"))
@@ -676,6 +729,55 @@ namespace CNCRouterCommand
                             i--;
 
                             resultMsgs.Add(new CNCRMsgMove(curX, curY, curZ));
+                            break;
+                        case 3: // G3: Circular Routing Move
+                            char[] g3targets = { 'X', 'Y', 'Z', 'F', 'I', 'J', 'K' };
+                            string g3param = "";
+
+                            Int16 destX = curX, destY = curY, destZ = curZ;
+                            Int16 centI = 0, centJ = 0, centK = 0;
+
+                            i++;
+                            while (i < splitLine.Length && (g3param = splitLine[i].Substring(0, 1)).IndexOfAny(g3targets) == 0)
+                            {
+                                bool bResult = true;
+                                if (g3param.Equals("X"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref destX);
+                                if (g3param.Equals("Y"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref destY);
+                                if (g3param.Equals("Z"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref destZ);
+                                if (g3param.Equals("I"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref centI);
+                                if (g3param.Equals("J"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref centJ);
+                                if (g3param.Equals("K"))
+                                    bResult &= getMsgInt16FromFloat(splitLine[i].Substring(1), ref centK);
+                                if (g3param.Equals("F"))
+                                {
+                                    bResult &= getMsgUInt16FromFloat(splitLine[i].Substring(1), ref curSpeed);
+                                    if (bResult)
+                                        resultMsgs.Add(new CNCRMsgSetSpeed(curSpeed));
+                                }
+
+                                if (!bResult)
+                                {
+                                    // Error: Failed to convert param 'X0.01' to router message.
+                                    eventLog += "Line " + line + ": Error: " +
+                                        " Failed to convert param '" + splitLine[i] +
+                                        "' to router message.\n";
+                                }
+                                i++;
+                            }
+                            i--;
+
+                            centI += curX;
+                            centJ += curY;
+                            centK += curZ;
+
+                            resultMsgs.AddRange(generateCurveMove(curX, curY,
+                                curZ, centI, centJ, centK, destX, destY, destZ));
+
                             break;
                         case 20:
                         case 70: // G20 & G70 = Inch Mode.
