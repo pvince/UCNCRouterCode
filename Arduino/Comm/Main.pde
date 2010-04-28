@@ -4,12 +4,10 @@
 #include "Main.h"
 #include "Comm.h"
 #include "Queue.h"
-#include "TimerOne.h"
+
 
 void setup()
 {
-  Timer1.initialize(MotorSpeed);
-  Timer1.attachInterrupt(QueueRead);
   Serial.begin(MessageRate);
   pinMode(12,OUTPUT);
   attachInterrupt(0,Motor,RISING);

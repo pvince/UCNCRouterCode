@@ -13,6 +13,12 @@ int QueueLength = 0;
 Linklist* StartPointer = 0;
 Linklist* WriteLocation = 0;
 
+void QueueAdd();
+void QueueRead();
+void Calculations(int, int, int);
+void SetSpeed();
+void Move();
+void ToolCMD();
 
 
 #endif

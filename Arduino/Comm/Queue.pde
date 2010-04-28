@@ -1,11 +1,12 @@
-  
+
 #include "Main.h"
-#include "Comm.h"
-#include "Queue.h"
-#include "TimerOne.h"
+//#include "Comm.h"
+//#include "Queue.h"
+#include "Interrupts.h"
 
 
-//
+
+
 int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
 {
   Linklist NewLink;
@@ -34,34 +35,67 @@ int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
 
 void QueueRead()  //Reads the oldest link off the queue and sends it to the required function.
 {
- Linklist* TempHolder;
- TempHolder = StartPointer;
- byte Type = StartPointer->Message[0]>>4;
- switch(Type)
- {
-   case (5):
-     SetSpeed(TempHolder);  //Reads packet and insterst speed into axis speed variables.
-     break;
-   case (6):
-     Move(TempHolder);
-     
-     break;
-   case (7):
-     ToolCMD(TempHolder);
-     break;
- }
- if(QueueLength>1)
- {
-   StartPointer = StartPointer->NextLink;
-   QueueLength--;
- }
- else
- {
-   QueueLength =0;
-   StartPointer = NULL;
-   FlagStart = 0;
- }
- 
+  Linklist* TempHolder;
+  TempHolder = StartPointer;
+  byte Type = StartPointer->Message[0]>>4;
+  switch(Type)
+  {
+    case (5):
+    SetSpeed(TempHolder);  //Reads packet and insterst speed into axis speed variables.
+    break;
+    case (6):
+    Move(TempHolder);
+
+    break;
+    case (7):
+    ToolCMD(TempHolder);
+    break;
+  }
+  if(QueueLength>1)
+  {
+    StartPointer = StartPointer->NextLink;
+    QueueLength--;
+  }
+  else
+  {
+    QueueLength =0;
+    StartPointer = NULL;
+    FlagStart = 0;
+  }
+
+}
+
+void Calculations(int XDiff, int YDiff, int ZDiff)
+{
+  float XRatio;
+  float YRatio;
+  float ZRatio;
+  //Set the speed of the motors using the speed input plus the max speed possible of the motors
+  XSpeed = MaxMotorSpeed + XSpeedSet;
+  YSpeed = MaxMotorSpeed + YSpeedSet;
+  ZSpeed = MaxMotorSpeed + ZSpeedSet;
+  XDiff = XDiff * Resolution;
+  YDiff = YDiff * Resolution;
+  ZDiff = ZDiff * Resolution;
+  if((XDiff >= YDiff) && (XDiff >= ZDiff))
+  {
+    XRatio = 1;
+    YRatio = (float)YDiff / (float)XDiff;
+    ZRatio = (float)ZDiff / (float)XDiff;
+  }
+  else if((YDiff >= XDiff) && (YDiff >= ZDiff))
+  {
+    YRatio = 1;
+    XRatio = (float)XDiff / (float)YDiff;
+    ZRatio = (float)ZDiff / (float)YDiff;
+  }
+  else if((ZDiff >= XDiff) && (ZDiff >= YDiff))
+  {
+    ZRatio = 1;
+    XRatio = (float)XDiff / (float)ZDiff;
+    YRatio = (float)YDiff / (float)ZDiff;
+  }
+  //Needs to scale timers
 }
 
 int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
@@ -70,22 +104,23 @@ int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
   temp = ((TempHolder->Message[1] & 0b11111110) << 8) | ((TempHolder->Message[3] & 0b00000100) << 6) | (TempHolder->Message[2] & 0b11111110) | ((TempHolder->Message[3] & 0b00000010) >> 1);
   if (TempHolder->Message[0] & 0b00001000)
   {
-    XSpeed = temp;
+    XSpeedSet = temp;
   }
   if (TempHolder->Message[0] & 0b00000100)
   {
-    XSpeed = temp;
+    XSpeedSet = temp;
   }
   if (TempHolder->Message[0] & 0b00000010)
   {
-    ZSpeed = temp;
+    ZSpeedSet = temp;
   }
   return(0);
 }
 
 int Move(Linklist* TempHolder)  //Sends signal to disired ports
 {
-  Timer2.initialize(65000);
+
+
   int done;
   int XDestination = (int) TempHolder->Message[1]<<13;              //converts the message into positions
   XDestination = XDestination & (int) TempHolder->Message[2]<<6;
@@ -99,30 +134,32 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
   int XDiff = XDestination - XPosition;
   int YDiff = YDestination - YPosition;
   int ZDiff = ZDestination - ZPosition;
- if (XDiff>=0)
- {
-   XDirection=1;
- }
- else
- {
-   XDirection=0;
- }
- if (YDiff>=0)
- {
-   YDirection=1;
- }
- else
- {
-   YDirection=0;
- }
- if (ZDiff>=0)
- {
-   ZDirection=1;
- }
- else
- {
-   ZDirection=0;
- }
+  if (XDiff>=0)
+  {
+    XDirection=1;
+  }
+  else
+  {
+    XDirection=0;
+  }
+  if (YDiff>=0)
+  {
+    YDirection=1;
+  }
+  else
+  {
+    YDirection=0;
+  }
+  if (ZDiff>=0)
+  {
+    ZDirection=1;
+  }
+  else
+  {
+    ZDirection=0;
+  }
+  Calculations(XDiff, YDiff, ZDiff);
+  SetTimers();
 }
 
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
@@ -131,62 +168,4 @@ int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
   return(0);
 }
 
-void XAxisISR()
-{
-  if(XPulseCount>0)
-  {
-    XPulseCount--;
-    digitalWrite(XDirectionPort,XDirection);
-    digitalWrite(XPort,HIGH);
-    digitalWrite(XPort,HIGH);
-    digitalWrite(XPort,HIGH);
-    digitalWrite(XPort,HIGH);  //done to make sure the signal is not to fast for the PICS
-    digitalWrite(XPort,LOW);
-  }
-  else
-  {
-    ExecutionStep++;
-    detachInterrupt(0);
-  }
-  
-}
 
-void YAxisISR()
-{
-  if(YPulseCount>0)
-  {
-    YPulseCount--;
-    digitalWrite(YDirectionPort,YDirection);
-    digitalWrite(YPort,HIGH);
-    digitalWrite(YPort,HIGH);
-    digitalWrite(YPort,HIGH);
-    digitalWrite(YPort,HIGH);  //done to make sure the signal is not to fast for the PICS
-    digitalWrite(YPort,LOW);
-  }
-  else
-  {
-    ExecutionStep++;
-    detachInterrupt(1);
-  }
-  
-}
-
-void ZAxisISR()
-{
-  if(ZPulseCount>0)
-  {
-    ZPulseCount--;
-    digitalWrite(ZDirection,ZDirection);
-    digitalWrite(ZPort,HIGH);
-    digitalWrite(ZPort,HIGH);
-    digitalWrite(ZPort,HIGH);
-    digitalWrite(ZPort,HIGH);  //done to make sure the signal is not to fast for the PICS
-    digitalWrite(ZPort,LOW);
-  }
-  else
-  {
-    ExecutionStep++;
-    detachInterrupt(2);
-  }
-  
-}

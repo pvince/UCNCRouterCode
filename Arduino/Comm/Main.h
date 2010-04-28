@@ -22,7 +22,8 @@ unsigned int  YDirectionPort = 25;
 unsigned int  ZDirectionPort = 27;
 
 //Slowest the motor can go
-unsigned int  MotorSpeed = 20000; 
+unsigned int  MaxMotorSpeed = 100; 
+unsigned int  Resolution = 1;
 
 
 
@@ -47,5 +48,8 @@ unsigned int  ZPulseCount = 0;
 unsigned int  XSpeed = 1;  
 unsigned int  YSpeed = 1;
 unsigned int  ZSpeed = 1;
+unsigned int  XSpeedSet = 1;  
+unsigned int  YSpeedSet = 1;
+unsigned int  ZSpeedSet = 1;
 unsigned int  ExecutionStep = 0;  
 #endif
