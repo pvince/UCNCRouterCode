@@ -17,6 +17,8 @@ void setup()
   TIMSK1=33;
   test=0;
   SetTimers();
+  //digitalWrite(47,LOW);
+  //  digitalWrite(52,HIGH);
 }
 
 void loop()
@@ -27,7 +29,11 @@ void loop()
   
   if (TCCR1B == 1)
   {
-    digitalWrite(13,LOW);
+      //digitalWrite(13,HIGH);
+  }
+  if ( test == 1)
+  {
+    //digitalWrite(13,LOW);
   }
   
 }
@@ -40,7 +46,7 @@ void SetTimers()
   //ExecutionStep = 0;
   
   //Stop interupts while setting them up
-  cli();
+  //cli();
   TCCR1B &= ~(_BV(CS10) | _BV(CS11) | _BV(CS12));
   //These registers should be 0 before starting the counters
   //Timers 1, 3 and 4 are used because they are 16 bit and timers 0 and 2 are only 8 bit.
@@ -69,19 +75,28 @@ void SetTimers()
 
 void Light()
 {
+  cli();
+ // TCCR1B &= ~(_BV(CS10) | _BV(CS11) | _BV(CS12));
+ TCCR1B = 0;
+ //Clear the overflow flags
+ TIFR1 &= ~_BV(TOV1);
   if(test==1)
   {
     digitalWrite(13,HIGH);
     test=0;
-    SetTimers();
-    reti();
+    //SetTimers();
   }
-  else if(test==0);
+  else if(test==0)
   {
     digitalWrite(13,LOW);
     test=1;
-    SetTimers();
-    reti();
+    //SetTimers();
   }
+ TCNT1H=0;
+  TCNT1L=0;
+//  //start the timers
+  TCCR1B = 4;
+  sei();
   //digitalWrite(13,LOW);
+  reti();
 }
