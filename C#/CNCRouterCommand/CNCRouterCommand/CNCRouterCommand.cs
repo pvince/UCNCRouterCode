@@ -194,14 +194,29 @@ namespace CNCRouterCommand
 
         private void btnLoadGCode_Click(object sender, EventArgs e)
         {
-            //* For testing gcode reading.
+            string eventLog = "";
+            if (ofdGcodeBrowse.ShowDialog() == DialogResult.OK)
+            {
+                eventLog += "Opening " + ofdGcodeBrowse.SafeFileName + "\n";
+
+                System.IO.StreamReader readFile = new System.IO.StreamReader(ofdGcodeBrowse.OpenFile());
+                string gcode = readFile.ReadToEnd();
+                Queue<CNCRMessage> tempQueue = CNCRTools.parseGCode(gcode, ref eventLog);
+                eventLog += "Finished Loading.\n";
+                rtbRCOutput.AppendText(eventLog);
+                lblStatusFile.Text = ofdGcodeBrowse.SafeFileName;
+            }
+
+            /* For testing gcode reading.
             //C:\Users\vincenpt\Documents\SeniorDesign\trunk\Docs\Drawings\DXF_Drawings\Square_40x40mm.nc"
             string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesign/trunk/Docs/Drawings/DXF_Drawings/SquareArc_40mm.nc");
             //string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesignSVN/SeniorDesign/Docs/Drawings/DXF_Drawings/SquareArc_40mm.nc");
 
             string logMessages = "";
-            CNCRTools.parseGCode(gcode, ref logMessages);
-            rtbRCOutput.AppendText(logMessages);//*/
+            Queue<CNCRMessage> testQ = CNCRTools.parseGCode(gcode, ref logMessages);
+            rtbRCOutput.AppendText(logMessages);//
+            lblStatusFile.Text = "G-code file loaded. " + testQ.Count.ToString() +
+                " commands created.";//*/
         }
     }
 }

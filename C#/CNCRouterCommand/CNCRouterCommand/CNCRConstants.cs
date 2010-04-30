@@ -56,5 +56,9 @@ namespace CNCRouterCommand
 
         // Constants for error messages
         public const string ERRMESG_INCOMPATFIRMWARE = "The firmware version of the CNCRouter is not compatible with this version of the software.";
+
+        public const ushort X = 4;
+        public const ushort Y = 2;
+        public const ushort Z = 1;
     }
 }

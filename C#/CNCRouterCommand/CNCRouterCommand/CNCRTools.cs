@@ -498,6 +498,11 @@ namespace CNCRouterCommand
             {
                 try
                 {
+                    // Check if we are in metric mode.
+                    if (!_bInMetricMode)
+                        tempFloat *= 25.4f; // 25.4 mm = 1 inch.
+
+                    // Round to 1 decimal, then shift decimal over to right 1.
                     output = Convert.ToInt16((Math.Round(tempFloat, 1) * 10));
                 }
                 catch (Exception ex)
@@ -517,6 +522,11 @@ namespace CNCRouterCommand
             {
                 try
                 {
+                    // Check if we are in metric mode.
+                    if (!_bInMetricMode)
+                        tempFloat *= 25.4f; // 25.4 mm = 1 inch.
+
+                    // Round to 1 decimal, then shift decimal over to right 1.
                     output = Convert.ToUInt16((Math.Round(tempFloat, 1) * 10));
                 }
                 catch (Exception ex)
@@ -535,6 +545,9 @@ namespace CNCRouterCommand
         private static float _fCutterCompensationAmt = 0;   // G40, G41, G42 = Cutter Compensation
         private static bool _bCutterComensationLeft = false;// G41 = Left, G42 = Right
         private static bool _bAbsolutePosMode = true;       // G90 = Absolute, G91 = Incremental (then false)
+        private static UInt16 _usPlaneXYZ = CNCRConstants.X | CNCRConstants.Y; // G17, G18, G19 = set XYZ plane.
+
+        private static bool _bToolOn = false;   // M3 = Tool spindle speed.
 
         // We start at 0,0,0
         private static Int16 curX = 0, curY = 0, curZ = 0;
@@ -569,17 +582,23 @@ namespace CNCRouterCommand
                     {
                         case 0:
                         case 1:
+                        case 2:
                         case 3:
+                        case 17:
                         case 20:
                         case 21:
                         case 70:
                         case 71:
                         case 40:
-                        case 41:
-                        case 42:
+                        //case 41:
+                        //case 42:
                         case 64:
                         case 90:
                             return true;
+                        case 41: // These commands are psuedo implemented.
+                        case 42: // They can be read in, but they are not
+                        case 18: // fully implemented.
+                        case 19:
                         default:
                             return false;
                     }
@@ -594,6 +613,10 @@ namespace CNCRouterCommand
                 case "M":
                     switch (number)
                     {
+                        case 3:
+                        case 5:
+                        case 30:
+                            return true;
                         default:
                             return false;
                     }
@@ -654,7 +677,6 @@ namespace CNCRouterCommand
 
             return resultMsgs;
         }
-
 
         private static List<CNCRMessage> parseGCodeCommand(string curCmdLetter,
             int curCmdNum, string[] splitLine, ref int i, 
@@ -730,7 +752,8 @@ namespace CNCRouterCommand
 
                             resultMsgs.Add(new CNCRMsgMove(curX, curY, curZ));
                             break;
-                        case 3: // G3: Circular Routing Move
+                        case 2: // G2: Clockwise Circular routing move
+                        case 3: // G3: Counter-Clockwise Circular Routing Move
                             char[] g3targets = { 'X', 'Y', 'Z', 'F', 'I', 'J', 'K' };
                             string g3param = "";
 
@@ -779,6 +802,15 @@ namespace CNCRouterCommand
                                 curZ, centI, centJ, centK, destX, destY, destZ));
 
                             break;
+                        case 17: // G17 - Set XY plane.
+                            _usPlaneXYZ = CNCRConstants.X | CNCRConstants.Y;
+                            break;
+                        case 18: // G18 - Set XZ plane.
+                            _usPlaneXYZ = CNCRConstants.X | CNCRConstants.Z;
+                            break;
+                        case 19: // G19 - Set YZ plane.
+                            _usPlaneXYZ = CNCRConstants.Y | CNCRConstants.Z;
+                            break;
                         case 20:
                         case 70: // G20 & G70 = Inch Mode.
                             _bInMetricMode = false;
@@ -813,6 +845,54 @@ namespace CNCRouterCommand
                 case "T":
                     break;
                 case "M":
+                    switch (curCmdNum)
+                    {
+                        case 3: // M3 S# - Turn spindle on at S# speed.
+                            char[] m3Targets = { 'S' };
+                            string m3Param = "";
+                            i++;
+                            while (i < splitLine.Length && (m3Param = splitLine[i].Substring(0, 1)).IndexOfAny(m3Targets) == 0)
+                            {
+                                // We do not really use the spindleSpeed for anything.
+                                // This loop is mainly just to advance the counter.
+                                bool bResult = false;
+                                if (m3Param.Equals("S"))
+                                    bResult = true;
+
+                                if (!bResult)
+                                {
+                                    // Error: Failed to convert param 'X0.01' to router message.
+                                    eventLog += "Line " + line + ": Warning: " +
+                                        " Failed to convert param '" + splitLine[i] +
+                                        "' to router message.\n";
+                                }
+                                i++;
+                            }
+                            i--;
+                            _bToolOn = true;
+                            resultMsgs.Add(new CNCRMsgToolCmd(_bToolOn));
+                            break;
+                        case 5: // M5 turn spindle off.
+                            if (_bToolOn)
+                            {
+                                _bToolOn = false;
+                                resultMsgs.Add(new CNCRMsgToolCmd(_bToolOn));
+                            }
+                            else
+                                eventLog += "Line " + line + ": Alert: M5 found " +
+                                    " but tool is not turned on.\n";
+                            break;
+                        case 30: //M30 - End of Build.
+                            // TODO: gcode: M30 - Enforce End of Build.
+                            resultMsgs.Add(new CNCRMsgStartQueue(true));
+                            break;
+                        default:
+                            // Severe Error: Command 'Q17' was accepted but is not implemented.
+                            eventLog += "Line " + line + ": Severe Error: Command '" +
+                                curCmdLetter + curCmdNum + "' was accepted but is not" +
+                                " implemented.\n";
+                            break;
+                    }
                     break;
                 default:
                     // Severe Error: Command 'Q17' was accepted but is not implemented.
@@ -832,29 +912,38 @@ namespace CNCRouterCommand
 
             for (int i = 0; i < splitLine.Length; i++)
             {
-                // Find the current command letter.
-                string _curCmdLetter = splitLine[i].Substring(0,1);
-                int _curCmdNum;
-
-                // Try to find the current command number.
-                if (!int.TryParse(splitLine[i].Substring(1), out _curCmdNum))
+                // Make sure current command is longer than 2.
+                if (splitLine[i].Length < 2)
                 {
-                    // Error: Invalid number '0.1', command 'X0.1' discarded.
-                    eventLog += "Line " + line + ": Error: Invalid number '" +
-                        splitLine[i].Substring(1) + "', command '" +
-                        splitLine[i] + "' discarded.\n";
-                } // Validate the current Letter & number
-                else if (!validCode(_curCmdLetter, _curCmdNum))
-                {
-                    // Error: Unknown command 'Q17'.
-                    eventLog += "Line " + line + ": Error: Unknown command '" +
-                        _curCmdLetter + _curCmdNum + "'.\n";
+                    eventLog += "Line " + line + ": Error: Invalid command '" +
+                        splitLine[i] + "'.\n";
                 }
                 else
-                { // All looks good, parse the next command
-                    resultMsgs.AddRange(
-                        parseGCodeCommand(_curCmdLetter, _curCmdNum, splitLine,
-                                          ref i, ref eventLog, line));
+                {
+                    // Find current command letter.
+                    string _curCmdLetter = splitLine[i].Substring(0, 1);
+                    int _curCmdNum;
+
+                    // Try to find the current command number.
+                    if (!int.TryParse(splitLine[i].Substring(1), out _curCmdNum))
+                    {
+                        // Error: Invalid number '0.1', command 'X0.1' discarded.
+                        eventLog += "Line " + line + ": Error: Invalid number '" +
+                            splitLine[i].Substring(1) + "', command '" +
+                            splitLine[i] + "' discarded.\n";
+                    } // Validate the current Letter & number
+                    else if (!validCode(_curCmdLetter, _curCmdNum))
+                    {
+                        // Error: Unknown command 'Q17'.
+                        eventLog += "Line " + line + ": Error: Unknown command '" +
+                            _curCmdLetter + _curCmdNum + "'.\n";
+                    }
+                    else
+                    { // All looks good, parse the next command
+                        resultMsgs.AddRange(
+                            parseGCodeCommand(_curCmdLetter, _curCmdNum, splitLine,
+                                              ref i, ref eventLog, line));
+                    }
                 }
 
             }
@@ -890,13 +979,19 @@ namespace CNCRouterCommand
                 while((commentStart = gcodeLines[i].IndexOf('(')) >= 0)
                 {
                     // Now look for any comment ends after the start.
+                    // Different possibilities for comments.
+                    // ( comment) stuff (Comment)
+                    // (comment)
+                    // stuff (comment)
+                    // stu(comment)ff
+                    // (comment(comment)comment) stuff
                     int commentEnd = gcodeLines[i].IndexOf(')', commentStart);
 
                     // Verify it found an end, if not remove end of string.
                     if (commentEnd >= 0)
-                        gcodeLines[i] = gcodeLines[i].Remove(commentStart, (commentEnd - commentStart) + 1);
+                        gcodeLines[i] = gcodeLines[i].Remove(commentStart, (commentEnd - commentStart) + 1).Trim();
                     else
-                        gcodeLines[i] = gcodeLines[i].Remove(commentStart);
+                        gcodeLines[i] = gcodeLines[i].Remove(commentStart).Trim();
 
                     // Log the comment removal.
                     eventLog += "Line " + (i + 1) + ": Removed comment.\n";

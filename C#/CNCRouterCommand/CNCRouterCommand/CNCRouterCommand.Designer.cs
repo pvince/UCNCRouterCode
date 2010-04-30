@@ -81,6 +81,7 @@
             this.tpGenDebug = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.ofdGcodeBrowse = new System.Windows.Forms.OpenFileDialog();
             this.statusStrip1.SuspendLayout();
             this.tpCommDebug.SuspendLayout();
             this.tcInterface.SuspendLayout();
@@ -643,6 +644,10 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // ofdGcodeBrowse
+            // 
+            this.ofdGcodeBrowse.Filter = "G-code files|*.nc|All files|*.*";
+            // 
             // CNCRouterCommand
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -726,6 +731,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
+        private System.Windows.Forms.OpenFileDialog ofdGcodeBrowse;
     }
 }
 
