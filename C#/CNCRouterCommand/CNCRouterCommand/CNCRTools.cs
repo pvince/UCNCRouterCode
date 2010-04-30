@@ -627,15 +627,35 @@ namespace CNCRouterCommand
             //return false;
         }
 
+        public static double arcRes = 0.1;
+
         public static List<CNCRMessage> generateCurveMove(Int16 xs, Int16 ys, Int16 zs,
-            Int16 xc, Int16 yc, Int16 zc, Int16 xd, Int16 yd, Int16 zd)
+            Int16 xc, Int16 yc, Int16 zc, Int16 xd, Int16 yd, Int16 zd, bool isCW)
         {
             List<CNCRMessage> resultMsgs = new List<CNCRMessage>();
-            double angle = getAngleFromLines(xc, yc, xd, yd, xc, yc, xs, ys);
+            double angle = getAngleFromLines(xc, yc, xs, ys, xc, yc, xd, yd);
+
+            // Angle range is screwy, we need to correct it to 0 to +- 360
+            if (angle < 0 && isCW)
+            {
+                angle += 360;
+            }
+            else if (angle > 0 && !isCW)
+            {
+                angle -= 360;
+            }
+            // The getAngle function gives us the wrong sign for the angles.
+            angle *= -1;
+
             double radius = Math.Sqrt(Math.Pow((xc - xd), 2) + Math.Pow((yc - yd), 2));
 
-            double arcLength = (angle / 360) * 2 * Math.PI * radius;
-            double arcResolution = 0.1;
+            double tempAngle = angle;
+            if (angle < 0)
+            {
+                tempAngle *= -1;
+            }
+            double arcLength = (tempAngle / 360) * 2 * Math.PI * radius;
+            double arcResolution = arcRes;// 0.1;
             double arcSegments = Math.Floor(arcLength / arcResolution);
             double angleSegment = angle / arcSegments;
 
@@ -684,6 +704,7 @@ namespace CNCRouterCommand
         {
             List<CNCRMessage> resultMsgs = new List<CNCRMessage>();
             string curParam = "";
+            bool isCW = false;
 
             switch (curCmdLetter)
             {
@@ -753,6 +774,8 @@ namespace CNCRouterCommand
                             resultMsgs.Add(new CNCRMsgMove(curX, curY, curZ));
                             break;
                         case 2: // G2: Clockwise Circular routing move
+                            isCW = true;
+                            goto case 3;
                         case 3: // G3: Counter-Clockwise Circular Routing Move
                             char[] g3targets = { 'X', 'Y', 'Z', 'F', 'I', 'J', 'K' };
                             string g3param = "";
@@ -799,7 +822,8 @@ namespace CNCRouterCommand
                             centK += curZ;
 
                             resultMsgs.AddRange(generateCurveMove(curX, curY,
-                                curZ, centI, centJ, centK, destX, destY, destZ));
+                                curZ, centI, centJ, centK, destX, destY, destZ,
+                                isCW));
 
                             break;
                         case 17: // G17 - Set XY plane.
