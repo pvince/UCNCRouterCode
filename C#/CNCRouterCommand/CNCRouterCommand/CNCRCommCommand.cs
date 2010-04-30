@@ -118,6 +118,12 @@ namespace CNCRouterCommand
         #endregion
 
         #region Getter // Setter Properties
+        public void commCommandQueueSet(Queue<CNCRMessage> newQ)
+        {
+            _commCmdQLock.WaitOne();
+            _commCommandQueue = newQ;
+            _commCmdQLock.Release();
+        }
         /// <summary>
         /// Dequeue a router build command.
         /// </summary>
@@ -541,8 +547,8 @@ namespace CNCRouterCommand
                 case CNCRMSG_TYPE.E_STOP:
                     // Send Ack.
                     CNCRMessage ack = new CNCRMsgCmdAck(false, 0);
-                    ack.setPriority(CNCRMSG_PRIORITY.MEDIUM);
-                    commPriorityQueueEnqueue(ack);
+                    ack.setPriority(CNCRMSG_PRIORITY.MEDIUM); // TODO: what about the E-stop Ack.
+                    commPriorityQueueEnqueue(ack); 
 
                     // Set the "Stop Sending Messages variable" 
                     setEStopActive(true);
@@ -573,7 +579,8 @@ namespace CNCRouterCommand
             }
         }
 
-        private void launchProcessQueues()
+
+        public void launchProcessQueues()
         {
 
             if (_processQueues == null ||
@@ -603,9 +610,15 @@ namespace CNCRouterCommand
 
                     int numCmdsToSend = getNumCmdsToSend();
 
-                    // Check the priority queue first, it has preference.
+                    // Check the priority queue first, it has priority.
                     if (commPriorityQueueCount() > 0)
-                        SendMsg(commPriorityQueueDequeue());
+                    {
+                        CNCRMessage commMsg = commPriorityQueueDequeue();
+                        if (commMsg.getMessageType() == CNCRMSG_TYPE.E_STOP)
+                            setEStopActive(true);
+
+                        SendMsg(commMsg);
+                    }
                     // Check to see if the router is requesting commands and then
                     // Check to ensure we actually have commands to send.
                     else if (numCmdsToSend > 0 && commCommandQueueCount() > 0)

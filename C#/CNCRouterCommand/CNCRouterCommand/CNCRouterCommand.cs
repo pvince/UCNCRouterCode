@@ -23,6 +23,7 @@ namespace CNCRouterCommand
     public partial class CNCRouterCommand : Form
     {
         private CNCRCommCommand commCmd = new CNCRCommCommand();
+        private double[] distances = new double[] {0.1, 0.2, 0.5, 1, 5, 10, 20, 50, 100};
         public CNCRouterCommand()
         {
             InitializeComponent();
@@ -30,14 +31,25 @@ namespace CNCRouterCommand
 
         private void CNCRouterCommand_Load(object sender, EventArgs e)
         {
+            // Setup the debug tab.
             string[] ports = CNCRTools.GetCNCRouterPorts();
             cmbPorts.Items.AddRange(ports);
             cmbPorts.SelectedIndex = 0;
             cmbMsgs.SelectedIndex = 0;
+
+            // Setup the Auto Tab
             commCmd._displayWindow = rtbTraffic;
             commCmd._displayLabel = lblQueue;
+
+            // Setup the manual tab.
+            for (int i = 0; i < distances.Length; i++)
+            {
+                cmbMoveDistance.Items.Add(distances[i].ToString() + " mm");
+            }
+            cmbMoveDistance.SelectedIndex = 0;
         }
 
+        #region Comm Debug Tab
         private void btnOpenPort_Click(object sender, EventArgs e)
         {
             commCmd.BaudRate = "9600";
@@ -140,6 +152,18 @@ namespace CNCRouterCommand
 
         private void button1_Click(object sender, EventArgs e)
         {
+            //                      center     start     stop
+            //                      (0, 0)    (0, -1)    (0, 1)
+          //int[] a180 = new int[] { 0, 0,/**/ 0, -1,/**/ 0, 1 }; // -180 // CCW
+          //int[] a180 = new int[] { 0, 0,/**/ 0, -1,/**/ -1, 0 };// -270 // CCW
+          //int[] a180 = new int[] { 0, 0,/**/ -1, 0,/**/ 0, -1 };// 270 // CW (360 - 270) = 90 
+          //int[] a180 = new int[] { 0, 0,/**/ 1, 0,/**/ -1, 0 };// -180
+            int[] a180 = new int[] { 0, 0,/**/ 1, 0,/**/ 0, -1 };// -90
+
+            // From (0, -1) to (0, 1) = -180
+            double angle = CNCRTools.getAngleFromLines(a180[0], a180[1], a180[2], a180[3], a180[0], a180[1], a180[4], a180[5]);
+
+            label1.Text = angle.ToString();
             //CNCRMessage bob = new CNCRMessage(CNCRMSG_TYPE.E_STOP);
 
             /* For testing the priority Queue
@@ -186,26 +210,49 @@ namespace CNCRouterCommand
             }//*/
 
         }
+        #endregion
 
         private void tcInterface_SelectedIndexChanged(object sender, EventArgs e)
         {
             // TODO: Stuff to run when the tab changes.
         }
 
+        #region Auto Tab
         private void btnLoadGCode_Click(object sender, EventArgs e)
         {
             string eventLog = "";
             if (ofdGcodeBrowse.ShowDialog() == DialogResult.OK)
             {
+                rtbRCOutput.Clear();
+
                 eventLog += "Opening " + ofdGcodeBrowse.SafeFileName + "\n";
 
                 System.IO.StreamReader readFile = new System.IO.StreamReader(ofdGcodeBrowse.OpenFile());
                 string gcode = readFile.ReadToEnd();
+                CNCRTools.arcRes = Double.Parse(textBox1.Text);
                 Queue<CNCRMessage> tempQueue = CNCRTools.parseGCode(gcode, ref eventLog);
-                eventLog += "Finished Loading.\n";
+                commCmd.commCommandQueueSet(tempQueue);
+                eventLog += "Finished Loading. Created " + tempQueue.Count().ToString() + "\n";
                 rtbRCOutput.AppendText(eventLog);
                 lblStatusFile.Text = ofdGcodeBrowse.SafeFileName;
+
+                /*
+                string outputText = "";
+
+                while (tempQueue.Count() > 0)
+                {
+                    CNCRMessage curMsg = tempQueue.Dequeue();
+                    if (curMsg.getMessageType() == CNCRMSG_TYPE.MOVE)
+                    {
+                        outputText += ((CNCRMsgMove)curMsg).getX().ToString() +
+                            "\t" + ((CNCRMsgMove)curMsg).getY().ToString() + "\n";
+                    }
+                }
+                System.IO.TextWriter tw = new System.IO.StreamWriter("output2.txt");
+                tw.Write("");
+                tw.Close();//*/
             }
+
 
             /* For testing gcode reading.
             //C:\Users\vincenpt\Documents\SeniorDesign\trunk\Docs\Drawings\DXF_Drawings\Square_40x40mm.nc"
@@ -218,5 +265,43 @@ namespace CNCRouterCommand
             lblStatusFile.Text = "G-code file loaded. " + testQ.Count.ToString() +
                 " commands created.";//*/
         }
+
+        private void btnStartBuild_Click(object sender, EventArgs e)
+        {
+            CNCRMessage startBuild = new CNCRMsgStartQueue(false);
+            startBuild.setPriority(CNCRMSG_PRIORITY.HIGH);
+
+            commCmd.commPriorityQueueEnqueue(startBuild);
+            commCmd.launchProcessQueues();
+        }
+
+        private void btnAbortBuild_Click(object sender, EventArgs e)
+        {
+            CNCRMessage stopBuild = new CNCRMsgStartQueue(true);
+            stopBuild.setPriority(CNCRMSG_PRIORITY.HIGH);
+
+            commCmd.commPriorityQueueEnqueue(stopBuild);
+            commCmd.launchProcessQueues();
+
+        }
+        #endregion
+
+        #region Manual
+        private void btnYp_Click(object sender, EventArgs e)
+        {
+            Int16 distance = Convert.ToInt16(distances[cmbMoveDistance.SelectedIndex] * 10);
+            sendShortMove(new CNCRMsgMove(0, distance, 0));
+        }
+
+
+
+        private void sendShortMove(CNCRMsgMove msg)
+        {
+            commCmd.commPriorityQueueEnqueue(new CNCRMsgStartQueue(false));
+            commCmd.commCommandQueueEnqueue(msg);
+            commCmd.commCommandQueueEnqueue(new CNCRMsgStartQueue(true));
+            commCmd.launchProcessQueues();
+        }
+        #endregion
     }
 }

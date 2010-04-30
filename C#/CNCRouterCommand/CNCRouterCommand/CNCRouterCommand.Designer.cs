@@ -73,7 +73,7 @@
             this.btnYm = new System.Windows.Forms.Button();
             this.btnXp = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.cmbMoveDistance = new System.Windows.Forms.ComboBox();
             this.btnYp = new System.Windows.Forms.Button();
             this.tpSettings = new System.Windows.Forms.TabPage();
             this.cmbRouterPort = new System.Windows.Forms.ComboBox();
@@ -82,6 +82,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.ofdGcodeBrowse = new System.Windows.Forms.OpenFileDialog();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.statusStrip1.SuspendLayout();
             this.tpCommDebug.SuspendLayout();
             this.tcInterface.SuspendLayout();
@@ -421,6 +422,7 @@
             this.btnAbortBuild.TabIndex = 15;
             this.btnAbortBuild.Text = "Abort Build";
             this.btnAbortBuild.UseVisualStyleBackColor = true;
+            this.btnAbortBuild.Click += new System.EventHandler(this.btnAbortBuild_Click);
             // 
             // label16
             // 
@@ -439,6 +441,7 @@
             this.btnStartBuild.TabIndex = 13;
             this.btnStartBuild.Text = "Start Build";
             this.btnStartBuild.UseVisualStyleBackColor = true;
+            this.btnStartBuild.Click += new System.EventHandler(this.btnStartBuild_Click);
             // 
             // label11
             // 
@@ -495,7 +498,7 @@
             this.tpManual.Controls.Add(this.btnYm);
             this.tpManual.Controls.Add(this.btnXp);
             this.tpManual.Controls.Add(this.label9);
-            this.tpManual.Controls.Add(this.comboBox1);
+            this.tpManual.Controls.Add(this.cmbMoveDistance);
             this.tpManual.Controls.Add(this.btnYp);
             this.tpManual.Location = new System.Drawing.Point(4, 22);
             this.tpManual.Name = "tpManual";
@@ -559,22 +562,14 @@
             this.label9.TabIndex = 23;
             this.label9.Text = "Distance:";
             // 
-            // comboBox1
+            // cmbMoveDistance
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "0.1 mm",
-            "0.5 mm",
-            "1 mm",
-            "5 mm",
-            "10 mm",
-            "20 mm",
-            "50 mm",
-            "100 mm"});
-            this.comboBox1.Location = new System.Drawing.Point(64, 11);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(95, 21);
-            this.comboBox1.TabIndex = 22;
+            this.cmbMoveDistance.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMoveDistance.FormattingEnabled = true;
+            this.cmbMoveDistance.Location = new System.Drawing.Point(64, 11);
+            this.cmbMoveDistance.Name = "cmbMoveDistance";
+            this.cmbMoveDistance.Size = new System.Drawing.Size(95, 21);
+            this.cmbMoveDistance.TabIndex = 22;
             // 
             // btnYp
             // 
@@ -584,9 +579,11 @@
             this.btnYp.TabIndex = 21;
             this.btnYp.Text = "Y+";
             this.btnYp.UseVisualStyleBackColor = true;
+            this.btnYp.Click += new System.EventHandler(this.btnYp_Click);
             // 
             // tpSettings
             // 
+            this.tpSettings.Controls.Add(this.textBox1);
             this.tpSettings.Controls.Add(this.cmbRouterPort);
             this.tpSettings.Controls.Add(this.label12);
             this.tpSettings.Location = new System.Drawing.Point(4, 22);
@@ -647,6 +644,14 @@
             // ofdGcodeBrowse
             // 
             this.ofdGcodeBrowse.Filter = "G-code files|*.nc|All files|*.*";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(106, 37);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 12;
+            this.textBox1.Text = "0.1";
             // 
             // CNCRouterCommand
             // 
@@ -725,13 +730,14 @@
         private System.Windows.Forms.Button btnYm;
         private System.Windows.Forms.Button btnXp;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox cmbMoveDistance;
         private System.Windows.Forms.Button btnYp;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
         private System.Windows.Forms.OpenFileDialog ofdGcodeBrowse;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
