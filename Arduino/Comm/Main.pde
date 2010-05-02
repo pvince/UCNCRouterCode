@@ -31,7 +31,7 @@ void loop()
       QueueRead();
     }
   }
-  if(QueueLength<250)
+  if(QueueLength<250 && FlagStart==1 && Serial.available()==0 && MessageInProgress == 0)
   {
       Serial.print("MoreMessages");  //Ask computer for more messages.
       PacketContainer Packet;
@@ -53,6 +53,7 @@ void loop()
     }
       MessageFilter(&Packet);
   }
+  digitalWrite(49,HIGH);
 }
 
 

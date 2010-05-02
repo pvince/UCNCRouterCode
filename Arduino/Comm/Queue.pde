@@ -66,34 +66,115 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
 }
 
 void Calculations(int XDiff, int YDiff, int ZDiff)
-{
+{//This section attempts to find the number of steps it takes each axis to get to it's location, 
+  //the interval of the interupts to create the needed slopes of lines relative to the other axises
   float XRatio;
   float YRatio;
   float ZRatio;
+  int unity = 2667;
   //Set the speed of the motors using the speed input plus the max speed possible of the motors
   XSpeed = MaxMotorSpeed + XSpeedSet;
   YSpeed = MaxMotorSpeed + YSpeedSet;
   ZSpeed = MaxMotorSpeed + ZSpeedSet;
+  //Find the number of pulses to get to that location
   XDiff = XDiff * Resolution;
   YDiff = YDiff * Resolution;
   ZDiff = ZDiff * Resolution;
+  //If the Yaxis is the largest distance traveled
   if((XDiff >= YDiff) && (XDiff >= ZDiff))
   {
     XRatio = 1;
-    YRatio = (float)YDiff / (float)XDiff;
-    ZRatio = (float)ZDiff / (float)XDiff;
+    if(YDiff != 0)
+    {
+      YRatio = (float)XDiff / (float)YDiff;
+    }
+    else 
+    {
+      YRatio=0;
+    }
+    if(ZDiff != 0)
+    {
+      ZRatio = (float)XDiff / (float)ZDiff;
+    }
+    else
+    {
+      ZRatio=0;
+    }
+    TCNT1H = 245;  //62869 unity value causes 6000 pps and 0 clock scaling
+    TCNT1L = 149;
+    if (YRatio==0)
+    {
+      TCCR3B = 0;
+    }
+    else if(YRatio<24)
+    {
+      unsigned int time = 65536 - (2667 * YRatio);
+      for(int x=0; x<8; x++)
+      {
+        bitWrite(TCNT3H,x,bitRead(time,x+8));
+        bitWrite(TCNT3L,x,bitRead(time,x));
+      }
+    }
+    if (ZRatio==0)
+    {
+      TCCR4B = 0;
+    }
+    else if(ZRatio<24)
+    {
+      unsigned int time = 65536 - (2667 * ZRatio);
+      for(int x=0; x<8; x++)
+      {
+        bitWrite(TCNT4H,x,bitRead(time,x+8));
+        bitWrite(TCNT4L,x,bitRead(time,x));
+      }
+    }
+
   }
+  //If the Yaxis is the largest distance traveled
   else if((YDiff >= XDiff) && (YDiff >= ZDiff))
   {
     YRatio = 1;
-    XRatio = (float)XDiff / (float)YDiff;
-    ZRatio = (float)ZDiff / (float)YDiff;
+    if(XDiff != 0 )
+    {
+      XRatio = (float)YDiff / (float)XDiff;
+    }
+    else
+    {
+      XRatio=0;
+    }
+    if(ZDiff != 0)
+    {
+      ZRatio = (float)YDiff / (float)ZDiff;
+    }
+    else
+    {
+      ZRatio=0;
+    }
+    TCNT3H = 245;  //62869 unity value causes 6000 pps and 0 clock scaling
+    TCNT3L = 149;
   }
+  //If the Zaxis is the largest distance traveled
   else if((ZDiff >= XDiff) && (ZDiff >= YDiff))
   {
     ZRatio = 1;
-    XRatio = (float)XDiff / (float)ZDiff;
-    YRatio = (float)YDiff / (float)ZDiff;
+    if(XDiff != 0 )
+    {
+      XRatio = (float)ZDiff / (float)XDiff;
+    }
+    else
+    {
+      XRatio=0;
+    }
+    if(YDiff != 0)
+    {
+      YRatio = (float)ZDiff / (float)YDiff;
+    }
+    else 
+    {
+      YRatio=0;
+    }
+    TCNT4H = 245;  //62869 unity value causes 6000 pps and 0 clock scaling
+    TCNT4L = 149;
   }
   //Needs to scale timers
 }
@@ -159,7 +240,7 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
     ZDirection=0;
   }
   Calculations(XDiff, YDiff, ZDiff);
-  SetTimers();
+  //SetTimers();
 }
 
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
@@ -167,5 +248,6 @@ int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
   digitalWrite(PowerPort,TempHolder->Message[7]); //bit 7 holds the on or off signal
   return(0);
 }
+
 
 

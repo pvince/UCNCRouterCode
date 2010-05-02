@@ -92,10 +92,10 @@ void Light()
     test=1;
     //SetTimers();
   }
- TCNT1H=0;
+ TCNT1H=160;
   TCNT1L=0;
 //  //start the timers
-  TCCR1B = 4;
+  TCCR1B = 2;
   sei();
   //digitalWrite(13,LOW);
   reti();

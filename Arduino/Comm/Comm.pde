@@ -12,6 +12,7 @@ int MessageFilter(PacketContainer* Packet)
 {
   //Serial.write(Packet->array[0]);
   byte Message=Packet->array[0];
+  digitalWrite(13,HIGH);
   switch((Message & 0b11110000)>>4)  //looks at the type bits
   {
     case (0):  //Ping
@@ -30,6 +31,7 @@ int MessageFilter(PacketContainer* Packet)
       {
         MessageInProgress=1;
       }
+      digitalWrite(13,LOW);
       break;
     case (1):  //Acknowledge
       Packet->length=2;
@@ -46,6 +48,7 @@ int MessageFilter(PacketContainer* Packet)
       {
         MessageInProgress=1;
       }
+      digitalWrite(13,LOW);
       break;
     case(2):  //EStop
       Packet->length=EStopLength;
@@ -62,6 +65,7 @@ int MessageFilter(PacketContainer* Packet)
       {
         MessageInProgress=1;
       }
+      digitalWrite(13,LOW);
       break;
     case(3):  //Request Commands
       Packet->length=RequestCommandsLength;
@@ -78,6 +82,7 @@ int MessageFilter(PacketContainer* Packet)
       {
         MessageInProgress=1;
       }
+      digitalWrite(13,LOW);
       break;
     case(4):  //Start Queue
       Packet->length=StartQueueLength;
@@ -94,6 +99,7 @@ int MessageFilter(PacketContainer* Packet)
       {
         MessageInProgress=1;
       }
+      digitalWrite(13,LOW);
       break;
     case(5):  //SetSpeed
       Packet->length=SetSpeedLength;
@@ -110,6 +116,7 @@ int MessageFilter(PacketContainer* Packet)
       {
         MessageInProgress=1;
       }
+      digitalWrite(13,LOW);
       break;
     case(6):  //Move
       Packet->length=MoveLength;
@@ -126,6 +133,7 @@ int MessageFilter(PacketContainer* Packet)
       {
         MessageInProgress=1;
       }
+      digitalWrite(13,LOW);
       break;
     case(7):  //ToolCMD
       Packet->length=ToolCMDLength;
@@ -142,6 +150,7 @@ int MessageFilter(PacketContainer* Packet)
       {
         MessageInProgress=1;
       }
+      digitalWrite(13,LOW);
       break;
   }
 return(0);
