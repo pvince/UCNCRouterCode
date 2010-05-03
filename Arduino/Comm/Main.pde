@@ -9,15 +9,19 @@
 void setup()
 {
   Serial.begin(MessageRate);
+  Serial.flush();
   pinMode(12,OUTPUT);
-  attachInterrupt(0,Motor,RISING);
+  pinMode(52,OUTPUT);
+  pinMode(53,OUTPUT);
+  pinMode(47,OUTPUT);
+  pinMode(22,OUTPUT);
+  pinMode(28,OUTPUT);
 }
 
 void loop()
 {
   //Priority of actions: (EStop)->(Send next motor action)->(Read incomming Message)->(Request more messges if needed)
   long Message = 0;   
-  
   if(FlagEStop)
   {
     noInterrupts();
@@ -53,6 +57,7 @@ void loop()
     PacketContainer Packet;
     if(MessageInProgress==0)  //if this is a "type" message read it into the array at index 0
     {
+      delay(1);
       Packet.array[0] = Serial.read();
     }
       MessageFilter(&Packet);

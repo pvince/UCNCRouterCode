@@ -106,6 +106,7 @@ int MessageFilter(PacketContainer* Packet)
     }
     digitalWrite(13,LOW);
     break;
+    
     case(5):  //SetSpeed
     Packet->length=SetSpeedLength;
     if(Serial.available()>=Packet->length-1)
@@ -124,8 +125,8 @@ int MessageFilter(PacketContainer* Packet)
     }
     digitalWrite(13,LOW);
     break;
+    
     case(6):  //Move
-
     Packet->length=MoveLength;
     if(Serial.available()>=Packet->length-1)
     {
@@ -143,6 +144,7 @@ int MessageFilter(PacketContainer* Packet)
     }
     digitalWrite(13,LOW);
     break;
+    
     case(7):  //ToolCMD
     Packet->length=ToolCMDLength;
     if(Serial.available()>=Packet->length-1)
@@ -166,11 +168,10 @@ int MessageFilter(PacketContainer* Packet)
 }
 int AcknowledgeMessage(boolean Error)
 {
+  delay(5);
+  Serial.flush();    //Needed to get rid of junk bits that shouldn't be there.
   if( Error==1)
   {
-    delay(50);
-    Serial.flush();
-
     for (int x=0; x<AcknowledgeLength; x++)
     {
       Serial.write(PreviousPacket.array[x]);
@@ -178,12 +179,11 @@ int AcknowledgeMessage(boolean Error)
   }
   else
   {
-    PacketContainer AckPacket;
     char FW=Firmware<<1;
     char type = 0x10 | (2*Error);
     AckPacket.length=AcknowledgeLength;
     AckPacket.array[0]=(type | HorParityGen(type));
-    AckPacket.array[1]=FW | HorParityGen(FW);
+    AckPacket.array[1]=FW | HorParityGen(FW);    
     AckPacket.array[2]=VertParityGen(&AckPacket);
     PreviousPacket = AckPacket;
     for (int x=0; x<AcknowledgeLength; x++)

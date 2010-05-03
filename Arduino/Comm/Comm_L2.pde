@@ -9,6 +9,9 @@
 //**************************************************************************
 int RecievePing(PacketContainer* Packet)
 {
+  digitalWrite(28,HIGH);
+  delay(10);
+  digitalWrite(28,LOW);
   if(ParityChecker(Packet)==0)
   {
     AcknowledgeMessage(0);
@@ -19,8 +22,12 @@ int RecievePing(PacketContainer* Packet)
   }
   return(0);
 }
+
 int RecieveAck(PacketContainer* Packet)
 {
+  digitalWrite(28,HIGH);
+  delay(10);
+  digitalWrite(28,LOW);
   if(Packet->array[0] == 18)
   {
      for (int x=0; x<AcknowledgeLength; x++)
@@ -32,6 +39,9 @@ int RecieveAck(PacketContainer* Packet)
 }
 int RecieveEStop(PacketContainer* Packet)
 {
+  digitalWrite(28,HIGH);
+  delay(10);
+  digitalWrite(28,LOW);
   if(ParityChecker(Packet)==0)
   {
     FlagEStop=1;
@@ -48,6 +58,9 @@ int RecieveStartQueue(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
+    digitalWrite(28,HIGH);
+  delay(10);
+  digitalWrite(28,LOW);
     FlagStart=1;
     FlagEStop=0;
     //****************************************
@@ -64,7 +77,9 @@ int RecieveStartQueue(PacketContainer* Packet)
 
 int RecieveRequestCommands(PacketContainer* Packet)
 {
-
+  digitalWrite(28,HIGH);
+  delay(10);
+  digitalWrite(28,LOW);
   if(ParityChecker(Packet)==0)
   {
     //****************************************
@@ -81,10 +96,19 @@ int RecieveRequestCommands(PacketContainer* Packet)
 
 int RecieveSetSpeed(PacketContainer* Packet)
 {
+  digitalWrite(47,HIGH);
+  delay(10);
+  digitalWrite(47,LOW);
   if(ParityChecker(Packet)==0)
   {
-    QueueAdd(Packet);
-    AcknowledgeMessage(0);
+    if(QueueAdd(Packet)==0)
+    {
+      AcknowledgeMessage(0);
+    }
+    else
+    {
+      AcknowledgeMessage(1);
+    }
   }
   else
   {
@@ -95,10 +119,19 @@ int RecieveSetSpeed(PacketContainer* Packet)
 
 int RecieveMove(PacketContainer* Packet)
 {
+  digitalWrite(53,HIGH);
+      delay(100);
+      digitalWrite(53,LOW);
   if(ParityChecker(Packet)==0)
   {
-    QueueAdd(Packet);
-    AcknowledgeMessage(0);
+    if(QueueAdd(Packet)==0)
+    {
+      AcknowledgeMessage(0);
+    }
+    else
+    {
+      AcknowledgeMessage(1);
+    }
   }
   else
   {
@@ -109,10 +142,20 @@ int RecieveMove(PacketContainer* Packet)
 
 int RecieveToolCMD(PacketContainer* Packet)
 {
+  Serial.write(Packet->array[0]);
+  digitalWrite(28,HIGH);
+  delay(10);
+  digitalWrite(28,LOW);
   if(ParityChecker(Packet)==0)
   {
-    QueueAdd(Packet);
-    AcknowledgeMessage(0);
+    if(QueueAdd(Packet)==0)
+    {
+      AcknowledgeMessage(0);
+    }
+    else
+    {
+      AcknowledgeMessage(1);
+    }
   }
   else
   {

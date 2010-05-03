@@ -12,11 +12,12 @@ int SetSpeedLength=5;
 int MoveLength=11;
 int ToolCMDLength=2;
 
+
 struct PacketContainer{
   byte array[11];
   byte length;
 };
  PacketContainer PreviousPacket;
-
+PacketContainer AckPacket;
 #endif
 

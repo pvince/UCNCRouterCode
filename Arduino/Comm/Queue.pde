@@ -1,7 +1,7 @@
 
 #include "Main.h"
-//#include "Comm.h"
-//#include "Queue.h"
+#include "Comm.h"
+#include "Queue.h"
 #include "Interrupts.h"
 
 
@@ -20,8 +20,12 @@ int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
     Linklist* temp = WriteLocation; 
     temp->NextLink = &NewLink;
     WriteLocation = &NewLink;
+    
   }
-  else return(-1);
+  else 
+  {
+    return(-1);
+  }
   QueueLength++;
   NewLink.MessageLength = Message->length;
   NewLink.NextLink = NULL;
@@ -37,38 +41,45 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
   Linklist* TempHolder;
   TempHolder = StartPointer;
   digitalWrite(49,HIGH);
-  //Serial.flush();
-  byte temp = StartPointer->Message[0];
-  //Serial.write(TempHolder->Message[0]);
-  //Serial.write(Type);
-  //Serial.write(255);
-
-  switch((temp& 0b11110000) >>4)
+  Serial.flush();
+  byte temp = TempHolder->Message[0];
+  switch((temp & 0b11110000) >>4)
   {
-    case (5):
+    case (5):        //SetSpeed
+    digitalWrite(47,HIGH);
+    delay(100);
+    digitalWrite(47,LOW);
     SetSpeed(TempHolder);  //Reads packet and insterst speed into axis speed variables.
     break;
-    case (6):
-    digitalWrite(24,HIGH);
+    case (6):        //Move
+    digitalWrite(53,HIGH);
+    delay(100);
+    digitalWrite(53,LOW);
     Move(TempHolder);
     break;
-    case (7):
+    case (7):        //ToolCMD
+    digitalWrite(28,HIGH);
+    delay(100);
+    digitalWrite(28,LOW);
     ToolCMD(TempHolder);
     break;
-  default:
+  default:          //Not Expected
     digitalWrite(22,HIGH);
+    delay(100);
+    digitalWrite(22,LOW);
     break;
   }
   digitalWrite(49,HIGH); 
   if(QueueLength>1)
   {
-    StartPointer = StartPointer->NextLink;
+    StartPointer = StartPointer->NextLink;   //Uncomment when first link works
     QueueLength--;
   }
-  else
+  else    //The queue is empty so there is nothing to execute
   {
     QueueLength =0;
     StartPointer = NULL;
+    WriteLocation = NULL;
     FlagStart = 0;
   }
   return;
@@ -203,6 +214,9 @@ int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
   {
     ZSpeedSet = temp;
   }
+    digitalWrite(47,HIGH);
+  delay(100);
+  digitalWrite(47,LOW);
   return(0);
 }
 
@@ -248,12 +262,18 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
   }
   Calculations(XDiff, YDiff, ZDiff);
   //SetTimers();
+  digitalWrite(53,HIGH);
+  delay(100);
+  digitalWrite(53,LOW);
   return(0);
 }
 
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
 {
   digitalWrite(PowerPort,TempHolder->Message[7]); //bit 7 holds the on or off signal
+  digitalWrite(28,HIGH);
+  delay(100);
+  digitalWrite(28,LOW);
   return(0);
 }
 

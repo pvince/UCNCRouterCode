@@ -10,8 +10,8 @@ struct Linklist
 };
 
 int QueueLength = 0;
-Linklist* StartPointer = 0;
-Linklist* WriteLocation = 0;
+Linklist* StartPointer;
+Linklist* WriteLocation;
 
 void QueueAdd();
 void QueueRead();
