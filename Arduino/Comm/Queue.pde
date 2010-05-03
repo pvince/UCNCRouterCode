@@ -29,7 +29,6 @@ int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
   {
     NewLink.Message[x]=Message->array[x];
   }
-  Serial.write(StartPointer->Message[0]);
   return(0);
 }
 
@@ -37,20 +36,30 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
 {
   Linklist* TempHolder;
   TempHolder = StartPointer;
-  byte Type = StartPointer->Message[0]>>4;
-  switch(Type)
+  digitalWrite(49,HIGH);
+  //Serial.flush();
+  byte temp = StartPointer->Message[0];
+  //Serial.write(TempHolder->Message[0]);
+  //Serial.write(Type);
+  //Serial.write(255);
+
+  switch((temp& 0b11110000) >>4)
   {
     case (5):
     SetSpeed(TempHolder);  //Reads packet and insterst speed into axis speed variables.
     break;
     case (6):
+    digitalWrite(24,HIGH);
     Move(TempHolder);
-
     break;
     case (7):
     ToolCMD(TempHolder);
     break;
+  default:
+    digitalWrite(22,HIGH);
+    break;
   }
+  digitalWrite(49,HIGH); 
   if(QueueLength>1)
   {
     StartPointer = StartPointer->NextLink;
@@ -62,7 +71,7 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
     StartPointer = NULL;
     FlagStart = 0;
   }
-
+  return;
 }
 
 void Calculations(int XDiff, int YDiff, int ZDiff)
@@ -128,7 +137,6 @@ void Calculations(int XDiff, int YDiff, int ZDiff)
         bitWrite(TCNT4L,x,bitRead(time,x));
       }
     }
-
   }
   //If the Yaxis is the largest distance traveled
   else if((YDiff >= XDiff) && (YDiff >= ZDiff))
@@ -201,7 +209,6 @@ int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
 int Move(Linklist* TempHolder)  //Sends signal to disired ports
 {
 
-
   int done;
   int XDestination = (int) TempHolder->Message[1]<<13;              //converts the message into positions
   XDestination = XDestination & (int) TempHolder->Message[2]<<6;
@@ -241,6 +248,7 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
   }
   Calculations(XDiff, YDiff, ZDiff);
   //SetTimers();
+  return(0);
 }
 
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
@@ -248,6 +256,7 @@ int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
   digitalWrite(PowerPort,TempHolder->Message[7]); //bit 7 holds the on or off signal
   return(0);
 }
+
 
 
 

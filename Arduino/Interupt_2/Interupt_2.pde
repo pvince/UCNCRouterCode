@@ -1,9 +1,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define RESOLUTION 65536    // Timer1 is 16 bit
+//#define RESOLUTION 65536    // Timer1 is 16 bit
 unsigned int test;
-unsigned char clockSelectBits;
+//unsigned char clockSelectBits;
 
 ISR(TIMER1_OVF_vect)
   {
@@ -26,7 +26,7 @@ void loop()
  // delay(2000);
   //SetTimers();
  // delay(2000);
-  
+digitalWrite(49,HIGH);
   if (TCCR1B == 1)
   {
       //digitalWrite(13,HIGH);
@@ -92,10 +92,10 @@ void Light()
     test=1;
     //SetTimers();
   }
- TCNT1H=160;
+ TCNT1H=255;
   TCNT1L=0;
 //  //start the timers
-  TCCR1B = 2;
+  TCCR1B = 5;    //0.004096 seconds/interupt no clock scaling  Unity = 2667 = 6000pps
   sei();
   //digitalWrite(13,LOW);
   reti();

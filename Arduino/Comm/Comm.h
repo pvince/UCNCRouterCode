@@ -16,7 +16,7 @@ struct PacketContainer{
   byte array[11];
   byte length;
 };
-
+ PacketContainer PreviousPacket;
 
 #endif
 

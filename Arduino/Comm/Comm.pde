@@ -12,168 +12,185 @@ int MessageFilter(PacketContainer* Packet)
 {
   //Serial.write(Packet->array[0]);
   byte Message=Packet->array[0];
-  digitalWrite(13,HIGH);
+  digitalWrite(13,HIGH);  //indicate a message is in progress
   switch((Message & 0b11110000)>>4)  //looks at the type bits
   {
     case (0):  //Ping
-      Packet->length=PingLength;
-      //AcknowledgeMessage(0);
-      if(Serial.available()==Packet->length-1)
+    Packet->length=PingLength;
+    //AcknowledgeMessage(0);
+    if(Serial.available()>=Packet->length-1)
+    {
+      for(int x=1; x<Packet->length; x++)
       {
-        for(int x=1; x<Packet->length; x++)
-        {
-          Packet->array[x]=Serial.read();          
-        }
-        RecievePing(Packet);
-        MessageInProgress=0;
+        Packet->array[x]=Serial.read();          
       }
-      else
-      {
-        MessageInProgress=1;
-      }
-      digitalWrite(13,LOW);
-      break;
+      Serial.flush();
+      RecievePing(Packet);
+      MessageInProgress=0;
+    }
+    else
+    {
+      MessageInProgress=1;
+    }
+    digitalWrite(13,LOW);
+    break;
     case (1):  //Acknowledge
-      Packet->length=2;
-      if(Serial.available()==Packet->length-1)
+    Packet->length=2;
+    if(Serial.available()>=Packet->length-1)
+    {
+      for(int x=1; x<Packet->length; x++)
       {
-        for(int x=1; x<Packet->length; x++)
-        {
-          Packet->array[x]=Serial.read();          
-        }
-        RecievePing(Packet);
-        MessageInProgress=0;
+        Packet->array[x]=Serial.read();          
       }
-      else
-      {
-        MessageInProgress=1;
-      }
-      digitalWrite(13,LOW);
-      break;
+      Serial.flush();
+      RecieveAck(Packet);
+      MessageInProgress=0; 
+    }
+    else
+    {
+      MessageInProgress=1;
+    }
+    digitalWrite(13,LOW);
+    break;
     case(2):  //EStop
-      Packet->length=EStopLength;
-      if(Serial.available()==Packet->length-1)
+    Packet->length=EStopLength;
+    if(Serial.available()>=Packet->length-1)
+    {
+      for(int x=1; x<Packet->length; x++)
       {
-        for(int x=1; x<Packet->length; x++)
-        {
-          Packet->array[x]=Serial.read();          
-        }
-        RecieveEStop(Packet);
-        MessageInProgress=0;
+        Packet->array[x]=Serial.read();          
       }
-      else
-      {
-        MessageInProgress=1;
-      }
-      digitalWrite(13,LOW);
-      break;
+      Serial.flush();
+      RecieveEStop(Packet);
+      MessageInProgress=0;
+    }
+    else
+    {
+      MessageInProgress=1;
+    }
+    digitalWrite(13,LOW);
+    break;
     case(3):  //Request Commands
-      Packet->length=RequestCommandsLength;
-      if(Serial.available()==Packet->length-1)
+    Packet->length=RequestCommandsLength;
+    if(Serial.available()>=Packet->length-1)
+    {
+      for(int x=1; x<Packet->length; x++)
       {
-        for(int x=1; x<Packet->length; x++)
-        {
-          Packet->array[x]=Serial.read();          
-        }
-        RecieveRequestCommands(Packet);
-        MessageInProgress=0;
+        Packet->array[x]=Serial.read();          
       }
-      else
-      {
-        MessageInProgress=1;
-      }
-      digitalWrite(13,LOW);
-      break;
+      Serial.flush();
+      RecieveRequestCommands(Packet);
+      MessageInProgress=0;
+    }
+    else
+    {
+      MessageInProgress=1;
+    }
+    digitalWrite(13,LOW);
+    break;
     case(4):  //Start Queue
-      Packet->length=StartQueueLength;
-      if(Serial.available()==Packet->length-1)
+    Packet->length=StartQueueLength;
+    if(Serial.available()>=Packet->length-1)
+    {
+      for(int x=1; x<Packet->length; x++)
       {
-        for(int x=1; x<Packet->length; x++)
-        {
-          Packet->array[x]=Serial.read();          
-        }
-        RecieveStartQueue(Packet);
-        MessageInProgress=0;
+        Packet->array[x]=Serial.read();          
       }
-      else
-      {
-        MessageInProgress=1;
-      }
-      digitalWrite(13,LOW);
-      break;
+      Serial.flush();
+      RecieveStartQueue(Packet);
+      MessageInProgress=0;
+    }
+    else
+    {
+      MessageInProgress=1;
+    }
+    digitalWrite(13,LOW);
+    break;
     case(5):  //SetSpeed
-      Packet->length=SetSpeedLength;
-      if(Serial.available()==Packet->length-1)
+    Packet->length=SetSpeedLength;
+    if(Serial.available()>=Packet->length-1)
+    {
+      for(int x=1; x<Packet->length; x++)
       {
-        for(int x=1; x<Packet->length; x++)
-        {
-          Packet->array[x]=Serial.read();          
-        }
-        RecieveSetSpeed(Packet);
-        MessageInProgress=0;
+        Packet->array[x]=Serial.read();          
       }
-      else
-      {
-        MessageInProgress=1;
-      }
-      digitalWrite(13,LOW);
-      break;
+      Serial.flush();
+      RecieveSetSpeed(Packet);
+      MessageInProgress=0;
+    }
+    else
+    {
+      MessageInProgress=1;
+    }
+    digitalWrite(13,LOW);
+    break;
     case(6):  //Move
-      Packet->length=MoveLength;
-      if(Serial.available()==Packet->length-1)
+
+    Packet->length=MoveLength;
+    if(Serial.available()>=Packet->length-1)
+    {
+      for(int x=1; x<Packet->length; x++)
       {
-        for(int x=1; x<Packet->length; x++)
-        {
-          Packet->array[x]=Serial.read();          
-        }
-        RecieveMove(Packet);
-        MessageInProgress=0;
+        Packet->array[x]=Serial.read();      
       }
-      else
-      {
-        MessageInProgress=1;
-      }
-      digitalWrite(13,LOW);
-      break;
+      Serial.flush();
+      RecieveMove(Packet);
+      MessageInProgress=0;
+    }
+    else
+    {
+      MessageInProgress=1;
+    }
+    digitalWrite(13,LOW);
+    break;
     case(7):  //ToolCMD
-      Packet->length=ToolCMDLength;
-      if(Serial.available()==Packet->length-1)
+    Packet->length=ToolCMDLength;
+    if(Serial.available()>=Packet->length-1)
+    {
+      for(int x=1; x<Packet->length; x++)
       {
-        for(int x=1; x<Packet->length; x++)
-        {
-          Packet->array[x]=Serial.read();          
-        }
-        RecieveToolCMD(Packet);
-        MessageInProgress=0;
+        Packet->array[x]=Serial.read();          
       }
-      else
-      {
-        MessageInProgress=1;
-      }
-      digitalWrite(13,LOW);
-      break;
+      Serial.flush();
+      RecieveToolCMD(Packet);
+      MessageInProgress=0;
+    }
+    else
+    {
+      MessageInProgress=1;
+    }
+    digitalWrite(13,LOW);
+    break;
   }
-return(0);
+  return(0);
 }
 int AcknowledgeMessage(boolean Error)
 {
-  PacketContainer AckPacket;
-  char FW=Firmware<<1;
-  char type = 0x10 | (2*Error);
-  AckPacket.length=AcknowledgeLength;
-  AckPacket.array[0]=(type | HorParityGen(type));
-  AckPacket.array[1]=FW | HorParityGen(FW);
-  AckPacket.array[2]=VertParityGen(&AckPacket);
   if( Error==1)
   {
     delay(50);
     Serial.flush();
+
+    for (int x=0; x<AcknowledgeLength; x++)
+    {
+      Serial.write(PreviousPacket.array[x]);
+    }
   }
-  for (int x=0; x<AcknowledgeLength; x++)
+  else
   {
-    Serial.write(AckPacket.array[x]);
+    PacketContainer AckPacket;
+    char FW=Firmware<<1;
+    char type = 0x10 | (2*Error);
+    AckPacket.length=AcknowledgeLength;
+    AckPacket.array[0]=(type | HorParityGen(type));
+    AckPacket.array[1]=FW | HorParityGen(FW);
+    AckPacket.array[2]=VertParityGen(&AckPacket);
+    PreviousPacket = AckPacket;
+    for (int x=0; x<AcknowledgeLength; x++)
+    {
+      Serial.write(AckPacket.array[x]);
+    }
   }
-  
   return(0);
 }
 
@@ -182,7 +199,7 @@ int RequestCMD(byte Number)
   PacketContainer Packet;
   Packet.array[0]=48;
   Packet.array[1]=HorParityGen(Number<<1);
-  
+
 }
 
 boolean HorParityGen(char Message)
@@ -212,11 +229,11 @@ unsigned char VertParityGen(PacketContainer* Packet)
 
 unsigned char ParityChecker(PacketContainer* Packet)
 {
-   if(HorParityCheck(Packet->array[0]) !=0)
+  if(HorParityCheck(Packet->array[0]) !=0)
   {
     return(-1);
   }
-  
+
   for(int x=1; x<Packet->length; x++)
   {
     if(HorParityCheck(Packet->array[x]) !=0)
@@ -260,3 +277,5 @@ int VertParityCheck(PacketContainer *Packet)  //Checks the parity packet with th
 //**************************************************************************
 //**                    End Parity Checks                                 **
 //**************************************************************************
+
+

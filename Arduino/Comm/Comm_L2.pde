@@ -19,7 +19,17 @@ int RecievePing(PacketContainer* Packet)
   }
   return(0);
 }
-
+int RecieveAck(PacketContainer* Packet)
+{
+  if(Packet->array[0] == 18)
+  {
+     for (int x=0; x<AcknowledgeLength; x++)
+     {
+        Serial.write(PreviousPacket.array[x]);
+     }
+  }
+  return(0);
+}
 int RecieveEStop(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)

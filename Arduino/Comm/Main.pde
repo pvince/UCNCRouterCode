@@ -24,6 +24,10 @@ void loop()
     FlagStart = 0;  //Stop proccessing the queue
     FlagMotorRunning = 0; //The motors are not running anymore
   }
+  if(FlagStart==1)
+  {
+    QueueRead();
+  }
   if(!FlagEStop ) //if the queue us supposed to be executed.
   {
     if(ExecutionStep==3)
@@ -33,16 +37,16 @@ void loop()
   }
   if(QueueLength<250 && FlagStart==1 && Serial.available()==0 && MessageInProgress == 0)
   {
-      Serial.print("MoreMessages");  //Ask computer for more messages.
-      PacketContainer Packet;
-      Packet.length=3;
-      Packet.array[0]=(0x30);
-      char Amount = RequestNumber<<2 + HorParityGen(RequestNumber<<2);
-      Packet.array[1]=Amount;
-      Packet.array[2]=VertParityGen(&Packet);
-      Serial.write(Packet.array[0]);
-      Serial.write(Packet.array[1]);
-      Serial.write(Packet.array[2]);
+//      Serial.print("MoreMessages");  //Ask computer for more messages.
+//      PacketContainer Packet;
+//      Packet.length=3;
+//      Packet.array[0]=(0x30);
+//      char Amount = RequestNumber<<2 + HorParityGen(RequestNumber<<2);
+//      Packet.array[1]=Amount;
+//      Packet.array[2]=VertParityGen(&Packet);
+//      Serial.write(Packet.array[0]);
+//      Serial.write(Packet.array[1]);
+//      Serial.write(Packet.array[2]);
   }
   if(Serial.available()) //get message on serial buffer if one exists
   {
@@ -53,7 +57,6 @@ void loop()
     }
       MessageFilter(&Packet);
   }
-  digitalWrite(49,HIGH);
 }
 
 
