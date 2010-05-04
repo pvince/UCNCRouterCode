@@ -37,6 +37,7 @@
             this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tpCommDebug = new System.Windows.Forms.TabPage();
+            this.btnClear = new System.Windows.Forms.Button();
             this.btnRefreshPorts = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.lblQueue = new System.Windows.Forms.Label();
@@ -55,6 +56,7 @@
             this.btnSndMsg = new System.Windows.Forms.Button();
             this.tcInterface = new System.Windows.Forms.TabControl();
             this.tpAuto = new System.Windows.Forms.TabPage();
+            this.btnClearEventOutput = new System.Windows.Forms.Button();
             this.lblStatusBuild = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.rtbRCOutput = new System.Windows.Forms.RichTextBox();
@@ -67,6 +69,12 @@
             this.lblStatusFile = new System.Windows.Forms.Label();
             this.btnLoadGCode = new System.Windows.Forms.Button();
             this.tpManual = new System.Windows.Forms.TabPage();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.txtZFeedrate = new System.Windows.Forms.TextBox();
+            this.txtXYFeedrate = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.btnZm = new System.Windows.Forms.Button();
             this.btnZp = new System.Windows.Forms.Button();
             this.btnXm = new System.Windows.Forms.Button();
@@ -76,13 +84,13 @@
             this.cmbMoveDistance = new System.Windows.Forms.ComboBox();
             this.btnYp = new System.Windows.Forms.Button();
             this.tpSettings = new System.Windows.Forms.TabPage();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.cmbRouterPort = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.tpGenDebug = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.ofdGcodeBrowse = new System.Windows.Forms.OpenFileDialog();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.statusStrip1.SuspendLayout();
             this.tpCommDebug.SuspendLayout();
             this.tcInterface.SuspendLayout();
@@ -145,6 +153,7 @@
             // 
             // tpCommDebug
             // 
+            this.tpCommDebug.Controls.Add(this.btnClear);
             this.tpCommDebug.Controls.Add(this.btnRefreshPorts);
             this.tpCommDebug.Controls.Add(this.label7);
             this.tpCommDebug.Controls.Add(this.lblQueue);
@@ -168,6 +177,17 @@
             this.tpCommDebug.TabIndex = 0;
             this.tpCommDebug.Text = "Comm Debug";
             this.tpCommDebug.UseVisualStyleBackColor = true;
+            // 
+            // btnClear
+            // 
+            this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClear.Location = new System.Drawing.Point(257, 201);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(75, 23);
+            this.btnClear.TabIndex = 28;
+            this.btnClear.Text = "Clear Output";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // btnRefreshPorts
             // 
@@ -226,6 +246,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbTraffic.Location = new System.Drawing.Point(6, 22);
             this.rtbTraffic.Name = "rtbTraffic";
+            this.rtbTraffic.ReadOnly = true;
             this.rtbTraffic.Size = new System.Drawing.Size(247, 202);
             this.rtbTraffic.TabIndex = 15;
             this.rtbTraffic.Text = "";
@@ -365,6 +386,7 @@
             // 
             // tpAuto
             // 
+            this.tpAuto.Controls.Add(this.btnClearEventOutput);
             this.tpAuto.Controls.Add(this.lblStatusBuild);
             this.tpAuto.Controls.Add(this.label17);
             this.tpAuto.Controls.Add(this.rtbRCOutput);
@@ -383,6 +405,17 @@
             this.tpAuto.TabIndex = 2;
             this.tpAuto.Text = "Automatic";
             this.tpAuto.UseVisualStyleBackColor = true;
+            // 
+            // btnClearEventOutput
+            // 
+            this.btnClearEventOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearEventOutput.Location = new System.Drawing.Point(428, 60);
+            this.btnClearEventOutput.Name = "btnClearEventOutput";
+            this.btnClearEventOutput.Size = new System.Drawing.Size(75, 23);
+            this.btnClearEventOutput.TabIndex = 29;
+            this.btnClearEventOutput.Text = "Clear Output";
+            this.btnClearEventOutput.UseVisualStyleBackColor = true;
+            this.btnClearEventOutput.Click += new System.EventHandler(this.btnClearEventOutput_Click);
             // 
             // lblStatusBuild
             // 
@@ -410,6 +443,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbRCOutput.Location = new System.Drawing.Point(6, 89);
             this.rtbRCOutput.Name = "rtbRCOutput";
+            this.rtbRCOutput.ReadOnly = true;
             this.rtbRCOutput.Size = new System.Drawing.Size(497, 135);
             this.rtbRCOutput.TabIndex = 16;
             this.rtbRCOutput.Text = "";
@@ -492,6 +526,12 @@
             // 
             // tpManual
             // 
+            this.tpManual.Controls.Add(this.label18);
+            this.tpManual.Controls.Add(this.label15);
+            this.tpManual.Controls.Add(this.txtZFeedrate);
+            this.tpManual.Controls.Add(this.txtXYFeedrate);
+            this.tpManual.Controls.Add(this.label14);
+            this.tpManual.Controls.Add(this.label13);
             this.tpManual.Controls.Add(this.btnZm);
             this.tpManual.Controls.Add(this.btnZp);
             this.tpManual.Controls.Add(this.btnXm);
@@ -508,6 +548,60 @@
             this.tpManual.Text = "Manual";
             this.tpManual.UseVisualStyleBackColor = true;
             // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(384, 37);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(50, 13);
+            this.label18.TabIndex = 34;
+            this.label18.Text = "mm / min";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(384, 11);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(50, 13);
+            this.label15.TabIndex = 33;
+            this.label15.Text = "mm / min";
+            // 
+            // txtZFeedrate
+            // 
+            this.txtZFeedrate.Location = new System.Drawing.Point(315, 34);
+            this.txtZFeedrate.Name = "txtZFeedrate";
+            this.txtZFeedrate.Size = new System.Drawing.Size(63, 20);
+            this.txtZFeedrate.TabIndex = 32;
+            this.txtZFeedrate.Text = "30.0";
+            this.txtZFeedrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // txtXYFeedrate
+            // 
+            this.txtXYFeedrate.Location = new System.Drawing.Point(315, 8);
+            this.txtXYFeedrate.Name = "txtXYFeedrate";
+            this.txtXYFeedrate.Size = new System.Drawing.Size(63, 20);
+            this.txtXYFeedrate.TabIndex = 31;
+            this.txtXYFeedrate.Text = "300.0";
+            this.txtXYFeedrate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(247, 37);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(62, 13);
+            this.label14.TabIndex = 30;
+            this.label14.Text = "Z Feedrate:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(240, 11);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(69, 13);
+            this.label13.TabIndex = 29;
+            this.label13.Text = "XY Feedrate:";
+            // 
             // btnZm
             // 
             this.btnZm.Location = new System.Drawing.Point(202, 125);
@@ -516,6 +610,7 @@
             this.btnZm.TabIndex = 28;
             this.btnZm.Text = "Z-";
             this.btnZm.UseVisualStyleBackColor = true;
+            this.btnZm.Click += new System.EventHandler(this.btnZm_Click);
             // 
             // btnZp
             // 
@@ -525,6 +620,7 @@
             this.btnZp.TabIndex = 27;
             this.btnZp.Text = "Z+";
             this.btnZp.UseVisualStyleBackColor = true;
+            this.btnZp.Click += new System.EventHandler(this.btnZp_Click);
             // 
             // btnXm
             // 
@@ -534,6 +630,7 @@
             this.btnXm.TabIndex = 26;
             this.btnXm.Text = "X-";
             this.btnXm.UseVisualStyleBackColor = true;
+            this.btnXm.Click += new System.EventHandler(this.btnXm_Click);
             // 
             // btnYm
             // 
@@ -543,6 +640,7 @@
             this.btnYm.TabIndex = 25;
             this.btnYm.Text = "Y-";
             this.btnYm.UseVisualStyleBackColor = true;
+            this.btnYm.Click += new System.EventHandler(this.btnYm_Click);
             // 
             // btnXp
             // 
@@ -552,6 +650,7 @@
             this.btnXp.TabIndex = 24;
             this.btnXp.Text = "X+";
             this.btnXp.UseVisualStyleBackColor = true;
+            this.btnXp.Click += new System.EventHandler(this.btnXp_Click);
             // 
             // label9
             // 
@@ -594,8 +693,17 @@
             this.tpSettings.Text = "Settings";
             this.tpSettings.UseVisualStyleBackColor = true;
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(106, 37);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 12;
+            this.textBox1.Text = "0.1";
+            // 
             // cmbRouterPort
             // 
+            this.cmbRouterPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbRouterPort.FormattingEnabled = true;
             this.cmbRouterPort.Location = new System.Drawing.Point(106, 10);
             this.cmbRouterPort.Name = "cmbRouterPort";
@@ -644,14 +752,6 @@
             // ofdGcodeBrowse
             // 
             this.ofdGcodeBrowse.Filter = "G-code files|*.nc|All files|*.*";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(106, 37);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 12;
-            this.textBox1.Text = "0.1";
             // 
             // CNCRouterCommand
             // 
@@ -738,6 +838,14 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
         private System.Windows.Forms.OpenFileDialog ofdGcodeBrowse;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox txtZFeedrate;
+        private System.Windows.Forms.TextBox txtXYFeedrate;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnClearEventOutput;
     }
 }
 

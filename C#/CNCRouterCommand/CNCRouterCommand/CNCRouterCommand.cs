@@ -34,11 +34,15 @@ namespace CNCRouterCommand
             // Setup the debug tab.
             string[] ports = CNCRTools.GetCNCRouterPorts();
             cmbPorts.Items.AddRange(ports);
-            cmbPorts.SelectedIndex = 0;
+            if(cmbPorts.Items.Count > 0)
+                cmbPorts.SelectedIndex = 0;
+
             cmbMsgs.SelectedIndex = 0;
 
             // Setup the Auto Tab
-            commCmd._displayWindow = rtbTraffic;
+            commCmd._rtbOutputCommDbg = rtbTraffic;
+            commCmd._rtbOutputAuto = rtbRCOutput;
+
             commCmd._displayLabel = lblQueue;
 
             // Setup the manual tab.
@@ -47,6 +51,12 @@ namespace CNCRouterCommand
                 cmbMoveDistance.Items.Add(distances[i].ToString() + " mm");
             }
             cmbMoveDistance.SelectedIndex = 0;
+
+            // Setup the Settings tab.
+            cmbRouterPort.Items.AddRange(ports);
+            if(cmbRouterPort.Items.Count > 0)
+                cmbRouterPort.SelectedIndex = 0;
+
         }
 
         #region Comm Debug Tab
@@ -113,7 +123,7 @@ namespace CNCRouterCommand
                     sendBytes = sendMsg.toSerial();
                     break;
                 case 7:
-                    sendMsg = new CNCRMsgMove(-32768, 32767, 0);
+                    sendMsg = new CNCRMsgMove(Int16.MinValue, Int16.MaxValue, 0);
                     sendBytes = sendMsg.toSerial();
                     break;
                 case 8:
@@ -268,11 +278,7 @@ namespace CNCRouterCommand
 
         private void btnStartBuild_Click(object sender, EventArgs e)
         {
-            CNCRMessage startBuild = new CNCRMsgStartQueue(false);
-            startBuild.setPriority(CNCRMSG_PRIORITY.HIGH);
-
-            commCmd.commPriorityQueueEnqueue(startBuild);
-            commCmd.launchProcessQueues();
+            startBuild();
         }
 
         private void btnAbortBuild_Click(object sender, EventArgs e)
@@ -284,24 +290,111 @@ namespace CNCRouterCommand
             commCmd.launchProcessQueues();
 
         }
+
+        private void startBuild()
+        {
+            commCmd.BaudRate = "9600";
+            commCmd.PortName = cmbPorts.SelectedItem.ToString();
+
+            rtbRCOutput.AppendText("Starting build...\n" +
+                "Opening Port: " + commCmd.PortName + "....");
+            rtbRCOutput.ScrollToCaret();
+
+            if (commCmd.OpenPort())
+            {
+                rtbRCOutput.AppendText(" Opened.\nStarting Build...\n");
+                tsPortStatus.Text = commCmd.PortName + " Open";
+
+                CNCRMessage startBuild = new CNCRMsgStartQueue(false);
+                startBuild.setPriority(CNCRMSG_PRIORITY.HIGH);
+
+                commCmd.commPriorityQueueEnqueue(startBuild);
+                commCmd.launchProcessQueues();
+            }
+        }
         #endregion
 
         #region Manual
         private void btnYp_Click(object sender, EventArgs e)
         {
             Int16 distance = Convert.ToInt16(distances[cmbMoveDistance.SelectedIndex] * 10);
-            sendShortMove(new CNCRMsgMove(0, distance, 0));
+            sendShortMove(new CNCRMsgMove(0, distance, 0), true);
+        }
+        private void btnYm_Click(object sender, EventArgs e)
+        {
+
+            Int16 distance = Convert.ToInt16(-1 * distances[cmbMoveDistance.SelectedIndex] * 10);
+            sendShortMove(new CNCRMsgMove(0, distance, 0), true);
+        }
+        
+        private void btnXp_Click(object sender, EventArgs e)
+        {
+            Int16 distance = Convert.ToInt16(distances[cmbMoveDistance.SelectedIndex] * 10);
+            sendShortMove(new CNCRMsgMove(distance, 0, 0), true);
+        }
+        private void btnXm_Click(object sender, EventArgs e)
+        {
+            Int16 distance = Convert.ToInt16(-1 * distances[cmbMoveDistance.SelectedIndex] * 10);
+            sendShortMove(new CNCRMsgMove(distance, 0, 0), true);
         }
 
-
-
-        private void sendShortMove(CNCRMsgMove msg)
+        private void btnZp_Click(object sender, EventArgs e)
         {
+            Int16 distance = Convert.ToInt16(distances[cmbMoveDistance.SelectedIndex] * 10);
+            sendShortMove(new CNCRMsgMove(0, 0, distance), false);
+        }
+        private void btnZm_Click(object sender, EventArgs e)
+        {
+            Int16 distance = Convert.ToInt16(-1 * distances[cmbMoveDistance.SelectedIndex] * 10);
+            sendShortMove(new CNCRMsgMove(0, 0, distance), false);
+        }
+        
+        private void sendShortMove(CNCRMsgMove msg, bool isXY)
+        {
+            float fSpeed;
+            // To be safe, set the speed to 30.0 mm/min
+            UInt16 uSpeed = CNCRConstants.DEFAULT_Z_FEEDRATE;
+
+            if (isXY)
+            {
+                if (!float.TryParse(txtXYFeedrate.Text, out fSpeed))
+                    fSpeed = CNCRConstants.DEFAULT_XY_FEEDRATE / 10;
+            }
+            else
+            {
+                if (!float.TryParse(txtZFeedrate.Text, out fSpeed))
+                    fSpeed = CNCRConstants.DEFAULT_Z_FEEDRATE / 10;
+            }
+
+            try
+            {
+                uSpeed = Convert.ToUInt16(fSpeed);
+            }
+            catch (Exception ex)
+            {
+                // eat my shorts.
+            }
+
+            // Enque the "startQueue" in the priority queue.
             commCmd.commPriorityQueueEnqueue(new CNCRMsgStartQueue(false));
+            commCmd.commCommandQueueEnqueue(new CNCRMsgSetSpeed(uSpeed));
             commCmd.commCommandQueueEnqueue(msg);
             commCmd.commCommandQueueEnqueue(new CNCRMsgStartQueue(true));
             commCmd.launchProcessQueues();
         }
         #endregion
+
+        private void btnClearEventOutput_Click(object sender, EventArgs e)
+        {
+            rtbRCOutput.Clear();
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            rtbTraffic.Clear();
+        }
+
+
+
     }
 }

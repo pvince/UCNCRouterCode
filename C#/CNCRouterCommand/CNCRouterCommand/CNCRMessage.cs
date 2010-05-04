@@ -55,7 +55,8 @@ namespace CNCRouterCommand
         {
             return "[ " + _msgType.ToString() +
                    " - " + _priority.ToString() +
-                   " - ID: " + _msgID + " ]";
+                   " - ID: " + _msgID + 
+                   " (" + CNCRTools.BytesToHex(this.toSerial()) + ") ]";
         }
 
         public abstract byte[] toSerial();

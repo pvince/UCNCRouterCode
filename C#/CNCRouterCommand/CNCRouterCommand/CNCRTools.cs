@@ -507,6 +507,7 @@ namespace CNCRouterCommand
                 }
                 catch (Exception ex)
                 {
+                    ex.ToString();
                     result = false;
                 }
             }
@@ -531,6 +532,7 @@ namespace CNCRouterCommand
                 }
                 catch (Exception ex)
                 {
+                    ex.ToString();
                     result = false;
                 }
             }
@@ -703,7 +705,6 @@ namespace CNCRouterCommand
             ref string eventLog, int line)
         {
             List<CNCRMessage> resultMsgs = new List<CNCRMessage>();
-            string curParam = "";
             bool isCW = false;
 
             switch (curCmdLetter)

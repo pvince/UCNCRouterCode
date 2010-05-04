@@ -183,7 +183,7 @@ namespace CNCRouterCommand
         public void commPriorityQueueEnqueue(CNCRMessage enqueue)
         {
             _commPriorityQLock.WaitOne();
-            _commCommandQueue.Enqueue(enqueue);
+            _commPriorityQueue.Enqueue(enqueue);
             _commPriorityQLock.Release();
         }
         public int commPriorityQueueCount()
@@ -366,7 +366,11 @@ namespace CNCRouterCommand
                 && ((CNCRMsgCmdAck)msg).getError() == true)             // and that acknowledge is saying we have an error.
             {
                 setDiscardingData(false);   // Then clear the discard data bit so we can see the response.
-                DisplayData("Sent Ack\n");
+                byte[] serialStuff = msg.toSerial();
+                string toDisplay = "Ack Sent: " + CNCRTools.BytesToHex(msg.toSerial());
+                toDisplay += "\n";
+
+                DisplayData(toDisplay);
             }
             if (msg.getMessageType() != CNCRMSG_TYPE.CMD_ACKNOWLEDGE)
             {
@@ -455,7 +459,7 @@ namespace CNCRouterCommand
             }
 
             // TODO: handleData: this is a hack, figure out a better way to validate the type.
-            if (getCurType() <= CNCRMSG_TYPE.TOOL_CMD)
+            if (getCurType() <= CNCRMSG_TYPE.PING)
             {
                 // Drop all incoming bytes into the queue
                 for (int i = 0; i < commBuffer.Length; i++)
@@ -573,7 +577,9 @@ namespace CNCRouterCommand
                 case CNCRMSG_TYPE.TOOL_CMD:
                     // We should not be receiving any of these messages.
                     // TODO: ActOnMessage: The following is not really an error, look into how to throw "warnings"
-                    throw new ArgumentException("Received a valid message that should not have been sent by router.");
+                    DisplayData("Reeived a valid message that shold not have been sent by the router. " + msg.ToString() + "\n");
+                    //throw new ArgumentException("Received a valid message that should not have been sent by router.");
+                    break;
                 default:
                     throw new ArgumentException("CNCRMessage has an invalid type");
             }
@@ -600,7 +606,7 @@ namespace CNCRouterCommand
 
             while (!getEStopActive() // While eStop is not active.
                  && ((commPriorityQueueCount() > 0) || (commCommandQueueCount() > 0 && getNumCmdsToSend() > 0))  // And this stuff
-                 && ((DateTime.Now - lastMsg) < timeout)) // And we are not timed out.
+                 /*&& ((DateTime.Now - lastMsg) < timeout)*/) // And we are not timed out.
             {
                 // If waiting for Ack or EStopped, exit thread, we cant send any commands.
                 if (!getWaitingOnAck() && !getEStopActive())
@@ -699,7 +705,8 @@ namespace CNCRouterCommand
 
         //* Display Data Stub
         #region DisplayData
-        public RichTextBox _displayWindow;
+        public RichTextBox _rtbOutputCommDbg;
+        public RichTextBox _rtbOutputAuto;
         public Label _displayLabel;
         /// <summary>
         /// method to display the data to & from the port
@@ -708,14 +715,52 @@ namespace CNCRouterCommand
         /// <param name="type">MessageType of the message</param>
         /// <param name="msg">Message to display</param>
         [STAThread]
+        private void DisplayData(string msg, int outputWindow)
+        {
+
+            switch (outputWindow)
+            {
+                case 0:
+                    // Comm Window
+                    DisplayData_Comm(msg);
+                    break;
+                case 1:
+                    // Auto Output
+                    DisplayData_Auto(msg);
+                    break;
+                default:
+                // Both
+                    break;
+            }
+        }
+
+        [STAThread]
         private void DisplayData(string msg)
         {
-            _displayWindow.Invoke(new EventHandler(delegate
+            DisplayData(msg, 0);
+        }
+
+        [STAThread]
+        private void DisplayData_Comm(string msg)
+        {
+            _rtbOutputCommDbg.Invoke(new EventHandler(delegate
             {
-                _displayWindow.SelectedText = string.Empty;
-                _displayWindow.SelectionFont = new Font(_displayWindow.SelectionFont, FontStyle.Bold);
-                _displayWindow.AppendText(msg);
-                _displayWindow.ScrollToCaret();
+                _rtbOutputCommDbg.SelectedText = string.Empty;
+                _rtbOutputCommDbg.SelectionFont = new Font(_rtbOutputCommDbg.SelectionFont, FontStyle.Bold);
+                _rtbOutputCommDbg.AppendText(msg);
+                _rtbOutputCommDbg.ScrollToCaret();
+            }));
+        }
+
+        [STAThread]
+        private void DisplayData_Auto(string msg)
+        {
+            _rtbOutputAuto.Invoke(new EventHandler(delegate
+            {
+                _rtbOutputAuto.SelectedText = string.Empty;
+                _rtbOutputAuto.SelectionFont = new Font(_rtbOutputAuto.SelectionFont, FontStyle.Bold);
+                _rtbOutputAuto.AppendText(msg);
+                _rtbOutputAuto.ScrollToCaret();
             }));
         }
         [STAThread]
