@@ -20,6 +20,7 @@ void setup()
 
 void loop()
 {
+
   //Priority of actions: (EStop)->(Send next motor action)->(Read incomming Message)->(Request more messges if needed)
   long Message = 0;   
   if(FlagEStop)
@@ -32,6 +33,7 @@ void loop()
   {
     QueueRead();
   }
+  digitalWrite(52,LOW);
   if(!FlagEStop ) //if the queue us supposed to be executed.
   {
     if(ExecutionStep==3)
@@ -54,13 +56,26 @@ void loop()
   }
   if(Serial.available()) //get message on serial buffer if one exists
   {
+    digitalWrite(52,HIGH);
     PacketContainer Packet;
     if(MessageInProgress==0)  //if this is a "type" message read it into the array at index 0
     {
-      delay(1);
-      Packet.array[0] = Serial.read();
+      int TempType = Serial.read();
+      
+      if(TempType > 0)
+      {
+        Packet.array[0] = TempType;
+      }
+      
     }
+    digitalWrite(52,LOW);
+    digitalWrite(53,HIGH);
+    if(Packet.array[0] !=0)
+    {
       MessageFilter(&Packet);
+    }
+    digitalWrite(53,LOW);
+    
   }
 }
 

@@ -10,30 +10,12 @@
 
 int MessageFilter(PacketContainer* Packet)
 {
+  Serial.write(255);
   //Serial.write(Packet->array[0]);
   byte Message=Packet->array[0];
   digitalWrite(13,HIGH);  //indicate a message is in progress
   switch((Message & 0b11110000)>>4)  //looks at the type bits
-  {
-    case (0):  //Ping
-    Packet->length=PingLength;
-    //AcknowledgeMessage(0);
-    if(Serial.available()>=Packet->length-1)
-    {
-      for(int x=1; x<Packet->length; x++)
-      {
-        Packet->array[x]=Serial.read();          
-      }
-      Serial.flush();
-      RecievePing(Packet);
-      MessageInProgress=0;
-    }
-    else
-    {
-      MessageInProgress=1;
-    }
-    digitalWrite(13,LOW);
-    break;
+  {    
     case (1):  //Acknowledge
     Packet->length=2;
     if(Serial.available()>=Packet->length-1)
@@ -163,6 +145,27 @@ int MessageFilter(PacketContainer* Packet)
     }
     digitalWrite(13,LOW);
     break;
+    
+    case (8):  //Ping
+    Packet->length=PingLength;
+    if(Serial.available()>=Packet->length-1)
+    {
+      for(int x=1; x<Packet->length; x++)
+      {
+        Packet->array[x]=Serial.read();          
+      }
+      Serial.flush();
+      RecievePing(Packet);
+      MessageInProgress=0;
+    }
+    else
+    {
+      MessageInProgress=1;
+    }
+    Serial.write(238);
+    digitalWrite(13,LOW);
+    break;
+    
   }
   return(0);
 }
