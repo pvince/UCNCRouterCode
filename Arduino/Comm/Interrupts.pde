@@ -57,6 +57,7 @@ void SetTimers()
   
   //Turn on interupts
   sei();
+  return;
 }
 
 void XAxisISR()
@@ -70,13 +71,13 @@ void XAxisISR()
     digitalWrite(XPort,HIGH);
     digitalWrite(XPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(XPort,LOW);
+    digitalWrite(30,HIGH);
   }
   else
   {
     ExecutionStep++;
-    detachInterrupt(0);
   }
-
+  return;
 }
 
 void YAxisISR()
@@ -90,11 +91,11 @@ void YAxisISR()
     digitalWrite(YPort,HIGH);
     digitalWrite(YPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(YPort,LOW);
+    digitalWrite(30,HIGH);
   }
   else
   {
     ExecutionStep++;
-    detachInterrupt(1);
   }
 
 }
@@ -114,7 +115,6 @@ void ZAxisISR()
   else
   {
     ExecutionStep++;
-    detachInterrupt(2);
   }
 
 }

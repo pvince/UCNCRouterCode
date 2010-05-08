@@ -15,16 +15,12 @@ int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
     StartPointer = &NewLink;
     WriteLocation = &NewLink;
   }
-  else if(QueueLength > 0)
+  else //if(QueueLength > 0)
   {
     Linklist* temp = WriteLocation; 
     temp->NextLink = &NewLink;
     WriteLocation = &NewLink;
     
-  }
-  else 
-  {
-    return(-1);
   }
   QueueLength++;
   NewLink.MessageLength = Message->length;
@@ -38,7 +34,6 @@ int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
 
 void QueueRead()  //Reads the oldest link off the queue and sends it to the required function.
 {
-  digitalWrite(30,HIGH);
   //Linklist *bob = new Linklist();
   Linklist* TempHolder;
   TempHolder = StartPointer;
@@ -66,9 +61,6 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
     ToolCMD(TempHolder);
     break;
   default:          //Not Expected
-    digitalWrite(22,HIGH);
-    delay(100);
-    digitalWrite(22,LOW);
     break;
   }
   digitalWrite(49,HIGH); 
@@ -260,7 +252,7 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
     ZDirection=0;
   }
   Calculations(XDiff, YDiff, ZDiff);
-  //SetTimers();
+  SetTimers();
   return(0);
 }
 

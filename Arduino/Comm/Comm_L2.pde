@@ -39,6 +39,7 @@ int RecieveEStop(PacketContainer* Packet)
   if(ParityChecker(Packet)==0)
   {
     FlagStart=0;
+    FlagEStop=1;
     AcknowledgeMessage(0);
   }
   else

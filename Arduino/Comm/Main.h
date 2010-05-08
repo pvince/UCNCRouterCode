@@ -2,8 +2,7 @@
 #define _Main_h
 
 //USE TO DEBUG
-int Debug1;
-int Debug2;
+
 //USE TO DEBUG
 
 int Firmware = 3;

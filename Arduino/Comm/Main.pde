@@ -20,36 +20,35 @@ void setup()
   pinMode(28,OUTPUT);
   pinMode(30,OUTPUT);
   pinMode(32,OUTPUT);
-  Debug2 = 0;
 }
 
 void loop()
 {
   //Priority of actions: (EStop)->(Send next motor action)->(Read incomming Message)->(Request more messges if needed)
-  if(!FlagStart)
+  if(FlagEStop)
   {
-    //cli();
+    cli();
   }
   
-  //Debugging: I don't think this is supposed to be here.
-//  if(FlagStart==1)
-//  {
-//    QueueRead();
-//  }
+//Debugging: I don't think this is supposed to be here.
+  if(FlagStart==1)
+  {
+    QueueRead();
+  }
 
   
-  if(FlagStart) //if the queue us supposed to be executed.
-  {
-    if(ExecutionStep==3)
-    {
-      QueueRead();
-    }
-  }
+//  if(FlagStart) //if the queue us supposed to be executed.
+//  {
+//    if(ExecutionStep==3)
+//    {
+//      QueueRead();
+//    }
+//  }
   
   //Conditionals for when the controller has time to get more messages
-  if(QueueLength<250 && FlagStart==1 && Serial.available()==0 && MessageInProgress == 0)
-  {
-//      Serial.print("MoreMessages");  //Ask computer for more messages.
+ // if(QueueLength<250 && FlagStart==1 && Serial.available()==0 && MessageInProgress == 0)
+  //{
+//      Serial.print("MoureMessages");  //Ask computer for more messages.
 //      PacketContainer Packet;
 //      Packet.length=3;
 //      Packet.array[0]=(0x30);
@@ -59,11 +58,10 @@ void loop()
 //      Serial.write(Packet.array[0]);
 //      Serial.write(Packet.array[1]);
 //      Serial.write(Packet.array[2]);
-  }
-  if(Serial.available() && (Debug2>=2)) //get message on serial buffer if one exists
+ // }
+  if(Serial.available())  //get message on serial buffer if one exists
   {
-    Debug2=0;
-    PacketContainer Packet;
+    
     if(MessageInProgress==0)  //if this is a "type" message read it into the array at index 0
     {
       int TempType = Serial.read();
@@ -78,7 +76,6 @@ void loop()
       MessageFilter(&Packet);
     }
   }
-  Debug2++;
 }
 
 

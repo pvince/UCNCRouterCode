@@ -155,9 +155,9 @@ int MessageFilter(PacketContainer* Packet)
       {
         Packet->array[x]=Serial.read();          
       }
-      Serial.flush();
       RecievePing(Packet);
       MessageInProgress=0;
+      Serial.flush();
     }
     else
     {
@@ -171,24 +171,14 @@ int MessageFilter(PacketContainer* Packet)
   digitalWrite(26,LOW);
   digitalWrite(28,LOW);
   digitalWrite(13,LOW);
-  if (Debug1==0) 
-  {
-    digitalWrite(28,HIGH);
-    Debug1=1;
-  }
-  else
-  {
-    digitalWrite(28,LOW);
-    Debug1=0;
-  }
   return(0);
 }
 int AcknowledgeMessage(boolean Error)
 {
-  delay(5);
   Serial.flush();    //Needed to get rid of junk bits that shouldn't be there.
   if( Error==1)
   {
+    Serial.flush();
     for (int x=0; x<AcknowledgeLength; x++)
     {
       Serial.write(PreviousPacket.array[x]);
