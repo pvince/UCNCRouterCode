@@ -18,27 +18,34 @@ ISR(TIMER4_OVF_vect)
 }
 
 
-void SetTimers()
+void SetTimers(unsigned int XTime, unsigned int YTime, unsigned int ZTime)
 {
   //Tells the main function that the router is currently moving, so don't execute another queue command.
   ExecutionStep = 0;
-  
   //Stop interupts while setting them up
   cli();
-  
   //These registers should be 0 before starting the counters
   //Timers 1, 3 and 4 are used because they are 16 bit and timers 0 and 2 are only 8 bit.
   TCCR1A=0;
   TCCR3A=0;
   TCCR4A=0;
   
+  for(int x=0; x<8; x++)
+      {
+        bitWrite(TCNT1H,x,bitRead(XTime,x+8));
+        bitWrite(TCNT1L,x,bitRead(XTime,x));
+        bitWrite(TCNT3H,x,bitRead(YTime,x+8));
+        bitWrite(TCNT3L,x,bitRead(YTime,x));
+        bitWrite(TCNT4H,x,bitRead(ZTime,x+8));
+        bitWrite(TCNT4L,x,bitRead(ZTime,x));
+      }
   //Clear the counter high and low bytes
-  TCNT1H=0;
-  TCNT1L=0;
-  TCNT3H=0;
-  TCNT3L=0;
-  TCNT4H=0;
-  TCNT4L=0;
+//  TCNT1H=0;
+//  TCNT1L=0;
+//  TCNT3H=0;
+//  TCNT3L=0;
+//  TCNT4H=0;
+//  TCNT4L=0;
   
   //Clear the overflow flags
   TIFR1 &= ~_BV(TOV1);
@@ -76,6 +83,7 @@ void XAxisISR()
   else
   {
     ExecutionStep++;
+    digitalWrite(30,HIGH);
   }
   return;
 }

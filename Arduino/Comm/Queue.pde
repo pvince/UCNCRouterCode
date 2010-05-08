@@ -72,6 +72,9 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
   float XRatio;
   float YRatio;
   float ZRatio;
+  unsigned int XTime;
+  unsigned int YTime;
+  unsigned int ZTime;
   int unity = 2667;
   //Set the speed of the motors using the speed input plus the max speed possible of the motors
   XSpeed = MaxMotorSpeed + XSpeedSet;
@@ -112,11 +115,12 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
     TCNT1L = 149;
     if (YRatio==0)
     {
-      TCCR3B = 0;
+      TCCR3B = 0;  //turn off interupt if there is no movement
     }
     else if(YRatio<24)
     {
       unsigned int time = 65536 - (2667 * YRatio);
+      YTime = time;
       for(int x=0; x<8; x++)
       {
         bitWrite(TCNT3H,x,bitRead(time,x+8));
@@ -125,11 +129,12 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
     }
     if (ZRatio==0)
     {
-      TCCR4B = 0;
+      TCCR4B = 0;  //turn off interupt if there is no movement.
     }
     else if(ZRatio<24)
     {
       unsigned int time = 65536 - (2667 * ZRatio);
+      ZTime = time;
       for(int x=0; x<8; x++)
       {
         bitWrite(TCNT4H,x,bitRead(time,x+8));
@@ -137,10 +142,12 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
       }
     }
   }
+  
+  
+  
   //If the Yaxis is the largest distance traveled
   else if((YDiff >= XDiff) && (YDiff >= ZDiff))
   {
-    digitalWrite(24,HIGH);
     YRatio = 1;
     if(XDiff != 0 )
     {
@@ -161,6 +168,9 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
     TCNT3H = 245;  //62869 unity value causes 6000 pps and 0 clock scaling
     TCNT3L = 149;
   }
+  
+  
+  
   //If the Zaxis is the largest distance traveled
   else if((ZDiff >= XDiff) && (ZDiff >= YDiff))
   {
@@ -185,7 +195,11 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
     TCNT4H = 245;  //62869 unity value causes 6000 pps and 0 clock scaling
     TCNT4L = 149;
   }
-  return();
+  XPulseCount = XDiff;
+  YPulseCount = YDiff;
+  ZPulseCount = ZDiff;
+  SetTimers(XTime,YTime,ZTime);
+  return;
 }
 
 int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
@@ -247,7 +261,6 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
     ZDirection=0;
   }
   Calculations(XDiff, YDiff, ZDiff);
-  SetTimers();
   return(0);
 }
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports

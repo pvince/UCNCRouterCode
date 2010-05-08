@@ -24,7 +24,6 @@ int RecievePing(PacketContainer* Packet)
 
 int RecieveAck(PacketContainer* Packet)
 {
-  digitalWrite(24,HIGH);
   if(Packet->array[0] == 18)
   {
      for (int x=0; x<AcknowledgeLength; x++)
