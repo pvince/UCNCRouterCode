@@ -10,7 +10,7 @@ void setup()
 {
   Serial.begin(MessageRate);
   Serial.flush();
-  pinMode(12,OUTPUT);
+  pinMode(12,OUTPUT);  //using these pins for debuging
   pinMode(52,OUTPUT);
   pinMode(53,OUTPUT);
   pinMode(47,OUTPUT);
@@ -29,18 +29,24 @@ void loop()
     FlagStart = 0;  //Stop proccessing the queue
     FlagMotorRunning = 0; //The motors are not running anymore
   }
-  if(FlagStart==1)
-  {
-    QueueRead();
-  }
+  
+  //Debugging: I don't think this is supposed to be here.
+//  if(FlagStart==1)
+//  {
+//    QueueRead();
+//  }
+  
   digitalWrite(52,LOW);
-  if(!FlagEStop ) //if the queue us supposed to be executed.
+  
+  if(!FlagEStop && FlagStart) //if the queue us supposed to be executed.
   {
     if(ExecutionStep==3)
     {
       QueueRead();
     }
   }
+  
+  //Conditionals for when the controller has time to get more messages
   if(QueueLength<250 && FlagStart==1 && Serial.available()==0 && MessageInProgress == 0)
   {
 //      Serial.print("MoreMessages");  //Ask computer for more messages.
