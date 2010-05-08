@@ -104,20 +104,24 @@ Start Queue
 0x41	01000001
 0x41	01000001
 SetSpeed
-0x50	01010000
+0x5c	01011100
+0x9c	10011100
+0x41	01000001
+0x00	00000000
+0x81	10000001
 
 Move
 0x60	01100000
-	[UpperX P]
-	[LowerX P]
-	[~X_botBits P]
-	[UpperY P]
-	[LowerY P]
-	[~Y_botBits P]
-	[UpperZ P]
-	[LowerZ P]
-	[~Z_botBits P]
-	[Parity]
+0x81	[UpperX P]
+0x00	[LowerX P]
+0x00	[~X_botBits P]
+0x7e	[UpperY P]
+0xff	[LowerY P]
+0x06	[~Y_botBits P]
+0x00	[UpperZ P]
+0x00	[LowerZ P]
+0x00	[~Z_botBits P]
+0x66	[Parity]
 ToolCommand
 0x72 0x71 [011100(OnOFF)P]
 0x72 0x71 [Parity]
