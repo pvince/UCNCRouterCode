@@ -166,10 +166,6 @@ int MessageFilter(PacketContainer* Packet)
     break;
     
   }
-  digitalWrite(22,LOW);
-  digitalWrite(24,LOW);
-  digitalWrite(26,LOW);
-  digitalWrite(28,LOW);
   digitalWrite(13,LOW);
   return(0);
 }

@@ -6,12 +6,12 @@ struct Linklist
 {
   byte MessageLength;
   byte Message[11];
-  Linklist* NextLink;
 };
-
+int MaxQueueLength=500;
+Linklist Queue[500];
 int QueueLength = 0;
-Linklist* StartPointer;
-Linklist* WriteLocation;
+int ReadLocation= 0;
+int WriteLocation = 0;
 
 void QueueAdd();
 void QueueRead();

@@ -12,6 +12,7 @@ void setup()
   //TIMSK1 |= ~_BV(TOIE1);
   //TIMSK3 |= ~_BV(TOIE3);
   //TIMSK4 |= ~_BV(TOIE4);
+  ExecutionStep=3;
   Serial.begin(MessageRate);
   Serial.flush();
   pinMode(22,OUTPUT);  //using these pins for debuging
@@ -29,21 +30,14 @@ void loop()
   {
     cli();
   }
-  
-//Debugging: I don't think this is supposed to be here.
-  if(FlagStart==1)
-  {
-    QueueRead();
-  }
 
-  
-//  if(FlagStart) //if the queue us supposed to be executed.
-//  {
-//    if(ExecutionStep==3)
-//    {
-//      QueueRead();
-//    }
-//  }
+  if(FlagStart && QueueLength > 0) //if the queue us supposed to be executed.
+  {
+    if(ExecutionStep==3)
+    {
+      QueueRead();
+    }
+  }
   
   //Conditionals for when the controller has time to get more messages
  // if(QueueLength<250 && FlagStart==1 && Serial.available()==0 && MessageInProgress == 0)

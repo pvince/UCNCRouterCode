@@ -51,7 +51,6 @@ int RecieveEStop(PacketContainer* Packet)
 
 int RecieveStartQueue(PacketContainer* Packet)
 {
-  digitalWrite(26,HIGH);
   if(ParityChecker(Packet)==0)
   {
     FlagStart=1;
@@ -69,7 +68,6 @@ int RecieveStartQueue(PacketContainer* Packet)
 
 int RecieveRequestCommands(PacketContainer* Packet)
 {
-  digitalWrite(28,HIGH);
   if(ParityChecker(Packet)==0)
   {
     //****************************************
@@ -106,7 +104,6 @@ int RecieveSetSpeed(PacketContainer* Packet)
 
 int RecieveMove(PacketContainer* Packet)
 {
-  digitalWrite(26,HIGH);
   if(ParityChecker(Packet)==0)
   {
     if(QueueAdd(Packet)==0)

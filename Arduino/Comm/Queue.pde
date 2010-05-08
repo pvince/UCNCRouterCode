@@ -9,77 +9,64 @@
 
 int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
 {
-  Linklist NewLink;
-  if(QueueLength == 0)
-  {
-    StartPointer = &NewLink;
-    WriteLocation = &NewLink;
-  }
-  else //if(QueueLength > 0)
-  {
-    Linklist* temp = WriteLocation; 
-    temp->NextLink = &NewLink;
-    WriteLocation = &NewLink;
-    
-  }
   QueueLength++;
-  NewLink.MessageLength = Message->length;
-  NewLink.NextLink = NULL;
-  for(int x = 0; x<Message->length-1; x++) //does not read in the parity
+  Queue[WriteLocation].MessageLength = Message->length;
+  for(int x = 0; x<Message->length; x++) //does not read in the parity
   {
-    NewLink.Message[x]=Message->array[x];
+    Queue[WriteLocation].Message[x]=Message->array[x];
+    Serial.write(Message->array[x]);
+  }
+  if (WriteLocation < MaxQueueLength-1)  //if it has not reached the top of the queue yet.
+  {
+    WriteLocation++;
+  }
+  else    //if it was on the last object in teh queue.
+  {
+    WriteLocation=0;
   }
   return(0);
 }
 
 void QueueRead()  //Reads the oldest link off the queue and sends it to the required function.
 {
-  //Linklist *bob = new Linklist();
-  Linklist* TempHolder;
-  TempHolder = StartPointer;
-  digitalWrite(49,HIGH);
-  Serial.flush();
-  byte temp = TempHolder->Message[0];
+  byte temp = Queue[ReadLocation].Message[0];
   switch((temp & 0b11110000) >>4)
   {
     case (5):        //SetSpeed
-    digitalWrite(47,HIGH);
-    delay(100);
-    digitalWrite(47,LOW);
-    SetSpeed(TempHolder);  //Reads packet and insterst speed into axis speed variables.
-    break;
+      SetSpeed(&Queue[ReadLocation]);  //Reads packet and insterst speed into axis speed variables.
+      break;
     case (6):        //Move
-    digitalWrite(53,HIGH);
-    delay(100);
-    digitalWrite(53,LOW);
-    Move(TempHolder);
-    break;
+      Move(&Queue[ReadLocation]);
+      break;
     case (7):        //ToolCMD
-    digitalWrite(28,HIGH);
-    delay(100);
-    digitalWrite(28,LOW);
-    ToolCMD(TempHolder);
-    break;
-  default:          //Not Expected
-    break;
+      ToolCMD(&Queue[ReadLocation]);
+      break;
+    default:          //Not Expected
+      break;
   }
-  digitalWrite(49,HIGH); 
+  QueueLength--;
   if(QueueLength>1)
   {
-    StartPointer = StartPointer->NextLink;   //Uncomment when first link works
-    QueueLength--;
+    if(ReadLocation < MaxQueueLength-1)
+    {
+      ReadLocation++;
+    }
+    else
+    {
+      ReadLocation=0;
+    }
   }
   else    //The queue is empty so there is nothing to execute
   {
     QueueLength =0;
-    StartPointer = NULL;
-    WriteLocation = NULL;
+    ReadLocation = 0;
+    WriteLocation = 0;
     FlagStart = 0;
   }
   return;
 }
 
-void Calculations(int XDiff, int YDiff, int ZDiff)
+void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
 {//This section attempts to find the number of steps it takes each axis to get to it's location, 
   //the interval of the interupts to create the needed slopes of lines relative to the other axises
   float XRatio;
@@ -91,12 +78,19 @@ void Calculations(int XDiff, int YDiff, int ZDiff)
   YSpeed = MaxMotorSpeed + YSpeedSet;
   ZSpeed = MaxMotorSpeed + ZSpeedSet;
   //Find the number of pulses to get to that location
-  XDiff = XDiff * Resolution;
-  YDiff = YDiff * Resolution;
-  ZDiff = ZDiff * Resolution;
-  //If the Yaxis is the largest distance traveled
+  XDiff *= Resolution;
+  YDiff *= Resolution;
+  ZDiff *= Resolution;
+  Serial.write(XDiff>>8);
+  Serial.write(XDiff);
+  Serial.write(YDiff>>8);
+  Serial.write(YDiff);
+  Serial.write(ZDiff>>8);
+  Serial.write(ZDiff);
+  //If the Xaxis is the largest distance traveled
   if((XDiff >= YDiff) && (XDiff >= ZDiff))
   {
+    digitalWrite(22,HIGH);
     XRatio = 1;
     if(YDiff != 0)
     {
@@ -127,7 +121,7 @@ void Calculations(int XDiff, int YDiff, int ZDiff)
       {
         bitWrite(TCNT3H,x,bitRead(time,x+8));
         bitWrite(TCNT3L,x,bitRead(time,x));
-      }
+      }  
     }
     if (ZRatio==0)
     {
@@ -146,6 +140,7 @@ void Calculations(int XDiff, int YDiff, int ZDiff)
   //If the Yaxis is the largest distance traveled
   else if((YDiff >= XDiff) && (YDiff >= ZDiff))
   {
+    digitalWrite(24,HIGH);
     YRatio = 1;
     if(XDiff != 0 )
     {
@@ -169,6 +164,7 @@ void Calculations(int XDiff, int YDiff, int ZDiff)
   //If the Zaxis is the largest distance traveled
   else if((ZDiff >= XDiff) && (ZDiff >= YDiff))
   {
+    digitalWrite(26,HIGH);
     ZRatio = 1;
     if(XDiff != 0 )
     {
@@ -189,7 +185,7 @@ void Calculations(int XDiff, int YDiff, int ZDiff)
     TCNT4H = 245;  //62869 unity value causes 6000 pps and 0 clock scaling
     TCNT4L = 149;
   }
-  //Needs to scale timers
+  return();
 }
 
 int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
@@ -213,20 +209,19 @@ int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
 
 int Move(Linklist* TempHolder)  //Sends signal to disired ports
 {
-
-  int done;
-  int XDestination = (int) TempHolder->Message[1]<<13;              //converts the message into positions
-  XDestination = XDestination & (int) TempHolder->Message[2]<<6;
-  XDestination = XDestination & (int) TempHolder->Message[3]>>1;
-  int YDestination = (int) TempHolder->Message[4]<<13;
-  YDestination = XDestination & (int) TempHolder->Message[5]<<6;
-  YDestination = XDestination & (int) TempHolder->Message[6]>>1;
-  int ZDestination = (int) TempHolder->Message[7]<<13;
-  ZDestination = XDestination & (int) TempHolder->Message[8]<<6;
-  ZDestination = XDestination & (int) TempHolder->Message[9]>>1;  
-  int XDiff = XDestination - XPosition;
-  int YDiff = YDestination - YPosition;
-  int ZDiff = ZDestination - ZPosition;
+  //int done;
+  int XDestination = ((int) TempHolder->Message[1] & 0b11111110)<<8;    //converts the message into positions
+  XDestination = XDestination | ((int) TempHolder->Message[2] & 0b11111110)<<1;
+  XDestination = XDestination | ((int) TempHolder->Message[3] & 0b00000110)>>1;
+  int YDestination = ((int) TempHolder->Message[4] & 0b11111110)<<8;
+  YDestination = YDestination | ((int) TempHolder->Message[5] & 0b11111110)<<1;
+  YDestination = YDestination | ((int) TempHolder->Message[6] & 0b00000110)>>1;
+  int ZDestination = ((int) TempHolder->Message[7] & 0b11111110)<<8;
+  ZDestination = ZDestination | ((int) TempHolder->Message[8] & 0b11111110)<<1;
+  ZDestination = ZDestination | ((int) TempHolder->Message[9] & 0b00000110)>>1;  
+  unsigned int XDiff = XDestination - XPosition;
+  unsigned int YDiff = YDestination - YPosition;
+  unsigned int ZDiff = ZDestination - ZPosition;
   if (XDiff>=0)
   {
     XDirection=1;
@@ -255,7 +250,6 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
   SetTimers();
   return(0);
 }
-
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
 {
   digitalWrite(PowerPort,TempHolder->Message[7]); //bit 7 holds the on or off signal
