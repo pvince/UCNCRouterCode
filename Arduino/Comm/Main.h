@@ -1,7 +1,10 @@
 #ifndef _Main_h
 #define _Main_h
 
-
+//USE TO DEBUG
+int Debug1;
+int Debug2;
+//USE TO DEBUG
 
 int Firmware = 3;
 int FlagStart = 0;

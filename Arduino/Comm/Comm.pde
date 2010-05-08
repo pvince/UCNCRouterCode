@@ -10,7 +10,6 @@
 
 int MessageFilter(PacketContainer* Packet)
 {
-  Serial.write(255);
   //Serial.write(Packet->array[0]);
   byte Message=Packet->array[0];
   digitalWrite(13,HIGH);  //indicate a message is in progress
@@ -32,8 +31,9 @@ int MessageFilter(PacketContainer* Packet)
     {
       MessageInProgress=1;
     }
-    digitalWrite(13,LOW);
     break;
+    
+    
     case(2):  //EStop
     Packet->length=EStopLength;
     if(Serial.available()>=Packet->length-1)
@@ -50,8 +50,9 @@ int MessageFilter(PacketContainer* Packet)
     {
       MessageInProgress=1;
     }
-    digitalWrite(13,LOW);
     break;
+    
+    
     case(3):  //Request Commands
     Packet->length=RequestCommandsLength;
     if(Serial.available()>=Packet->length-1)
@@ -68,8 +69,9 @@ int MessageFilter(PacketContainer* Packet)
     {
       MessageInProgress=1;
     }
-    digitalWrite(13,LOW);
     break;
+    
+    
     case(4):  //Start Queue
     Packet->length=StartQueueLength;
     if(Serial.available()>=Packet->length-1)
@@ -86,8 +88,8 @@ int MessageFilter(PacketContainer* Packet)
     {
       MessageInProgress=1;
     }
-    digitalWrite(13,LOW);
     break;
+    
     
     case(5):  //SetSpeed
     Packet->length=SetSpeedLength;
@@ -105,8 +107,8 @@ int MessageFilter(PacketContainer* Packet)
     {
       MessageInProgress=1;
     }
-    digitalWrite(13,LOW);
     break;
+    
     
     case(6):  //Move
     Packet->length=MoveLength;
@@ -124,7 +126,6 @@ int MessageFilter(PacketContainer* Packet)
     {
       MessageInProgress=1;
     }
-    digitalWrite(13,LOW);
     break;
     
     case(7):  //ToolCMD
@@ -143,8 +144,8 @@ int MessageFilter(PacketContainer* Packet)
     {
       MessageInProgress=1;
     }
-    digitalWrite(13,LOW);
     break;
+    
     
     case (8):  //Ping
     Packet->length=PingLength;
@@ -162,10 +163,23 @@ int MessageFilter(PacketContainer* Packet)
     {
       MessageInProgress=1;
     }
-    Serial.write(238);
-    digitalWrite(13,LOW);
     break;
     
+  }
+  digitalWrite(22,LOW);
+  digitalWrite(24,LOW);
+  digitalWrite(26,LOW);
+  digitalWrite(28,LOW);
+  digitalWrite(13,LOW);
+  if (Debug1==0) 
+  {
+    digitalWrite(28,HIGH);
+    Debug1=1;
+  }
+  else
+  {
+    digitalWrite(28,LOW);
+    Debug1=0;
   }
   return(0);
 }

@@ -8,26 +8,27 @@
 
 void setup()
 {
+   //disable overflow interupts
+  //TIMSK1 |= ~_BV(TOIE1);
+  //TIMSK3 |= ~_BV(TOIE3);
+  //TIMSK4 |= ~_BV(TOIE4);
   Serial.begin(MessageRate);
   Serial.flush();
-  pinMode(12,OUTPUT);  //using these pins for debuging
-  pinMode(52,OUTPUT);
-  pinMode(53,OUTPUT);
-  pinMode(47,OUTPUT);
-  pinMode(22,OUTPUT);
+  pinMode(22,OUTPUT);  //using these pins for debuging
+  pinMode(24,OUTPUT);
+  pinMode(26,OUTPUT);
   pinMode(28,OUTPUT);
+  pinMode(30,OUTPUT);
+  pinMode(32,OUTPUT);
+  Debug2 = 0;
 }
 
 void loop()
 {
-
   //Priority of actions: (EStop)->(Send next motor action)->(Read incomming Message)->(Request more messges if needed)
-  long Message = 0;   
-  if(FlagEStop)
+  if(!FlagStart)
   {
-    noInterrupts();
-    FlagStart = 0;  //Stop proccessing the queue
-    FlagMotorRunning = 0; //The motors are not running anymore
+    //cli();
   }
   
   //Debugging: I don't think this is supposed to be here.
@@ -35,10 +36,9 @@ void loop()
 //  {
 //    QueueRead();
 //  }
+
   
-  digitalWrite(52,LOW);
-  
-  if(!FlagEStop && FlagStart) //if the queue us supposed to be executed.
+  if(FlagStart) //if the queue us supposed to be executed.
   {
     if(ExecutionStep==3)
     {
@@ -60,9 +60,9 @@ void loop()
 //      Serial.write(Packet.array[1]);
 //      Serial.write(Packet.array[2]);
   }
-  if(Serial.available()) //get message on serial buffer if one exists
+  if(Serial.available() && (Debug2>=2)) //get message on serial buffer if one exists
   {
-    digitalWrite(52,HIGH);
+    Debug2=0;
     PacketContainer Packet;
     if(MessageInProgress==0)  //if this is a "type" message read it into the array at index 0
     {
@@ -71,22 +71,18 @@ void loop()
       if(TempType > 0)
       {
         Packet.array[0] = TempType;
-      }
-      
+      }  
     }
-    digitalWrite(52,LOW);
-    digitalWrite(53,HIGH);
     if(Packet.array[0] !=0)
     {
       MessageFilter(&Packet);
     }
-    digitalWrite(53,LOW);
-    
   }
+  Debug2++;
 }
 
 
-void Motor()
-{
-  QueueRead();
-}
+//  void Motor()
+//  {
+//    QueueRead();
+//  }

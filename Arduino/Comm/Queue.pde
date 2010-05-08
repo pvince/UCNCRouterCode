@@ -38,6 +38,7 @@ int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
 
 void QueueRead()  //Reads the oldest link off the queue and sends it to the required function.
 {
+  digitalWrite(30,HIGH);
   //Linklist *bob = new Linklist();
   Linklist* TempHolder;
   TempHolder = StartPointer;
@@ -215,9 +216,6 @@ int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
   {
     ZSpeedSet = temp;
   }
-    digitalWrite(47,HIGH);
-  delay(100);
-  digitalWrite(47,LOW);
   return(0);
 }
 
@@ -263,18 +261,12 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
   }
   Calculations(XDiff, YDiff, ZDiff);
   //SetTimers();
-  digitalWrite(53,HIGH);
-  delay(100);
-  digitalWrite(53,LOW);
   return(0);
 }
 
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
 {
   digitalWrite(PowerPort,TempHolder->Message[7]); //bit 7 holds the on or off signal
-  digitalWrite(28,HIGH);
-  delay(100);
-  digitalWrite(28,LOW);
   return(0);
 }
 

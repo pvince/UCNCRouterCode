@@ -57,7 +57,6 @@ void SetTimers()
   
   //Turn on interupts
   sei();
-  
 }
 
 void XAxisISR()
