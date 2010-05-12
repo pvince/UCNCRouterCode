@@ -9,7 +9,6 @@
 //**************************************************************************
 int RecievePing(PacketContainer* Packet)
 {
-  digitalWrite(22,HIGH);
   if(ParityChecker(Packet)==0)
   {
     
@@ -52,7 +51,14 @@ int RecieveStartQueue(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
+    if(ExecutionStep < 3)
+    {
+      TIMSK1 |= _BV(TOIE1);
+      TIMSK3 |= _BV(TOIE3);
+      TIMSK4 |= _BV(TOIE4);
+    }
     FlagStart=1;
+    FlagEStop=0;
     //****************************************
     //**  Start Queue Logic                 **
     //****************************************
@@ -145,4 +151,12 @@ int RecieveToolCMD(PacketContainer* Packet)
 //**                     End Message Functions                            **
 //**************************************************************************
 
-
+void EStop()
+{
+ //Priority of actions: (EStop)->(Send next motor action)->(Read incomming Message)->(Request more messges if needed)
+  
+    //shuts off the interupts that would move the motors
+    TIMSK1 &= ~_BV(TOIE1);
+    TIMSK3 &= ~_BV(TOIE3);
+    TIMSK4 &= ~_BV(TOIE4);
+}

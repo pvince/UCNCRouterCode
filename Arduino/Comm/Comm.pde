@@ -167,8 +167,16 @@ int MessageFilter(PacketContainer* Packet)
     
   }
   digitalWrite(13,LOW);
+  
   return(0);
 }
+
+
+//*************************************************************
+//*************************************************************
+//*************************************************************
+
+
 int AcknowledgeMessage(boolean Error)
 {
   Serial.flush();    //Needed to get rid of junk bits that shouldn't be there.

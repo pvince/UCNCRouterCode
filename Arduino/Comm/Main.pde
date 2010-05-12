@@ -8,14 +8,19 @@
 
 void setup()
 {
-   //disable overflow interupts
-  //TIMSK1 |= ~_BV(TOIE1);
-  //TIMSK3 |= ~_BV(TOIE3);
-  //TIMSK4 |= ~_BV(TOIE4);
+  FlagEStop = 1;
+  FlagStart = 0;
   ExecutionStep=3;
   Serial.begin(MessageRate);
   Serial.flush();
-  pinMode(22,OUTPUT);  //using these pins for debuging
+  pinMode(XPort,OUTPUT);
+  pinMode(YPort,OUTPUT);
+  pinMode(ZPort,OUTPUT);
+  pinMode(XDirectionPort,OUTPUT);
+  pinMode(YDirectionPort,OUTPUT);
+  pinMode(ZDirectionPort,OUTPUT);
+  //using these pins for debuging
+  pinMode(22,OUTPUT);  
   pinMode(24,OUTPUT);
   pinMode(26,OUTPUT);
   pinMode(28,OUTPUT);
@@ -25,12 +30,12 @@ void setup()
 
 void loop()
 {
-  //Priority of actions: (EStop)->(Send next motor action)->(Read incomming Message)->(Request more messges if needed)
-  if(FlagEStop)
-  {
-    cli();
-  }
-digitalWrite(30,LOW);
+ 
+  //Used for debugging
+  //digitalWrite(30,LOW);
+  //digitalWrite(28,LOW);
+  //digitalWrite(26,LOW);
+   Serial.write(ExecutionStep);
   if(FlagStart && QueueLength > 0) //if the queue us supposed to be executed.
   {
     if(ExecutionStep==3)
@@ -55,7 +60,6 @@ digitalWrite(30,LOW);
  // }
   if(Serial.available())  //get message on serial buffer if one exists
   {
-    
     if(MessageInProgress==0)  //if this is a "type" message read it into the array at index 0
     {
       int TempType = Serial.read();
@@ -72,8 +76,3 @@ digitalWrite(30,LOW);
   }
 }
 
-
-//  void Motor()
-//  {
-//    QueueRead();
-//  }

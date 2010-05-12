@@ -78,12 +78,11 @@ void XAxisISR()
     digitalWrite(XPort,HIGH);
     digitalWrite(XPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(XPort,LOW);
-    digitalWrite(30,HIGH);
+    digitalWrite(26,HIGH);
   }
   else
   {
     ExecutionStep++;
-    digitalWrite(30,HIGH);
   }
   return;
 }
@@ -99,7 +98,7 @@ void YAxisISR()
     digitalWrite(YPort,HIGH);
     digitalWrite(YPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(YPort,LOW);
-    digitalWrite(30,HIGH);
+    digitalWrite(28,HIGH);
   }
   else
   {
@@ -119,6 +118,7 @@ void ZAxisISR()
     digitalWrite(ZPort,HIGH);
     digitalWrite(ZPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(ZPort,LOW);
+    digitalWrite(30,HIGH);
   }
   else
   {

@@ -14,7 +14,8 @@ int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
   for(int x = 0; x<Message->length; x++) //does not read in the parity
   {
     Queue[WriteLocation].Message[x]=Message->array[x];
-    Serial.write(Message->array[x]);
+    //Used for debuging, shows the message recieved on the serial buss
+    //Serial.write(Message->array[x]);
   }
   if (WriteLocation < MaxQueueLength-1)  //if it has not reached the top of the queue yet.
   {
@@ -84,16 +85,16 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
   XDiff *= Resolution;
   YDiff *= Resolution;
   ZDiff *= Resolution;
-  Serial.write(XDiff>>8);
-  Serial.write(XDiff);
-  Serial.write(YDiff>>8);
-  Serial.write(YDiff);
-  Serial.write(ZDiff>>8);
-  Serial.write(ZDiff);
+  //Used for debugging calculations
+  //  Serial.write(XDiff>>8);
+  //  Serial.write(XDiff);
+  //  Serial.write(YDiff>>8);
+  //  Serial.write(YDiff);
+  //  Serial.write(ZDiff>>8);
+  //  Serial.write(ZDiff);
   //If the Xaxis is the largest distance traveled
   if((XDiff >= YDiff) && (XDiff >= ZDiff))
   {
-    digitalWrite(22,HIGH);
     XRatio = 1;
     if(YDiff != 0)
     {
@@ -167,6 +168,34 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
     }
     TCNT3H = 245;  //62869 unity value causes 6000 pps and 0 clock scaling
     TCNT3L = 149;
+    if (XRatio==0)
+    {
+      TCCR1B = 0;  //turn off interupt if there is no movement
+    }
+    else if(XRatio<24)
+    {
+      unsigned int time = 65536 - (2667 * XRatio);
+      YTime = time;
+      for(int x=0; x<8; x++)
+      {
+        bitWrite(TCNT1H,x,bitRead(time,x+8));
+        bitWrite(TCNT1L,x,bitRead(time,x));
+      }  
+    }
+    if (ZRatio==0)
+    {
+      TCCR4B = 0;  //turn off interupt if there is no movement.
+    }
+    else if(ZRatio<24)
+    {
+      unsigned int time = 65536 - (2667 * ZRatio);
+      ZTime = time;
+      for(int x=0; x<8; x++)
+      {
+        bitWrite(TCNT4H,x,bitRead(time,x+8));
+        bitWrite(TCNT4L,x,bitRead(time,x));
+      }
+    }
   }
   
   
@@ -174,7 +203,6 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
   //If the Zaxis is the largest distance traveled
   else if((ZDiff >= XDiff) && (ZDiff >= YDiff))
   {
-    digitalWrite(26,HIGH);
     ZRatio = 1;
     if(XDiff != 0 )
     {
@@ -195,9 +223,43 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
     TCNT4H = 245;  //62869 unity value causes 6000 pps and 0 clock scaling
     TCNT4L = 149;
   }
+  
+  if (XRatio==0)
+    {
+      TCCR1B = 0;  //turn off interupt if there is no movement
+    }
+  else if(XRatio<24)
+  {
+    unsigned int time = 65536 - (2667 * XRatio);
+    YTime = time;
+    for(int x=0; x<8; x++)
+    {
+      bitWrite(TCNT1H,x,bitRead(time,x+8));
+      bitWrite(TCNT1L,x,bitRead(time,x));
+    }  
+  }
+  if (YRatio==0)
+  {
+    TCCR3B = 0;  //turn off interupt if there is no movement
+  }
+  else if(YRatio<24)
+  {
+    unsigned int time = 65536 - (2667 * YRatio);
+    YTime = time;
+    for(int x=0; x<8; x++)
+    {
+      bitWrite(TCNT3H,x,bitRead(time,x+8));
+      bitWrite(TCNT3L,x,bitRead(time,x));
+    }  
+  }
+  
   XPulseCount = XDiff;
   YPulseCount = YDiff;
   ZPulseCount = ZDiff;
+  Serial.write((int)XPulseCount);
+  Serial.write((int)YPulseCount);
+  Serial.write((int)ZPulseCount);
+  Serial.write(255);
   SetTimers(XTime,YTime,ZTime);
   return;
 }
