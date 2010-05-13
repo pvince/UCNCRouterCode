@@ -1,0 +1,4 @@
+Todo List:
+1) Fix Message request
+2) Finish calculations section (test and improve accuracy)
+3) Remove Global variables
