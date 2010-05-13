@@ -78,10 +78,14 @@ void XAxisISR()
     digitalWrite(XPort,HIGH);
     digitalWrite(XPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(XPort,LOW);
-    digitalWrite(26,HIGH);
+    //digitalWrite(26,HIGH);
+    //Serial.write(ExecutionStep);
   }
   else
   {
+    TCCR1B = 0;
+    TIMSK1 &= ~_BV(TOIE1);
+    digitalWrite(26,HIGH);
     ExecutionStep++;
   }
   return;
@@ -98,10 +102,13 @@ void YAxisISR()
     digitalWrite(YPort,HIGH);
     digitalWrite(YPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(YPort,LOW);
-    digitalWrite(28,HIGH);
+    //digitalWrite(28,HIGH);
   }
   else
   {
+    TCCR3B = 0;
+    TIMSK3 &= ~_BV(TOIE3);
+    digitalWrite(28,HIGH);
     ExecutionStep++;
   }
 
@@ -118,10 +125,13 @@ void ZAxisISR()
     digitalWrite(ZPort,HIGH);
     digitalWrite(ZPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(ZPort,LOW);
-    digitalWrite(30,HIGH);
+    //digitalWrite(30,HIGH);
   }
   else
   {
+    TCCR4B = 0;
+    TIMSK4 &= ~_BV(TOIE4);
+    digitalWrite(30,HIGH);
     ExecutionStep++;
   }
 

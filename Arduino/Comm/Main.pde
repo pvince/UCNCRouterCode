@@ -35,7 +35,6 @@ void loop()
   //digitalWrite(30,LOW);
   //digitalWrite(28,LOW);
   //digitalWrite(26,LOW);
-   Serial.write(ExecutionStep);
   if(FlagStart && QueueLength > 0) //if the queue us supposed to be executed.
   {
     if(ExecutionStep==3)

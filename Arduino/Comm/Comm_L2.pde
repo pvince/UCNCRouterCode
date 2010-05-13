@@ -4,14 +4,14 @@
 
 //**************************************************************************
 //**************************************************************************
-//**                     Message Functions                                **
+//**                     Message Functions:                               **
+//**      Controls what happons when this type of packet is recieved      **
 //**************************************************************************
 //**************************************************************************
 int RecievePing(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
-    
     AcknowledgeMessage(0);
   }
   else
@@ -20,6 +20,8 @@ int RecievePing(PacketContainer* Packet)
   }
   return(0);
 }
+
+//**************************************************************************
 
 int RecieveAck(PacketContainer* Packet)
 {
@@ -32,12 +34,26 @@ int RecieveAck(PacketContainer* Packet)
   }
   return(0);
 }
+
+//**************************************************************************
+
 int RecieveEStop(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
     FlagStart=0;
     FlagEStop=1;
+    
+     //Stop the timers
+    TCCR1B = 0;
+    TCCR3B = 0;
+    TCCR4B = 0;
+  
+    //shuts off the interupts that would move the motors
+    TIMSK1 &= ~_BV(TOIE1);
+    TIMSK3 &= ~_BV(TOIE3);
+    TIMSK4 &= ~_BV(TOIE4);
+    
     AcknowledgeMessage(0);
   }
   else
@@ -46,22 +62,32 @@ int RecieveEStop(PacketContainer* Packet)
   }
   return(0);
 }
+
+//**************************************************************************
 
 int RecieveStartQueue(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
-    if(ExecutionStep < 3)
+    //if the motors were stoped before they got to their location 
+    //they need to be started again
+    if(XPulseCount > 0)    
     {
       TIMSK1 |= _BV(TOIE1);
+      TCCR1B = 1;
+    }
+    if(YPulseCount > 0)
+    {
       TIMSK3 |= _BV(TOIE3);
+      TCCR3B = 1;
+    }
+    if(ZPulseCount > 0)
+    {
       TIMSK4 |= _BV(TOIE4);
+      TCCR4B = 1;
     }
     FlagStart=1;
     FlagEStop=0;
-    //****************************************
-    //**  Start Queue Logic                 **
-    //****************************************
     AcknowledgeMessage(0);
   }
   else
@@ -71,13 +97,12 @@ int RecieveStartQueue(PacketContainer* Packet)
   return(0);
 }
 
+//**************************************************************************
+
 int RecieveRequestCommands(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
   {
-    //****************************************
-    //**    Start Request Commands Logic    **
-    //****************************************
     AcknowledgeMessage(0);
   }
   else
@@ -86,6 +111,8 @@ int RecieveRequestCommands(PacketContainer* Packet)
   }
   return(0);
 }
+
+//**************************************************************************
 
 int RecieveSetSpeed(PacketContainer* Packet)
 {
@@ -107,6 +134,8 @@ int RecieveSetSpeed(PacketContainer* Packet)
   return(0);
 }
 
+//**************************************************************************
+
 int RecieveMove(PacketContainer* Packet)
 {
   if(ParityChecker(Packet)==0)
@@ -126,6 +155,8 @@ int RecieveMove(PacketContainer* Packet)
   }
   return(0);
 }
+
+//**************************************************************************
 
 int RecieveToolCMD(PacketContainer* Packet)
 {
@@ -150,13 +181,3 @@ int RecieveToolCMD(PacketContainer* Packet)
 //**************************************************************************
 //**                     End Message Functions                            **
 //**************************************************************************
-
-void EStop()
-{
- //Priority of actions: (EStop)->(Send next motor action)->(Read incomming Message)->(Request more messges if needed)
-  
-    //shuts off the interupts that would move the motors
-    TIMSK1 &= ~_BV(TOIE1);
-    TIMSK3 &= ~_BV(TOIE3);
-    TIMSK4 &= ~_BV(TOIE4);
-}

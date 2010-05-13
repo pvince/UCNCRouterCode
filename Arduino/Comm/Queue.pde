@@ -253,28 +253,25 @@ void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
     }  
   }
   
-  XPulseCount = XDiff;
-  YPulseCount = YDiff;
-  ZPulseCount = ZDiff;
-  Serial.write((int)XPulseCount);
-  Serial.write((int)YPulseCount);
-  Serial.write((int)ZPulseCount);
-  Serial.write(255);
+//  XPulseCount = XDiff;
+//  YPulseCount = YDiff;
+//  ZPulseCount = ZDiff;
+
   SetTimers(XTime,YTime,ZTime);
   return;
 }
 
 int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
 {
-  int temp;
-  temp = ((TempHolder->Message[1] & 0b11111110) << 8) | ((TempHolder->Message[3] & 0b00000100) << 6) | (TempHolder->Message[2] & 0b11111110) | ((TempHolder->Message[3] & 0b00000010) >> 1);
+  int temp = 0;
+  temp = ((TempHolder->Message[1] & 0b11111110) << 8) | ((TempHolder->Message[2] & 0b11111110) << 1) | ((TempHolder->Message[3] & 0b00000110) >> 1);
   if (TempHolder->Message[0] & 0b00001000)
   {
     XSpeedSet = temp;
   }
   if (TempHolder->Message[0] & 0b00000100)
   {
-    XSpeedSet = temp;
+    YSpeedSet = temp;
   }
   if (TempHolder->Message[0] & 0b00000010)
   {
@@ -327,7 +324,7 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
 }
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports
 {
-  digitalWrite(PowerPort,TempHolder->Message[7]); //bit 7 holds the on or off signal
+  digitalWrite(PowerPort,TempHolder->Message[0] & 0b00000010); //bit 7 holds the on or off signal
   return(0);
 }
 
