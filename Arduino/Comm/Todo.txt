@@ -1,5 +1,5 @@
 Todo List:
-1) Fix Message request
-2) Add manual control
-3) Finish calculations section (test and improve accuracy)
-4) Remove Global variables
+(done)	1) Fix Message request
+	2) Add manual control
+	3) Finish calculations section (test and improve accuracy)
+	4) Remove Global variables
