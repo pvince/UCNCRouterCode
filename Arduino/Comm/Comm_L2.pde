@@ -120,6 +120,7 @@ int RecieveSetSpeed(PacketContainer* Packet)
   {
     if(QueueAdd(Packet)==0)
     {
+      RequestInProgress--; //This was one of the messages that was requested
       AcknowledgeMessage(0);
     }
     else
@@ -142,6 +143,7 @@ int RecieveMove(PacketContainer* Packet)
   {
     if(QueueAdd(Packet)==0)
     {
+      RequestInProgress--; //This was one of the messages that was requested
       AcknowledgeMessage(0);
     }
     else
@@ -164,6 +166,7 @@ int RecieveToolCMD(PacketContainer* Packet)
   {
     if(QueueAdd(Packet)==0)
     {
+      RequestInProgress--; //This was one of the messages that was requested
       AcknowledgeMessage(0);
     }
     else

@@ -8,7 +8,10 @@
 int Firmware = 3;
 int FlagStart = 0;
 int FlagEStop = 0;
+int ReplyWait = 0;
+int NoMoreMessages = 0; //Signals when the computer has no more messages to send
 int FlagMotorRunning = 0; //1=Motors busy  0=Motors ready
+int RequestInProgress = 0; //Keeps track of how many requested messages have yet to come.
 int MessageInProgress=0;
 unsigned char RequestNumber = 5; //has to be between 1-127
 unsigned int  PowerPort = 20;

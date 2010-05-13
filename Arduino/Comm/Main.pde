@@ -44,19 +44,18 @@ void loop()
   }
   
   //Conditionals for when the controller has time to get more messages
- // if(QueueLength<250 && FlagStart==1 && Serial.available()==0 && MessageInProgress == 0)
-  //{
-//      Serial.print("MoureMessages");  //Ask computer for more messages.
-//      PacketContainer Packet;
-//      Packet.length=3;
-//      Packet.array[0]=(0x30);
-//      char Amount = RequestNumber<<2 + HorParityGen(RequestNumber<<2);
-//      Packet.array[1]=Amount;
-//      Packet.array[2]=VertParityGen(&Packet);
-//      Serial.write(Packet.array[0]);
-//      Serial.write(Packet.array[1]);
-//      Serial.write(Packet.array[2]);
- // }
+ if(QueueLength<250 && Serial.available()==0 && RequestInProgress <= 0 && NoMoreMessages == 0)
+ {
+   RequestInProgress = RequestNumber;
+   Packet.length=RequestCommandsLength;
+   Packet.array[0]=(0x30);
+   Packet.array[1]= RequestNumber<<2 + HorParityGen(RequestNumber<<2);
+   Packet.array[2]=VertParityGen(&Packet);
+   Serial.write(Packet.array[0]);
+   Serial.write(Packet.array[1]);
+   Serial.write(Packet.array[2]);
+   PreviousPacket = Packet;
+ }
   if(Serial.available())  //get message on serial buffer if one exists
   {
     if(MessageInProgress==0)  //if this is a "type" message read it into the array at index 0
