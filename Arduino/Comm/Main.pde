@@ -55,7 +55,14 @@ void loop()
       QueueRead();
     }
   }
-  
+  if(RequestInProgress <= 0 && NoMoreMessages == 0)
+  {
+    digitalWrite(22,HIGH);
+  }
+  else
+  {
+    digitalWrite(22,LOW);
+  }
   //Conditionals for when the controller has time to get more messages
  if(FlagStart == 1 && QueueLength<250 && Serial.available()==0 && RequestInProgress <= 0 && NoMoreMessages == 0)
  {
