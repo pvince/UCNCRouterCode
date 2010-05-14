@@ -20,11 +20,17 @@ unsigned int  PowerPort = 20;
 unsigned int  XPort = 22;  
 unsigned int  YPort = 24;
 unsigned int  ZPort = 26;
+unsigned int  XInPulse = 52;
+unsigned int  YInPulse = 50;
+unsigned int  ZInPulse = 48;
 
 //Port that the direction signal will be provided
 unsigned int  XDirectionPort = 23;  
 unsigned int  YDirectionPort = 25;
 unsigned int  ZDirectionPort = 27;
+unsigned int  XInDirection = 53;
+unsigned int  YInDirection = 55;
+unsigned int  ZInDirection = 57;
 
 //Slowest the motor can go
 unsigned int  MaxMotorSpeed = 100; 

@@ -1,5 +1,10 @@
 Todo List:
 (done)	1) Fix Message request
 	2) Add manual control
+		PCINT0 as change interupt
+		DDB0 = 1 input
+		PCIF0 //becomes 1 when PCINT7:0 triggers an interrupt
+		PCMSK0 //select which PCINT7:0 you watch
+		
 	3) Finish calculations section (test and improve accuracy)
 	4) Remove Global variables

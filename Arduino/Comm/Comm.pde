@@ -16,7 +16,7 @@ int MessageFilter(PacketContainer* Packet)
   switch((Message & 0b11110000)>>4)  //looks at the type bits
   {    
     case (1):  //Acknowledge
-    Packet->length=2;
+    Packet->length=AcknowledgeLength;
     if(Serial.available()>=Packet->length-1)
     {
       for(int x=1; x<Packet->length; x++)

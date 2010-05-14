@@ -2,8 +2,9 @@
 
 
 
+//ESR's
 
-
+//ISR's
 ISR(TIMER1_OVF_vect)
 {
   XAxisISR();
@@ -67,6 +68,13 @@ void SetTimers(unsigned int XTime, unsigned int YTime, unsigned int ZTime)
   return;
 }
 
+
+
+//*****************************************************************
+//*****************************************************************
+//**    Interupts for messaging with the computer                **
+//*****************************************************************
+//*****************************************************************
 void XAxisISR()
 {
   if(XPulseCount>0)
@@ -137,3 +145,61 @@ void ZAxisISR()
 
 }
 
+
+//*****************************************************************
+//*****************************************************************
+//**                 Interupts for manual control                **
+//*****************************************************************
+//*****************************************************************
+
+void ManualEStop()  //used for manual control
+{
+  FlagStart=0;
+  FlagEStop=1;
+  
+   //Stop the timers
+  TCCR1B = 0;
+  TCCR3B = 0;
+  TCCR4B = 0;
+
+  //shuts off the interupts that would move the motors
+  TIMSK1 &= ~_BV(TOIE1);
+  TIMSK3 &= ~_BV(TOIE3);
+  TIMSK4 &= ~_BV(TOIE4);
+    
+  AcknowledgeMessage(0);
+  return;
+}
+
+void XAxisManual()
+{
+  digitalWrite(XDirectionPort,XDirection);
+  digitalWrite(XPort,HIGH);
+  digitalWrite(XPort,HIGH);
+  digitalWrite(XPort,HIGH);
+  digitalWrite(XPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+  digitalWrite(XPort,LOW);
+  return;
+}
+
+void YAxisManual()
+{
+    digitalWrite(YDirectionPort,YDirection);
+    digitalWrite(YPort,HIGH);
+    digitalWrite(YPort,HIGH);
+    digitalWrite(YPort,HIGH);
+    digitalWrite(YPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(YPort,LOW);
+    return;
+}
+
+void ZAxisManual()
+{
+    digitalWrite(ZDirection,ZDirection);
+    digitalWrite(ZPort,HIGH);
+    digitalWrite(ZPort,HIGH);
+    digitalWrite(ZPort,HIGH);
+    digitalWrite(ZPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(ZPort,LOW);
+    return;
+}

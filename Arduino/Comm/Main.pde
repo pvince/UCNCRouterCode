@@ -13,6 +13,19 @@ void setup()
   ExecutionStep=3;
   Serial.begin(MessageRate);
   Serial.flush();
+  //Inputes
+  pinMode(XInPulse,INPUT);
+  pinMode(YInPulse,INPUT);
+  pinMode(ZInPulse,INPUT);
+  pinMode(XInDirection,INPUT);
+  pinMode(YInDirection,INPUT);
+  pinMode(ZInDirection,INPUT);
+  attachInterrupt(2,ManualEStop,RISING);  //pin 21
+  attachInterrupt(3,XAxisManual,RISING);  //pin 20
+  attachInterrupt(4,YAxisManual,RISING);  //pin 19
+  attachInterrupt(5,ZAxisManual,RISING);  //pin 18
+
+  //Outputes
   pinMode(XPort,OUTPUT);
   pinMode(YPort,OUTPUT);
   pinMode(ZPort,OUTPUT);
@@ -44,7 +57,7 @@ void loop()
   }
   
   //Conditionals for when the controller has time to get more messages
- if(QueueLength<250 && Serial.available()==0 && RequestInProgress <= 0 && NoMoreMessages == 0)
+ if(FlagStart == 1 && QueueLength<250 && Serial.available()==0 && RequestInProgress <= 0 && NoMoreMessages == 0)
  {
    RequestInProgress = RequestNumber;
    Packet.length=RequestCommandsLength;

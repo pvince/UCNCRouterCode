@@ -71,23 +71,33 @@ int RecieveStartQueue(PacketContainer* Packet)
   {
     //if the motors were stoped before they got to their location 
     //they need to be started again
-    if(XPulseCount > 0)    
+    if((Packet->array[0] & 0b00000010)>>1==0)
     {
-      TIMSK1 |= _BV(TOIE1);
-      TCCR1B = 1;
+      if(XPulseCount > 0)    
+      {
+        TIMSK1 |= _BV(TOIE1);
+        TCCR1B = 1;
+      }
+      if(YPulseCount > 0)
+      {
+        TIMSK3 |= _BV(TOIE3);
+        TCCR3B = 1;
+      }
+      if(ZPulseCount > 0)
+      {
+        TIMSK4 |= _BV(TOIE4);
+        TCCR4B = 1;
+      }
+      FlagStart=1;
+      FlagEStop=0;
     }
-    if(YPulseCount > 0)
+    else
     {
-      TIMSK3 |= _BV(TOIE3);
-      TCCR3B = 1;
+      FlagStart = 0;
+      digitalWrite(26,LOW);
+      digitalWrite(28,LOW);
+      digitalWrite(30,LOW);
     }
-    if(ZPulseCount > 0)
-    {
-      TIMSK4 |= _BV(TOIE4);
-      TCCR4B = 1;
-    }
-    FlagStart=1;
-    FlagEStop=0;
     AcknowledgeMessage(0);
   }
   else
