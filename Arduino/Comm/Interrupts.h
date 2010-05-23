@@ -9,5 +9,9 @@ void XAxisISR();
 void YAxisISR();
 void ZAxisISR();
 
+unsigned int XTime;
+unsigned int YTime;
+unsigned int ZTime;
+
 
 #endif

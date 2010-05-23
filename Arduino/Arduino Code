@@ -98,8 +98,8 @@ E-Stop
 0x21	00100001
 Request Commands
 0x30	00110000
-0x	[#Comands P]
-0x	Parity
+0x14	[#Comands P]
+0x14	Parity
 Start Queue
 0x41	01000001
 0x41	01000001

@@ -1,5 +1,5 @@
 
-
+#include "Interrupts.h"
 
 
 //ESR's
@@ -19,8 +19,10 @@ ISR(TIMER4_OVF_vect)
 }
 
 
-void SetTimers(unsigned int XTime, unsigned int YTime, unsigned int ZTime)
+void SetTimers(int XScaler,int YScaler,int ZScaler)
 {
+
+  
   //Tells the main function that the router is currently moving, so don't execute another queue command.
   ExecutionStep = 0;
   //Stop interupts while setting them up
@@ -31,32 +33,10 @@ void SetTimers(unsigned int XTime, unsigned int YTime, unsigned int ZTime)
   TCCR3A=0;
   TCCR4A=0;
   
-  for(int x=0; x<8; x++)
-      {
-        bitWrite(TCNT1H,x,bitRead(XTime,x+8));
-        bitWrite(TCNT1L,x,bitRead(XTime,x));
-        bitWrite(TCNT3H,x,bitRead(YTime,x+8));
-        bitWrite(TCNT3L,x,bitRead(YTime,x));
-        bitWrite(TCNT4H,x,bitRead(ZTime,x+8));
-        bitWrite(TCNT4L,x,bitRead(ZTime,x));
-      }
-  //Clear the counter high and low bytes
-//  TCNT1H=0;
-//  TCNT1L=0;
-//  TCNT3H=0;
-//  TCNT3L=0;
-//  TCNT4H=0;
-//  TCNT4L=0;
+  setXTimer();
+  setYTimer();
+  setZTimer();
   
-  //Clear the overflow flags
-  TIFR1 &= ~_BV(TOV1);
-  TIFR1 &= ~_BV(TOV3);
-  TIFR1 &= ~_BV(TOV4);
-  
-  //enable overflow interupts
-  TIMSK1 |= _BV(TOIE1);
-  TIMSK3 |= _BV(TOIE3);
-  TIMSK4 |= _BV(TOIE4);
   
   //start the timers
   TCCR1B = 1;
@@ -68,7 +48,35 @@ void SetTimers(unsigned int XTime, unsigned int YTime, unsigned int ZTime)
   return;
 }
 
+void setXTimer() {
+  //Set the values in the timers to get the correct slopes
+  TCNT1H=XTime>8 & 0b11111111;
+  TCNT1L=XTime & 0b11111111;
+  //Clear the overflow flags
+  TIFR1 &= ~_BV(TOV1);
+  //enable overflow interupts
+  TIMSK1 |= _BV(TOIE1);
+}
 
+void setYTimer() {
+  //Set the values in the timers to get the correct slopes
+  TCNT3H=YTime>8 & 0b11111111;
+  TCNT3L=YTime & 0b11111111;
+  //Clear the overflow flags
+  TIFR1 &= ~_BV(TOV3);
+  //enable overflow interupts
+  TIMSK3 |= _BV(TOIE3);
+}
+
+void setZTimer() {
+  //Set the values in the timers to get the correct slopes
+  TCNT4H=ZTime>8 & 0b11111111;
+  TCNT4L=ZTime & 0b11111111;
+  //Clear the overflow flags
+  TIFR1 &= ~_BV(TOV4);
+  //enable overflow interupts
+  TIMSK4 |= _BV(TOIE4);
+}
 
 //*****************************************************************
 //*****************************************************************
@@ -81,13 +89,16 @@ void XAxisISR()
   {
     XPulseCount--;
     digitalWrite(XDirectionPort,XDirection);
-    digitalWrite(XPort,HIGH);
-    digitalWrite(XPort,HIGH);
-    digitalWrite(XPort,HIGH);
     digitalWrite(XPort,HIGH);  //done to make sure the signal is not to fast for the PICS
-    digitalWrite(XPort,LOW);
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
     //digitalWrite(26,HIGH);
     //Serial.write(ExecutionStep);
+    digitalWrite(XPort,LOW);
+    
   }
   else
   {
@@ -105,10 +116,12 @@ void YAxisISR()
   {
     YPulseCount--;
     digitalWrite(YDirectionPort,YDirection);
-    digitalWrite(YPort,HIGH);
-    digitalWrite(YPort,HIGH);
-    digitalWrite(YPort,HIGH);
     digitalWrite(YPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
     digitalWrite(YPort,LOW);
     //digitalWrite(28,HIGH);
   }
@@ -128,10 +141,12 @@ void ZAxisISR()
   {
     ZPulseCount--;
     digitalWrite(ZDirection,ZDirection);
-    digitalWrite(ZPort,HIGH);
-    digitalWrite(ZPort,HIGH);
-    digitalWrite(ZPort,HIGH);
     digitalWrite(ZPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
+    asm("nop");
     digitalWrite(ZPort,LOW);
     //digitalWrite(30,HIGH);
   }
