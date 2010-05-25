@@ -32,10 +32,7 @@ unsigned int  XInDirection = 53;
 unsigned int  YInDirection = 55;
 unsigned int  ZInDirection = 57;
 
-//Slowest the motor can go
-unsigned int  MaxMotorSpeed = 100; 
-unsigned int  Resolution = 1;
-
+unsigned long Frequency = 16000000;
 
 
 //Bad Programing! work the following variables into the code when I have free time

@@ -67,58 +67,87 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
   return;
 }
 
-void calcRatioTimes(unsigned int Gd, unsigned int Md, unsigned int Ld, 
-                    float &Gr, float &Mr, float &Lr, 
-                    unsigned int &Gt, unsigned int &Mt, unsigned int &Lt) {
-  Gr = 1;
-  if(Md != 0) 
-    Mr = (float)Gd / (float)Md;
+void calcRatio(unsigned int& DiffBig, unsigned int& DiffOne, unsigned int& DiffTwo, 
+                    float& RatioBig, float& RationOne, float& RationTwo) {
+  DiffBig = 1;
+  if(DiffOne != 0) 
+    RationOne = (float)DiffBig / (float)DiffOne;
   else  
-    Mr=0;
+    RationOne=0;
     
-  if(Ld != 0) 
-    Lr = (float)Gd / (float)Ld;
+  if(DiffTwo != 0) 
+    RationTwo = (float)DiffBig / (float)DiffTwo;
   else 
-    Lr=0;
+    RationTwo=0;
+}
+ 
 
-  Gt = 62869;
-  if (Mr==0) 
-    Mt = 0;  //turn off interupt if there is no movement
-  else if(Lr<24) 
-    Mt = 65536 - (2667 * Mr);
-    
-  if (Lr==0)  
-    Lt = 0;  //turn off interupt if there is no movement.
-  else if(Lr<24) 
-    Lt = 65536 - (2667 * Lr);
+//  TimeBig = 62869;
+//  if (RationOne==0) 
+//    TimeOne = 0;  //turn off interupt if there is no movement
+//  else if(RationOne<24) 
+//    TimeOne = 65536 - (2667 * RationOne);
+//    
+//  if (RationTwo==0)  
+//    TimeTwo = 0;  //turn off interupt if there is no movement.
+//  else if(RationTwo<24) 
+//    TimeTwo = 65536 - (2667 * RationTwo);
+
+void calcPulseRate(MoveDetails* MD){
+  if(MD->XRatio==1)
+    MD->XPulseRate = 1000/XSpeed; 
+  else
+    MD->XPulseRate = 1000/(MD->XRatio*XSpeed);
+  
+  if(MD->YRatio==1)
+    MD->YPulseRate = 1000/YSpeed; 
+  else
+    MD->YPulseRate = 1000/(MD->YRatio*YSpeed);
+  
+  if(MD->YRatio==1)
+    MD->ZPulseRate = 1000/ZSpeed; 
+  else
+    MD->ZPulseRate = 1000/(MD->ZRatio*ZSpeed);
 }
 
-void Calculations(unsigned int XDiff, unsigned int YDiff, unsigned int ZDiff)
+void calcScalar(unsigned int& pulseRate, int scalar) {
+  if(pulseRate > 350) {
+      scalar = 1;
+  } else if(pulseRate > 50) {
+      scalar = 2;
+  } else if(pulseRate > 10){
+      scalar = 3;
+  } else if(pulseRate > 1){
+      scalar = 5;
+  }
+}
+
+void calcTimes(MoveDetails* MD){
+   XTime = 256 - ((1/MD->XPulseRate)*Frequency/256/MD
+}
+
+void Calculations(MoveDetails* MD)
 {//This section attempts to find the number of steps it takes each axis to get to it's location, 
   //the interval of the interupts to create the needed slopes of lines relative to the other axises
-  float XRatio;
-  float YRatio;
-  float ZRatio;
-  unsigned int XPulseRate;
-  unsigned int YPulseRate;
-  unsigned int ZPulseRate;
+  
   //If the Xaxis is the largest distance traveled
-  if((XDiff >= YDiff) && (XDiff >= ZDiff))
+  if((MD->XDiff >= MD->YDiff) && (MD->XDiff >= MD->ZDiff))
   {
-    calcRatioTimes(XDiff, YDiff, ZDiff, XRatio, YRatio, ZRatio, XTime, YTime, ZTime);
+    //Turn diffs to ratios and time intervals
+//    calcRatio(MD->XDiff, MD->YDiff, MD->ZDiff, MD->XRatio, MD->YRatio, MD->ZRatio, XTime, YTime, ZTime);
   }
   
   //If the Yaxis is the largest distance traveled
-  else if((YDiff >= XDiff) && (YDiff >= ZDiff))
+  else if((MD->YDiff >= MD->XDiff) && (MD->YDiff >= MD->ZDiff))
   {
-    calcRatioTimes(YDiff, XDiff, ZDiff, YRatio, XRatio, ZRatio, YTime, XTime, ZTime);
+//    calcRatio(MD->YDiff, MD->XDiff, MD->ZDiff, MD->YRatio, MD->XRatio, MD->ZRatio, YTime, XTime, ZTime);
   }
   //If the Zaxis is the largest distance traveled
-  else if((ZDiff >= XDiff) && (ZDiff >= YDiff))
+  else if((MD->ZDiff >= MD->XDiff) && (MD->ZDiff >= MD->YDiff))
   {
-    calcRatioTimes(ZDiff, XDiff, YDiff, ZRatio, XRatio, YRatio, ZTime, XTime, YTime);
+    calcRatio(MD->ZDiff, MD->XDiff, MD->YDiff, MD->ZRatio, MD->XRatio, MD->YRatio);
   }
-  SetTimers(1,1,1);
+  SetTimers(MD);
   return;
 }
 
@@ -153,20 +182,21 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
   int ZDestination = ((int) TempHolder->Message[7] & 0b11111110)<<8;
   ZDestination = ZDestination | ((int) TempHolder->Message[8] & 0b11111110)<<1;
   ZDestination = ZDestination | ((int) TempHolder->Message[9] & 0b00000110)>>1;
-  unsigned int XDiff = XDestination - XPosition;
-  unsigned int YDiff = YDestination - YPosition;
-  unsigned int ZDiff = ZDestination - ZPosition;
+  MoveDetails* MD;
+  MD->XDiff = XDestination - XPosition;
+  MD->YDiff = YDestination - YPosition;
+  MD->ZDiff = ZDestination - ZPosition;
 
   //Set direction of each motor
-  if (XDiff>=0) XDirection=1;
+  if (MD->XDiff>=0) XDirection=1;
   else XDirection=0;
-  if (YDiff>=0) YDirection=1;
+  if (MD->YDiff>=0) YDirection=1;
   else YDirection=0;
-  if (ZDiff>=0) ZDirection=1;
+  if (MD->ZDiff>=0) ZDirection=1;
   else ZDirection=0;
 
   //Calculate interupt periods to get desired slopes
-  Calculations(XDiff, YDiff, ZDiff);
+  Calculations(MD);
   return(0);
 }
 int ToolCMD(Linklist* TempHolder)  //Sends signal to disired ports

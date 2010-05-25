@@ -18,8 +18,19 @@ ISR(TIMER4_OVF_vect)
   ZAxisISR();
 }
 
+void calcScalar(unsigned int& pulseRate, int scalar) {
+  if(pulseRate > 350) {
+      scalar = 1;
+  } else if(pulseRate > 50) {
+      scalar = 2;
+  } else if(pulseRate > 10){
+      scalar = 3;
+  } else if(pulseRate > 1){
+      scalar = 5;
+  }
+}
 
-void SetTimers(int XScaler,int YScaler,int ZScaler)
+void SetTimers(MoveDetails* MD)
 {
 
   
@@ -39,7 +50,10 @@ void SetTimers(int XScaler,int YScaler,int ZScaler)
   
   
   //start the timers
-  TCCR1B = 1;
+calcScalar(MD->XPulseRate,TCCR1B);
+calcScalar(MD->YPulseRate,TCCR3B);
+calcScalar(MD->ZPulseRate,TCCR4B);
+
   TCCR3B = 1;
   TCCR4B = 1;
   
@@ -47,6 +61,8 @@ void SetTimers(int XScaler,int YScaler,int ZScaler)
   sei();
   return;
 }
+
+
 
 void setXTimer() {
   //Set the values in the timers to get the correct slopes
@@ -95,8 +111,6 @@ void XAxisISR()
     asm("nop");
     asm("nop");
     asm("nop");
-    //digitalWrite(26,HIGH);
-    //Serial.write(ExecutionStep);
     digitalWrite(XPort,LOW);
     
   }
@@ -123,7 +137,6 @@ void YAxisISR()
     asm("nop");
     asm("nop");
     digitalWrite(YPort,LOW);
-    //digitalWrite(28,HIGH);
   }
   else
   {
@@ -148,7 +161,6 @@ void ZAxisISR()
     asm("nop");
     asm("nop");
     digitalWrite(ZPort,LOW);
-    //digitalWrite(30,HIGH);
   }
   else
   {

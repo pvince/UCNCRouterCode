@@ -7,6 +7,20 @@ struct Linklist
   byte MessageLength;
   byte Message[11];
 };
+
+struct MoveDetails
+{
+  unsigned int XDiff;
+  unsigned int YDiff;
+  unsigned int ZDiff;
+  float XRatio;
+  float YRatio;
+  float ZRatio;
+  unsigned int XPulseRate;
+  unsigned int YPulseRate;
+  unsigned int ZPulseRate;
+
+};
 int MaxQueueLength=500;
 Linklist Queue[500];
 int QueueLength = 0;

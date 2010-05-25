@@ -13,5 +13,10 @@ unsigned int XTime;
 unsigned int YTime;
 unsigned int ZTime;
 
+int UnityScale = 1000;
+int LowScaleOne = 350;
+int LowScaleTwo = 50;
+int LowScaleThree = 10;
+int LowScaleFour = 1;
 
 #endif
