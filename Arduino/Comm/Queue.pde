@@ -31,13 +31,29 @@ int QueueAdd(PacketContainer* Message)  //Adds messages to the queue
 void QueueRead()  //Reads the oldest link off the queue and sends it to the required function.
 {
   byte temp = Queue[ReadLocation].Message[0];
+  MoveDetails MD;
+  MD.XDiff = 0;
+  MD.YDiff = 0;
+  MD.ZDiff = 0;
+  MD.XRatio = 0;
+  MD.YRatio = 0;
+  MD.ZRatio = 0;
+  MD.XPulseRate = 0;
+  MD.YPulseRate = 0;
+  MD.ZPulseRate = 0;
+  MD.XScalar = 0;
+  MD.YScalar = 0;
+  MD.ZScalar = 0;
+  MD.XSpeed = 1;
+  MD.YSpeed = 1;
+  MD.ZSpeed = 1;
   switch((temp & 0b11110000) >>4)
   {
     case (5):        //SetSpeed
-      SetSpeed(&Queue[ReadLocation]);  //Reads packet and insterst speed into axis speed variables.
+      SetSpeed(&Queue[ReadLocation], MD);  //Reads packet and insterst speed into axis speed variables.
       break;
     case (6):        //Move
-      Move(&Queue[ReadLocation]);
+      Move(&Queue[ReadLocation], MD);
       break;
     case (7):        //ToolCMD
       ToolCMD(&Queue[ReadLocation]);
@@ -68,46 +84,42 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
 }
 
 void calcRatio(unsigned int& DiffBig, unsigned int& DiffOne, unsigned int& DiffTwo, 
-                    float& RatioBig, float& RationOne, float& RationTwo) {
-  DiffBig = 1;
+                    float& RatioBig, float& RatioOne, float& RatioTwo) {
+  RatioBig = 1;
   if(DiffOne != 0) 
-    RationOne = (float)DiffBig / (float)DiffOne;
+    RatioOne = (float)DiffBig / (float)DiffOne;
   else  
-    RationOne=0;
+    RatioOne=0;
     
   if(DiffTwo != 0) 
-    RationTwo = (float)DiffBig / (float)DiffTwo;
+    RatioTwo = (float)DiffBig / (float)DiffTwo;
   else 
-    RationTwo=0;
+    RatioTwo=0;
+//  Serial.write(RatioOne);
+//  Serial.write(250);
 }
- 
 
-//  TimeBig = 62869;
-//  if (RationOne==0) 
-//    TimeOne = 0;  //turn off interupt if there is no movement
-//  else if(RationOne<24) 
-//    TimeOne = 65536 - (2667 * RationOne);
-//    
-//  if (RationTwo==0)  
-//    TimeTwo = 0;  //turn off interupt if there is no movement.
-//  else if(RationTwo<24) 
-//    TimeTwo = 65536 - (2667 * RationTwo);
-
-void calcPulseRate(MoveDetails* MD){
-  if(MD->XRatio==1)
-    MD->XPulseRate = 1000/XSpeed; 
+void calcPulseRate(MoveDetails& MD){
+  if(MD.XRatio==1)
+    MD.XPulseRate = 1000/MD.XSpeed; 
   else
-    MD->XPulseRate = 1000/(MD->XRatio*XSpeed);
+    MD.XPulseRate = 1000/(MD.XRatio*MD.XSpeed);
   
-  if(MD->YRatio==1)
-    MD->YPulseRate = 1000/YSpeed; 
+  if(MD.YRatio==1)
+    MD.YPulseRate = 1000/MD.YSpeed; 
   else
-    MD->YPulseRate = 1000/(MD->YRatio*YSpeed);
+    MD.YPulseRate = 1000/(MD.YRatio*MD.YSpeed);
   
-  if(MD->YRatio==1)
-    MD->ZPulseRate = 1000/ZSpeed; 
+  if(MD.YRatio==1)
+    MD.ZPulseRate = 1000/MD.ZSpeed; 
   else
-    MD->ZPulseRate = 1000/(MD->ZRatio*ZSpeed);
+    MD.ZPulseRate = 1000/(MD.ZRatio*MD.ZSpeed);
+//  Serial.write(MD.XRatio);
+//  Serial.write(MD.XSpeed>>8);
+//  Serial.write(MD.XSpeed);
+//  Serial.write(MD.XPulseRate>>8);
+//  Serial.write(MD.XPulseRate);
+//  Serial.write(251);
 }
 
 void calcScalar(unsigned int& pulseRate, int scalar) {
@@ -119,58 +131,77 @@ void calcScalar(unsigned int& pulseRate, int scalar) {
       scalar = 3;
   } else if(pulseRate > 1){
       scalar = 5;
+  }else{
+    Serial.write(255);
   }
+  Serial.write(pulseRate);
+  Serial.write(scalar);
+  Serial.write(252);
 }
 
-void calcTimes(MoveDetails* MD){
-   XTime = 256 - ((1/MD->XPulseRate)*Frequency/256/MD
+void calcTimes(MoveDetails MD){
+   XTime = 256 - ((1/MD.XPulseRate)*Frequency/256/MD.XScalar);
+   YTime = 256 - ((1/MD.YPulseRate)*Frequency/256/MD.YScalar);
+   ZTime = 256 - ((1/MD.ZPulseRate)*Frequency/256/MD.ZScalar);
+//   Serial.write(XTime>>8);
+//   Serial.write(XTime);
+//   Serial.write(253);
 }
 
-void Calculations(MoveDetails* MD)
+void Calculations(MoveDetails MD)
 {//This section attempts to find the number of steps it takes each axis to get to it's location, 
   //the interval of the interupts to create the needed slopes of lines relative to the other axises
   
   //If the Xaxis is the largest distance traveled
-  if((MD->XDiff >= MD->YDiff) && (MD->XDiff >= MD->ZDiff))
+  if((MD.XDiff >= MD.YDiff) && (MD.XDiff >= MD.ZDiff))
   {
     //Turn diffs to ratios and time intervals
-//    calcRatio(MD->XDiff, MD->YDiff, MD->ZDiff, MD->XRatio, MD->YRatio, MD->ZRatio, XTime, YTime, ZTime);
+    calcRatio(MD.XDiff, MD.YDiff, MD.ZDiff, MD.XRatio, MD.YRatio, MD.ZRatio);
   }
-  
   //If the Yaxis is the largest distance traveled
-  else if((MD->YDiff >= MD->XDiff) && (MD->YDiff >= MD->ZDiff))
+  else if((MD.YDiff >= MD.XDiff) && (MD.YDiff >= MD.ZDiff))
   {
-//    calcRatio(MD->YDiff, MD->XDiff, MD->ZDiff, MD->YRatio, MD->XRatio, MD->ZRatio, YTime, XTime, ZTime);
+    calcRatio(MD.YDiff, MD.XDiff, MD.ZDiff, MD.YRatio, MD.XRatio, MD.ZRatio);
   }
   //If the Zaxis is the largest distance traveled
-  else if((MD->ZDiff >= MD->XDiff) && (MD->ZDiff >= MD->YDiff))
+  else if((MD.ZDiff >= MD.XDiff) && (MD.ZDiff >= MD.YDiff))
   {
-    calcRatio(MD->ZDiff, MD->XDiff, MD->YDiff, MD->ZRatio, MD->XRatio, MD->YRatio);
+    calcRatio(MD.ZDiff, MD.XDiff, MD.YDiff, MD.ZRatio, MD.XRatio, MD.YRatio);
   }
+  calcPulseRate(MD);
+  calcScalar(MD.XPulseRate,MD.XScalar);
+  Serial.write(MD.XScalar);
+  calcScalar(MD.YPulseRate,MD.YScalar);
+  calcScalar(MD.ZPulseRate,MD.ZScalar);
+  calcTimes(MD);
+  Serial.write(MD.XScalar);
+  Serial.write(255);
+  Serial.write(MD.YScalar);
+  Serial.write(MD.ZScalar);
   SetTimers(MD);
   return;
 }
 
-int SetSpeed(Linklist* TempHolder)  //Sends signal to desired ports
+int SetSpeed(Linklist* TempHolder, MoveDetails& MD)  //Sends signal to desired ports
 {
   int temp = 0;
   temp = ((TempHolder->Message[1] & 0b11111110) << 8) | ((TempHolder->Message[2] & 0b11111110) << 1) | ((TempHolder->Message[3] & 0b00000110) >> 1);
   if (TempHolder->Message[0] & 0b00001000)
   {
-    XSpeedSet = temp;
+    MD.XSpeed = temp/60; //converts it from distance/minute to distance/second
   }
   if (TempHolder->Message[0] & 0b00000100)
   {
-    YSpeedSet = temp;
+    MD.YSpeed = temp/60; //converts it from distance/minute to distance/second
   }
   if (TempHolder->Message[0] & 0b00000010)
   {
-    ZSpeedSet = temp;
+    MD.ZSpeed = temp/60; //converts it from distance/minute to distance/second
   }
   return(0);
 }
 
-int Move(Linklist* TempHolder)  //Sends signal to disired ports
+int Move(Linklist* TempHolder, MoveDetails& MD)  //Sends signal to disired ports
 {
   //converts the message into positions
   int XDestination = ((int) TempHolder->Message[1] & 0b11111110)<<8;
@@ -182,17 +213,16 @@ int Move(Linklist* TempHolder)  //Sends signal to disired ports
   int ZDestination = ((int) TempHolder->Message[7] & 0b11111110)<<8;
   ZDestination = ZDestination | ((int) TempHolder->Message[8] & 0b11111110)<<1;
   ZDestination = ZDestination | ((int) TempHolder->Message[9] & 0b00000110)>>1;
-  MoveDetails* MD;
-  MD->XDiff = XDestination - XPosition;
-  MD->YDiff = YDestination - YPosition;
-  MD->ZDiff = ZDestination - ZPosition;
+  MD.XDiff = XDestination - XPosition;
+  MD.YDiff = YDestination - YPosition;
+  MD.ZDiff = ZDestination - ZPosition;
 
   //Set direction of each motor
-  if (MD->XDiff>=0) XDirection=1;
+  if (MD.XDiff>=0) XDirection=1;
   else XDirection=0;
-  if (MD->YDiff>=0) YDirection=1;
+  if (MD.YDiff>=0) YDirection=1;
   else YDirection=0;
-  if (MD->ZDiff>=0) ZDirection=1;
+  if (MD.ZDiff>=0) ZDirection=1;
   else ZDirection=0;
 
   //Calculate interupt periods to get desired slopes

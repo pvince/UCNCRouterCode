@@ -1,5 +1,6 @@
 
 #include "Interrupts.h"
+#include "Queue.h"
 
 
 //ESR's
@@ -18,24 +19,13 @@ ISR(TIMER4_OVF_vect)
   ZAxisISR();
 }
 
-void calcScalar(unsigned int& pulseRate, int scalar) {
-  if(pulseRate > 350) {
-      scalar = 1;
-  } else if(pulseRate > 50) {
-      scalar = 2;
-  } else if(pulseRate > 10){
-      scalar = 3;
-  } else if(pulseRate > 1){
-      scalar = 5;
-  }
-}
-
-void SetTimers(MoveDetails* MD)
+void SetTimers(MoveDetails& MD)
 {
-
-  
   //Tells the main function that the router is currently moving, so don't execute another queue command.
   ExecutionStep = 0;
+  Serial.write(MD.XScalar);
+  Serial.write(MD.YScalar);
+  Serial.write(MD.ZScalar);
   //Stop interupts while setting them up
   cli();
   //These registers should be 0 before starting the counters
@@ -50,43 +40,44 @@ void SetTimers(MoveDetails* MD)
   
   
   //start the timers
-calcScalar(MD->XPulseRate,TCCR1B);
-calcScalar(MD->YPulseRate,TCCR3B);
-calcScalar(MD->ZPulseRate,TCCR4B);
+  TCCR1B = MD.XScalar;
+  TCCR3B = MD.YScalar;
+  TCCR4B = MD.ZScalar;
 
   TCCR3B = 1;
   TCCR4B = 1;
   
   //Turn on interupts
+  digitalWrite(52,HIGH);
   sei();
   return;
 }
 
-
-
 void setXTimer() {
   //Set the values in the timers to get the correct slopes
-  TCNT1H=XTime>8 & 0b11111111;
+  TCNT1H=XTime>>8 & 0b11111111;
   TCNT1L=XTime & 0b11111111;
   //Clear the overflow flags
   TIFR1 &= ~_BV(TOV1);
   //enable overflow interupts
   TIMSK1 |= _BV(TOIE1);
+  digitalWrite(13,HIGH);
 }
 
 void setYTimer() {
   //Set the values in the timers to get the correct slopes
-  TCNT3H=YTime>8 & 0b11111111;
+  TCNT3H=YTime>>8 & 0b11111111;
   TCNT3L=YTime & 0b11111111;
   //Clear the overflow flags
   TIFR1 &= ~_BV(TOV3);
   //enable overflow interupts
   TIMSK3 |= _BV(TOIE3);
+  digitalWrite(13,LOW);
 }
 
 void setZTimer() {
   //Set the values in the timers to get the correct slopes
-  TCNT4H=ZTime>8 & 0b11111111;
+  TCNT4H=ZTime>>8 & 0b11111111;
   TCNT4L=ZTime & 0b11111111;
   //Clear the overflow flags
   TIFR1 &= ~_BV(TOV4);
@@ -112,13 +103,12 @@ void XAxisISR()
     asm("nop");
     asm("nop");
     digitalWrite(XPort,LOW);
-    
+    digitalWrite(13,HIGH);
   }
   else
   {
     TCCR1B = 0;
     TIMSK1 &= ~_BV(TOIE1);
-    digitalWrite(26,HIGH);
     ExecutionStep++;
   }
   return;
@@ -137,12 +127,12 @@ void YAxisISR()
     asm("nop");
     asm("nop");
     digitalWrite(YPort,LOW);
+    digitalWrite(13,HIGH);
   }
   else
   {
     TCCR3B = 0;
     TIMSK3 &= ~_BV(TOIE3);
-    digitalWrite(28,HIGH);
     ExecutionStep++;
   }
 

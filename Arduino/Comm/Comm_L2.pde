@@ -95,9 +95,6 @@ int RecieveStartQueue(PacketContainer* Packet)
     {
       FlagStart = 0;
       NoMoreMessages == 1;
-      digitalWrite(26,LOW);
-      digitalWrite(28,LOW);
-      digitalWrite(30,LOW);
     }
     AcknowledgeMessage(0);
   }

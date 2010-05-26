@@ -32,36 +32,18 @@ void setup()
   pinMode(XDirectionPort,OUTPUT);
   pinMode(YDirectionPort,OUTPUT);
   pinMode(ZDirectionPort,OUTPUT);
-  //using these pins for debuging
-  pinMode(22,OUTPUT);  
-  pinMode(24,OUTPUT);
-  pinMode(26,OUTPUT);
-  pinMode(28,OUTPUT);
-  pinMode(30,OUTPUT);
-  pinMode(32,OUTPUT);
+  pinMode(13,OUTPUT);
+  pinMode(52,OUTPUT);
 }
 
 void loop()
 {
- 
-  //Used for debugging
-  //digitalWrite(30,LOW);
-  //digitalWrite(28,LOW);
-  //digitalWrite(26,LOW);
   if(FlagStart && QueueLength > 0) //if the queue us supposed to be executed.
   {
     if(ExecutionStep==3)
     {
       QueueRead();
     }
-  }
-  if(RequestInProgress <= 0 && NoMoreMessages == 0)
-  {
-    digitalWrite(22,HIGH);
-  }
-  else
-  {
-    digitalWrite(22,LOW);
   }
   //Conditionals for when the controller has time to get more messages
  if(FlagStart == 1 && QueueLength<250 && Serial.available()==0 && RequestInProgress <= 0 && NoMoreMessages == 0)
@@ -71,9 +53,6 @@ void loop()
    Packet.array[0]=(0x30);
    Packet.array[1]= RequestNumber<<2 + HorParityGen(RequestNumber<<2);
    Packet.array[2]=VertParityGen(&Packet);
-   Serial.write(Packet.array[0]);
-   Serial.write(Packet.array[1]);
-   Serial.write(Packet.array[2]);
    PreviousPacket = Packet;
  }
   if(Serial.available())  //get message on serial buffer if one exists

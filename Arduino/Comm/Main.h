@@ -37,27 +37,5 @@ unsigned long Frequency = 16000000;
 
 //Bad Programing! work the following variables into the code when I have free time
 
-//Keeps track of the current position and destination
-unsigned int  XPosition = 0;  
-unsigned int  YPosition = 0;
-unsigned int  ZPosition = 0;
-unsigned int  XDestination = 0;  
-unsigned int  YDestination = 0;
-unsigned int  ZDestination = 0;
-unsigned int  XDirection = 0;  
-unsigned int  YDirection = 0;
-unsigned int  ZDirection = 0;
-//Number of times for the motor to move
-unsigned int  XPulseCount = 0;  
-unsigned int  YPulseCount = 0;
-unsigned int  ZPulseCount = 0;
-
-//higher number is faster
-unsigned int  XSpeed = 1;  
-unsigned int  YSpeed = 1;
-unsigned int  ZSpeed = 1;
-unsigned int  XSpeedSet = 1;  
-unsigned int  YSpeedSet = 1;
-unsigned int  ZSpeedSet = 1;
-unsigned int  ExecutionStep = 0;  
+ 
 #endif
