@@ -122,7 +122,7 @@ void calcPulseRate(MoveDetails& MD){
 //  Serial.write(251);
 }
 
-void calcScalar(unsigned int& pulseRate, int scalar) {
+void calcScalar(unsigned int& pulseRate, int& scalar) {
   if(pulseRate > 350) {
       scalar = 1;
   } else if(pulseRate > 50) {
@@ -132,7 +132,7 @@ void calcScalar(unsigned int& pulseRate, int scalar) {
   } else if(pulseRate > 1){
       scalar = 5;
   }else{
-    Serial.write(255);
+      scalar = 0;
   }
   Serial.write(pulseRate);
   Serial.write(scalar);
@@ -143,9 +143,9 @@ void calcTimes(MoveDetails MD){
    XTime = 256 - ((1/MD.XPulseRate)*Frequency/256/MD.XScalar);
    YTime = 256 - ((1/MD.YPulseRate)*Frequency/256/MD.YScalar);
    ZTime = 256 - ((1/MD.ZPulseRate)*Frequency/256/MD.ZScalar);
-//   Serial.write(XTime>>8);
-//   Serial.write(XTime);
-//   Serial.write(253);
+   Serial.write(XTime>>8);
+   Serial.write(XTime);
+   Serial.write(253);
 }
 
 void Calculations(MoveDetails MD)
@@ -170,14 +170,13 @@ void Calculations(MoveDetails MD)
   }
   calcPulseRate(MD);
   calcScalar(MD.XPulseRate,MD.XScalar);
-  Serial.write(MD.XScalar);
   calcScalar(MD.YPulseRate,MD.YScalar);
   calcScalar(MD.ZPulseRate,MD.ZScalar);
   calcTimes(MD);
   Serial.write(MD.XScalar);
-  Serial.write(255);
   Serial.write(MD.YScalar);
   Serial.write(MD.ZScalar);
+  Serial.write(255);
   SetTimers(MD);
   return;
 }

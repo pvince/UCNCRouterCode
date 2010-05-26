@@ -54,7 +54,7 @@ void QueueAdd();
 void QueueRead();
 void calcRatio(unsigned int&, unsigned int&, unsigned int&);
 void calcPulseRate(MoveDetails*);
-void calcScalar(unsigned int&, int);
+void calcScalar(unsigned int&, int&);
 void calcTimes(MoveDetails*);
 void Calculations(int, int, int);
 int SetSpeed(Linklist*, MoveDetails&);

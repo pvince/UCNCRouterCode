@@ -38,6 +38,7 @@ void setup()
 
 void loop()
 {
+  digitalWrite(52,LOW);
   if(FlagStart && QueueLength > 0) //if the queue us supposed to be executed.
   {
     if(ExecutionStep==3)

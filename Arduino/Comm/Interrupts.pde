@@ -48,7 +48,6 @@ void SetTimers(MoveDetails& MD)
   TCCR4B = 1;
   
   //Turn on interupts
-  digitalWrite(52,HIGH);
   sei();
   return;
 }
@@ -62,6 +61,7 @@ void setXTimer() {
   //enable overflow interupts
   TIMSK1 |= _BV(TOIE1);
   digitalWrite(13,HIGH);
+  digitalWrite(52,HIGH);
 }
 
 void setYTimer() {
