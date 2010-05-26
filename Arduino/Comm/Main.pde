@@ -34,11 +34,11 @@ void setup()
   pinMode(ZDirectionPort,OUTPUT);
   pinMode(13,OUTPUT);
   pinMode(52,OUTPUT);
+  pinMode(53,OUTPUT);
 }
 
 void loop()
 {
-  digitalWrite(52,LOW);
   if(FlagStart && QueueLength > 0) //if the queue us supposed to be executed.
   {
     if(ExecutionStep==3)

@@ -23,9 +23,6 @@ void SetTimers(MoveDetails& MD)
 {
   //Tells the main function that the router is currently moving, so don't execute another queue command.
   ExecutionStep = 0;
-  Serial.write(MD.XScalar);
-  Serial.write(MD.YScalar);
-  Serial.write(MD.ZScalar);
   //Stop interupts while setting them up
   cli();
   //These registers should be 0 before starting the counters
@@ -43,10 +40,9 @@ void SetTimers(MoveDetails& MD)
   TCCR1B = MD.XScalar;
   TCCR3B = MD.YScalar;
   TCCR4B = MD.ZScalar;
-
-  TCCR3B = 1;
-  TCCR4B = 1;
-  
+  Serial.write(MD.XScalar);
+  Serial.write(YTime>>8 & 0b11111111);
+  Serial.write(YTime & 0b11111111);
   //Turn on interupts
   sei();
   return;
@@ -60,8 +56,6 @@ void setXTimer() {
   TIFR1 &= ~_BV(TOV1);
   //enable overflow interupts
   TIMSK1 |= _BV(TOIE1);
-  digitalWrite(13,HIGH);
-  digitalWrite(52,HIGH);
 }
 
 void setYTimer() {
@@ -69,10 +63,9 @@ void setYTimer() {
   TCNT3H=YTime>>8 & 0b11111111;
   TCNT3L=YTime & 0b11111111;
   //Clear the overflow flags
-  TIFR1 &= ~_BV(TOV3);
+  TIFR3 &= ~_BV(TOV3);
   //enable overflow interupts
   TIMSK3 |= _BV(TOIE3);
-  digitalWrite(13,LOW);
 }
 
 void setZTimer() {
@@ -80,7 +73,7 @@ void setZTimer() {
   TCNT4H=ZTime>>8 & 0b11111111;
   TCNT4L=ZTime & 0b11111111;
   //Clear the overflow flags
-  TIFR1 &= ~_BV(TOV4);
+  TIFR4 &= ~_BV(TOV4);
   //enable overflow interupts
   TIMSK4 |= _BV(TOIE4);
 }
@@ -92,6 +85,7 @@ void setZTimer() {
 //*****************************************************************
 void XAxisISR()
 {
+  digitalWrite(53,HIGH);
   if(XPulseCount>0)
   {
     XPulseCount--;
@@ -103,13 +97,14 @@ void XAxisISR()
     asm("nop");
     asm("nop");
     digitalWrite(XPort,LOW);
-    digitalWrite(13,HIGH);
+    digitalWrite(52,HIGH);
   }
   else
   {
     TCCR1B = 0;
     TIMSK1 &= ~_BV(TOIE1);
     ExecutionStep++;
+    digitalWrite(52,LOW);
   }
   return;
 }
@@ -127,7 +122,6 @@ void YAxisISR()
     asm("nop");
     asm("nop");
     digitalWrite(YPort,LOW);
-    digitalWrite(13,HIGH);
   }
   else
   {
@@ -156,7 +150,6 @@ void ZAxisISR()
   {
     TCCR4B = 0;
     TIMSK4 &= ~_BV(TOIE4);
-    digitalWrite(30,HIGH);
     ExecutionStep++;
   }
 

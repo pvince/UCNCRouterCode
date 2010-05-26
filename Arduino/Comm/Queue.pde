@@ -134,18 +134,18 @@ void calcScalar(unsigned int& pulseRate, int& scalar) {
   }else{
       scalar = 0;
   }
-  Serial.write(pulseRate);
-  Serial.write(scalar);
-  Serial.write(252);
+//  Serial.write(pulseRate);
+//  Serial.write(scalar);
+//  Serial.write(252);
 }
 
 void calcTimes(MoveDetails MD){
    XTime = 256 - ((1/MD.XPulseRate)*Frequency/256/MD.XScalar);
    YTime = 256 - ((1/MD.YPulseRate)*Frequency/256/MD.YScalar);
    ZTime = 256 - ((1/MD.ZPulseRate)*Frequency/256/MD.ZScalar);
-   Serial.write(XTime>>8);
-   Serial.write(XTime);
-   Serial.write(253);
+//   Serial.write(XTime>>8);
+//   Serial.write(XTime);
+//   Serial.write(253);
 }
 
 void Calculations(MoveDetails MD)
@@ -173,9 +173,9 @@ void Calculations(MoveDetails MD)
   calcScalar(MD.YPulseRate,MD.YScalar);
   calcScalar(MD.ZPulseRate,MD.ZScalar);
   calcTimes(MD);
-  Serial.write(MD.XScalar);
-  Serial.write(MD.YScalar);
-  Serial.write(MD.ZScalar);
+//  Serial.write(MD.XScalar);
+//  Serial.write(MD.YScalar);
+//  Serial.write(MD.ZScalar);
   Serial.write(255);
   SetTimers(MD);
   return;
@@ -215,7 +215,9 @@ int Move(Linklist* TempHolder, MoveDetails& MD)  //Sends signal to disired ports
   MD.XDiff = XDestination - XPosition;
   MD.YDiff = YDestination - YPosition;
   MD.ZDiff = ZDestination - ZPosition;
-
+  XPulseCount = MD.XDiff;
+  YPulseCount = MD.YDiff;
+  ZPulseCount = MD.ZDiff;
   //Set direction of each motor
   if (MD.XDiff>=0) XDirection=1;
   else XDirection=0;
