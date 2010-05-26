@@ -185,9 +185,6 @@ void XAxisManual()
 {
   digitalWrite(XDirectionPort,XDirection);
   digitalWrite(XPort,HIGH);
-  digitalWrite(XPort,HIGH);
-  digitalWrite(XPort,HIGH);
-  digitalWrite(XPort,HIGH);  //done to make sure the signal is not to fast for the PICS
   digitalWrite(XPort,LOW);
   return;
 }
@@ -196,9 +193,6 @@ void YAxisManual()
 {
     digitalWrite(YDirectionPort,YDirection);
     digitalWrite(YPort,HIGH);
-    digitalWrite(YPort,HIGH);
-    digitalWrite(YPort,HIGH);
-    digitalWrite(YPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(YPort,LOW);
     return;
 }
@@ -207,9 +201,6 @@ void ZAxisManual()
 {
     digitalWrite(ZDirection,ZDirection);
     digitalWrite(ZPort,HIGH);
-    digitalWrite(ZPort,HIGH);
-    digitalWrite(ZPort,HIGH);
-    digitalWrite(ZPort,HIGH);  //done to make sure the signal is not to fast for the PICS
     digitalWrite(ZPort,LOW);
     return;
 }

@@ -44,9 +44,9 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
   MD.XScalar = 0;
   MD.YScalar = 0;
   MD.ZScalar = 0;
-  MD.XSpeed = 1;
-  MD.YSpeed = 1;
-  MD.ZSpeed = 1;
+  MD.XSpeed = 4;
+  MD.YSpeed = 4;
+  MD.ZSpeed = 4;
   switch((temp & 0b11110000) >>4)
   {
     case (5):        //SetSpeed
