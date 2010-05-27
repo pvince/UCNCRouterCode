@@ -78,7 +78,7 @@ void QueueRead()  //Reads the oldest link off the queue and sends it to the requ
     QueueLength =0;
     ReadLocation = 0;
     WriteLocation = 0;
-    FlagStart = 0;
+    //FlagStart=0;
   }
   return;
 }
@@ -176,7 +176,7 @@ void Calculations(MoveDetails MD)
 //  Serial.write(MD.XScalar);
 //  Serial.write(MD.YScalar);
 //  Serial.write(MD.ZScalar);
-  Serial.write(255);
+  //Serial.write(255);
   SetTimers(MD);
   return;
 }

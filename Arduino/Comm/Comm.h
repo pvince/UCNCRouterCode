@@ -18,9 +18,7 @@ int SetSpeedLength=5;
 int MoveLength=11;
 int ToolCMDLength=2;
 PacketContainer Packet;
-
-
- PacketContainer PreviousPacket;
+PacketContainer PreviousPacket;
 PacketContainer AckPacket;
 #endif
 

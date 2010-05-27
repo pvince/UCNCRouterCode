@@ -8,6 +8,10 @@ void SetTimers();
 void XAxisISR();
 void YAxisISR();
 void ZAxisISR();
+void ManualEStop();
+void XAxisManual();
+void YAxisManual();
+void ZAxisManual();
 
 unsigned int XTime;
 unsigned int YTime;

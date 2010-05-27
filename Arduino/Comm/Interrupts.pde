@@ -18,6 +18,22 @@ ISR(TIMER4_OVF_vect)
 {
   ZAxisISR();
 }
+ISR(INT0_vect)
+{
+  ManualEStop();
+}
+ISR(INT1_vect)
+{
+  XAxisManual();
+}
+ISR(INT2_vect)
+{
+  YAxisManual();
+}
+ISR(INT3_vect)
+{
+  ZAxisManual();
+}
 
 void SetTimers(MoveDetails& MD)
 {
@@ -40,9 +56,9 @@ void SetTimers(MoveDetails& MD)
   TCCR1B = MD.XScalar;
   TCCR3B = MD.YScalar;
   TCCR4B = MD.ZScalar;
-  Serial.write(MD.XScalar);
-  Serial.write(YTime>>8 & 0b11111111);
-  Serial.write(YTime & 0b11111111);
+//  Serial.write(MD.XScalar);
+//  Serial.write(YTime>>8 & 0b11111111);
+//  Serial.write(YTime & 0b11111111);
   //Turn on interupts
   sei();
   return;
@@ -90,14 +106,13 @@ void XAxisISR()
   {
     XPulseCount--;
     digitalWrite(XDirectionPort,XDirection);
-    digitalWrite(XPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(XPulsePort,HIGH);  //done to make sure the signal is not to fast for the PICS
     asm("nop");
     asm("nop");
     asm("nop");
     asm("nop");
     asm("nop");
-    digitalWrite(XPort,LOW);
-    digitalWrite(52,HIGH);
+    digitalWrite(XPulsePort,LOW);
   }
   else
   {
@@ -115,13 +130,13 @@ void YAxisISR()
   {
     YPulseCount--;
     digitalWrite(YDirectionPort,YDirection);
-    digitalWrite(YPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(YPulsePort,HIGH);  //done to make sure the signal is not to fast for the PICS
     asm("nop");
     asm("nop");
     asm("nop");
     asm("nop");
     asm("nop");
-    digitalWrite(YPort,LOW);
+    digitalWrite(YPulsePort,LOW);
   }
   else
   {
@@ -138,13 +153,13 @@ void ZAxisISR()
   {
     ZPulseCount--;
     digitalWrite(ZDirection,ZDirection);
-    digitalWrite(ZPort,HIGH);  //done to make sure the signal is not to fast for the PICS
+    digitalWrite(ZPulsePort,HIGH);  //done to make sure the signal is not to fast for the PICS
     asm("nop");
     asm("nop");
     asm("nop");
     asm("nop");
     asm("nop");
-    digitalWrite(ZPort,LOW);
+    digitalWrite(ZPulsePort,LOW);
   }
   else
   {
@@ -178,29 +193,35 @@ void ManualEStop()  //used for manual control
   TIMSK4 &= ~_BV(TOIE4);
     
   AcknowledgeMessage(0);
+  digitalWrite(13,HIGH);
+  digitalWrite(52,HIGH);
+  EIFR |= 0b00000001;
   return;
 }
 
 void XAxisManual()
 {
   digitalWrite(XDirectionPort,XDirection);
-  digitalWrite(XPort,HIGH);
-  digitalWrite(XPort,LOW);
+  digitalWrite(XPulsePort,HIGH);
+  digitalWrite(XPulsePort,LOW);
+  EIFR |= 0b00000010;
   return;
 }
 
 void YAxisManual()
 {
     digitalWrite(YDirectionPort,YDirection);
-    digitalWrite(YPort,HIGH);
-    digitalWrite(YPort,LOW);
+    digitalWrite(YPulsePort,HIGH);
+    digitalWrite(YPulsePort,LOW);
+    EIFR |= 0b00000100;
     return;
 }
 
 void ZAxisManual()
 {
     digitalWrite(ZDirection,ZDirection);
-    digitalWrite(ZPort,HIGH);
-    digitalWrite(ZPort,LOW);
+    digitalWrite(ZPulsePort,HIGH);
+    digitalWrite(ZPulsePort,LOW);
+    EIFR |= 0b00001000;
     return;
 }

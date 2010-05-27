@@ -73,6 +73,7 @@ int RecieveStartQueue(PacketContainer* Packet)
     //they need to be started again
     if((Packet->array[0] & 0b00000010)>>1==0)
     {
+      NoMoreMessages=0;
       if(XPulseCount > 0)    
       {
         TIMSK1 |= _BV(TOIE1);
@@ -93,8 +94,10 @@ int RecieveStartQueue(PacketContainer* Packet)
     }
     else
     {
-      FlagStart = 0;
-      NoMoreMessages == 1;
+      //FlagStart = 0;
+      RequestInProgress=0;
+      NoMoreMessages=1;
+      digitalWrite(52,LOW);
     }
     AcknowledgeMessage(0);
   }
