@@ -25,7 +25,7 @@ namespace CNCRouterCommand
         /// </summary>
         public int getCommandCount()
         {
-            return _cmdCnt + 1;
+            return _cmdCnt;
         }
 
         private CNCRMsgRequestCommands() : base(CNCRMSG_TYPE.REQUEST_COMMAND) { }
@@ -37,11 +37,11 @@ namespace CNCRouterCommand
         public CNCRMsgRequestCommands(byte commandCount)
             : this()
         {
-            if (commandCount > 128)
+            if (commandCount > 127)
                 throw new ArgumentOutOfRangeException("commandCount", 
                     "Command count must be 128 or less");
-            else if (commandCount < 1)
-                commandCount = 1;
+            else if (commandCount < 0)
+                commandCount = 0;
             _cmdCnt = --commandCount; //TODO: CNCRMsgRequestCommands: validate --commandCount works.
         }
         public CNCRMsgRequestCommands(byte[] msgBytes)
