@@ -8,7 +8,7 @@ namespace CNCRouterCommand
 
     public enum CNCRMSG_TYPE
     {
-        zZeroSet,           //0 - Computer  -> Router
+        zMIN_TYPE,           //0 - Computer  -> Router
         CMD_ACKNOWLEDGE,//1 - Computer <-> Router
         E_STOP,         //2 - Computer <-> Router
         REQUEST_COMMAND,//3 - Computer <-  Router
@@ -16,8 +16,8 @@ namespace CNCRouterCommand
         SET_SPEED,      //5 - Computer  -> Router
         MOVE,           //6 - Computer  -> Router
         TOOL_CMD,       //7 - Computer  -> Router
-        PING,           //0 - Computer  -> Router
-        zNone           //If we ever get this type, it is an error.
+        PING,           //8 - Computer  -> Router
+        zMAX_TYPE       //9 - This is one more than the max type possible.
     };
 
     public enum CNCRMSG_PRIORITY

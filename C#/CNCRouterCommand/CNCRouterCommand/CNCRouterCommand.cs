@@ -22,15 +22,20 @@ namespace CNCRouterCommand
 {
     public partial class CNCRouterCommand : Form
     {
-        private CNCRCommCommand commCmd = new CNCRCommCommand();
-        private double[] distances = new double[] {0.1, 0.2, 0.5, 1, 5, 10, 20, 50, 100};
         public CNCRouterCommand()
         {
             InitializeComponent();
         }
 
+        private CNCRCommCommand commCmd = new CNCRCommCommand();
+
         private void CNCRouterCommand_Load(object sender, EventArgs e)
         {
+#if !DEBUG
+            tcInterface.TabPages.Remove(tpGenDebug);
+            tcInterface.TabPages.Remove(tpCommDebug);
+#endif
+
             // Setup the debug tab.
             string[] ports = CNCRTools.GetCNCRouterPorts();
             cmbPorts.Items.AddRange(ports);
@@ -59,6 +64,12 @@ namespace CNCRouterCommand
 
         }
 
+        private void tcInterface_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // TODO: Stuff to run when the tab changes.
+        }
+
+        // Events and cuntions related to the "Comm Debug" tab.
         #region Comm Debug Tab
         private void btnOpenPort_Click(object sender, EventArgs e)
         {
@@ -75,8 +86,6 @@ namespace CNCRouterCommand
                 btnClosePort.Enabled = true;
                 btnSndMsg.Enabled = true;
             }
-            
-            //TODO: add CommCmd.isOpen();
         }
 
         private void btnSndMsg_Click(object sender, EventArgs e)
@@ -222,12 +231,9 @@ namespace CNCRouterCommand
         }
         #endregion
 
-        private void tcInterface_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // TODO: Stuff to run when the tab changes.
-        }
-
+        // Events and functions related to the "Auto" tab.
         #region Auto Tab
+
         private void btnLoadGCode_Click(object sender, EventArgs e)
         {
             string eventLog = "";
@@ -239,14 +245,15 @@ namespace CNCRouterCommand
 
                 System.IO.StreamReader readFile = new System.IO.StreamReader(ofdGcodeBrowse.OpenFile());
                 string gcode = readFile.ReadToEnd();
-                CNCRTools.arcRes = Double.Parse(textBox1.Text);
+                CNCRTools.arcRes = Double.Parse(txtArcAccuracy.Text);
                 Queue<CNCRMessage> tempQueue = CNCRTools.parseGCode(gcode, ref eventLog);
                 commCmd.commCommandQueueSet(tempQueue);
-                eventLog += "Finished Loading. Created " + tempQueue.Count().ToString() + "\n";
+                eventLog += "Finished Loading. Created " + tempQueue.Count().ToString() + " messages.\n";
                 rtbRCOutput.AppendText(eventLog);
+                rtbRCOutput.ScrollToCaret();
                 lblStatusFile.Text = ofdGcodeBrowse.SafeFileName;
 
-                /*
+                /* Debug output of the commands to a text file.
                 string outputText = "";
 
                 while (tempQueue.Count() > 0)
@@ -263,17 +270,6 @@ namespace CNCRouterCommand
                 tw.Close();//*/
             }
 
-
-            /* For testing gcode reading.
-            //C:\Users\vincenpt\Documents\SeniorDesign\trunk\Docs\Drawings\DXF_Drawings\Square_40x40mm.nc"
-            string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesign/trunk/Docs/Drawings/DXF_Drawings/SquareArc_40mm.nc");
-            //string gcode = CNCRTools.readTextFile("C:/Users/vincenpt/Documents/SeniorDesignSVN/SeniorDesign/Docs/Drawings/DXF_Drawings/SquareArc_40mm.nc");
-
-            string logMessages = "";
-            Queue<CNCRMessage> testQ = CNCRTools.parseGCode(gcode, ref logMessages);
-            rtbRCOutput.AppendText(logMessages);//
-            lblStatusFile.Text = "G-code file loaded. " + testQ.Count.ToString() +
-                " commands created.";//*/
         }
 
         private void btnStartBuild_Click(object sender, EventArgs e)
@@ -291,6 +287,15 @@ namespace CNCRouterCommand
 
         }
 
+        private void btnClearEventOutput_Click(object sender, EventArgs e)
+        {
+            rtbRCOutput.Clear();
+        }
+
+        /// <summary> Start the build processes.
+        /// This function starts the build processes by doing the following:
+        /// - Enqueue a "startBuild" comand 
+        /// </summary>
         private void startBuild()
         {
             commCmd.BaudRate = "9600";
@@ -314,7 +319,10 @@ namespace CNCRouterCommand
         }
         #endregion
 
+        // Events and functions related to the "Manual" tab.
         #region Manual
+        private double[] distances = new double[] { 0.1, 0.2, 0.5, 1, 5, 10, 20, 50, 100 };
+
         private void btnYp_Click(object sender, EventArgs e)
         {
             Int16 distance = Convert.ToInt16(distances[cmbMoveDistance.SelectedIndex] * 10);
@@ -375,6 +383,7 @@ namespace CNCRouterCommand
                 // eat my shorts.
             }
 
+            //commCmd.PortName = cmbRouterPort.SelectedItem.ToString();
             // Enque the "startQueue" in the priority queue.
             commCmd.commPriorityQueueEnqueue(new CNCRMsgStartQueue(false));
             commCmd.commCommandQueueEnqueue(new CNCRMsgSetSpeed(uSpeed));
@@ -382,17 +391,20 @@ namespace CNCRouterCommand
             commCmd.commCommandQueueEnqueue(new CNCRMsgStartQueue(true));
             commCmd.launchProcessQueues();
         }
-        #endregion
-
-        private void btnClearEventOutput_Click(object sender, EventArgs e)
-        {
-            rtbRCOutput.Clear();
-        }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
             rtbTraffic.Clear();
         }
+        #endregion
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            cmbRouterPort.Items.Clear();
+            cmbRouterPort.Items.AddRange(CNCRTools.GetCNCRouterPorts());
+            cmbRouterPort.SelectedIndex = 0;
+        }
+
 
 
 

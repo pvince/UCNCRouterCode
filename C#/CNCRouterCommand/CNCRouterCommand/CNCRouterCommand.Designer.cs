@@ -84,13 +84,16 @@
             this.cmbMoveDistance = new System.Windows.Forms.ComboBox();
             this.btnYp = new System.Windows.Forms.Button();
             this.tpSettings = new System.Windows.Forms.TabPage();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtArcAccuracy = new System.Windows.Forms.TextBox();
             this.cmbRouterPort = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.tpGenDebug = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.ofdGcodeBrowse = new System.Windows.Forms.OpenFileDialog();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.btnRefreshRtrPorts = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.tpCommDebug.SuspendLayout();
             this.tcInterface.SuspendLayout();
@@ -408,7 +411,7 @@
             // 
             // btnClearEventOutput
             // 
-            this.btnClearEventOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearEventOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClearEventOutput.Location = new System.Drawing.Point(428, 60);
             this.btnClearEventOutput.Name = "btnClearEventOutput";
             this.btnClearEventOutput.Size = new System.Drawing.Size(75, 23);
@@ -682,7 +685,10 @@
             // 
             // tpSettings
             // 
-            this.tpSettings.Controls.Add(this.textBox1);
+            this.tpSettings.Controls.Add(this.btnRefreshRtrPorts);
+            this.tpSettings.Controls.Add(this.label20);
+            this.tpSettings.Controls.Add(this.label19);
+            this.tpSettings.Controls.Add(this.txtArcAccuracy);
             this.tpSettings.Controls.Add(this.cmbRouterPort);
             this.tpSettings.Controls.Add(this.label12);
             this.tpSettings.Location = new System.Drawing.Point(4, 22);
@@ -693,13 +699,13 @@
             this.tpSettings.Text = "Settings";
             this.tpSettings.UseVisualStyleBackColor = true;
             // 
-            // textBox1
+            // txtArcAccuracy
             // 
-            this.textBox1.Location = new System.Drawing.Point(106, 37);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 12;
-            this.textBox1.Text = "0.1";
+            this.txtArcAccuracy.Location = new System.Drawing.Point(106, 37);
+            this.txtArcAccuracy.Name = "txtArcAccuracy";
+            this.txtArcAccuracy.Size = new System.Drawing.Size(100, 20);
+            this.txtArcAccuracy.TabIndex = 12;
+            this.txtArcAccuracy.Text = "0.1";
             // 
             // cmbRouterPort
             // 
@@ -752,6 +758,36 @@
             // ofdGcodeBrowse
             // 
             this.ofdGcodeBrowse.Filter = "G-code files|*.nc|All files|*.*";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(26, 40);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(74, 13);
+            this.label19.TabIndex = 13;
+            this.label19.Text = "Arc Accuracy:";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(212, 40);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(23, 13);
+            this.label20.TabIndex = 14;
+            this.label20.Text = "mm";
+            // 
+            // btnRefreshRtrPorts
+            // 
+            this.btnRefreshRtrPorts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefreshRtrPorts.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnRefreshRtrPorts.BackgroundImage")));
+            this.btnRefreshRtrPorts.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnRefreshRtrPorts.Location = new System.Drawing.Point(219, 10);
+            this.btnRefreshRtrPorts.Name = "btnRefreshRtrPorts";
+            this.btnRefreshRtrPorts.Size = new System.Drawing.Size(26, 23);
+            this.btnRefreshRtrPorts.TabIndex = 28;
+            this.btnRefreshRtrPorts.UseVisualStyleBackColor = true;
+            this.btnRefreshRtrPorts.Click += new System.EventHandler(this.button2_Click);
             // 
             // CNCRouterCommand
             // 
@@ -837,7 +873,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
         private System.Windows.Forms.OpenFileDialog ofdGcodeBrowse;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtArcAccuracy;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox txtZFeedrate;
@@ -846,6 +882,9 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnClearEventOutput;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Button btnRefreshRtrPorts;
     }
 }
 

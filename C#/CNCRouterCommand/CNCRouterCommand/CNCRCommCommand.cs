@@ -101,7 +101,7 @@ namespace CNCRouterCommand
         /// BY MULTIPLE THREADS. ONLY USE THEIR GETTER AND SETTER VARIABLES.
         /// </summary>
         /// 
-        private CNCRMSG_TYPE _curType = CNCRMSG_TYPE.zNone;
+        private CNCRMSG_TYPE _curType = CNCRMSG_TYPE.zMAX_TYPE;
         private CNCRMessage _lastMessage;
         private bool _discardingData = false;
         private bool _waitingOnAck = false;
@@ -120,9 +120,14 @@ namespace CNCRouterCommand
         #region Getter // Setter Properties
         public void commCommandQueueSet(Queue<CNCRMessage> newQ)
         {
-            _commCmdQLock.WaitOne();
-            _commCommandQueue = newQ;
-            _commCmdQLock.Release();
+            bool threadLocked = _commCmdQLock.WaitOne(100);
+            if (threadLocked)
+            {
+                _commCommandQueue = newQ;
+                _commCmdQLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock cmdQ");
         }
         /// <summary>
         /// Dequeue a router build command.
@@ -131,9 +136,15 @@ namespace CNCRouterCommand
         public CNCRMessage commCommandQueueDequeue()
         {
             CNCRMessage result;
-            _commCmdQLock.WaitOne();
-            result = _commCommandQueue.Dequeue();
-            _commCmdQLock.Release();
+            bool threadLocked = _commCmdQLock.WaitOne(100);
+            if (threadLocked)
+            {
+                result = _commCommandQueue.Dequeue();
+                _commCmdQLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock CmdQ");
+
             return result;
         }
         /// <summary>
@@ -144,9 +155,14 @@ namespace CNCRouterCommand
         /// CNCRMsgSetSpeed, CNCRMsgMove, CNCRMsgToolCmd</param>
         public void commCommandQueueEnqueue(CNCRMessage enqueue)
         {
-            _commCmdQLock.WaitOne();
-            _commCommandQueue.Enqueue(enqueue);
-            _commCmdQLock.Release();
+            bool threadLocked = _commCmdQLock.WaitOne(100);
+            if (threadLocked)
+            {
+                _commCommandQueue.Enqueue(enqueue);
+                _commCmdQLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock CmdQ");
         }
         /// <summary>
         /// Find the number of commands currently in the build queue.
@@ -155,9 +171,14 @@ namespace CNCRouterCommand
         public int commCommandQueueCount()
         {
             int result;
-            _commCmdQLock.WaitOne();
-            result = _commCommandQueue.Count;
-            _commCmdQLock.Release();
+            bool threadLocked = _commCmdQLock.WaitOne(100);
+            if (threadLocked)
+            {
+                result = _commCommandQueue.Count;
+                _commCmdQLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock CmdQ");
             return result;
         }
 
@@ -169,9 +190,14 @@ namespace CNCRouterCommand
         public CNCRMessage commPriorityQueueDequeue()
         {
             CNCRMessage result;
-            _commPriorityQLock.WaitOne();
-            result = _commPriorityQueue.Dequeue();
-            _commPriorityQLock.Release();
+            bool threadLocked = _commPriorityQLock.WaitOne(100);
+            if (threadLocked)
+            {
+                result = _commPriorityQueue.Dequeue();
+                _commPriorityQLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock thread");
             return result;
         }
         /// <summary>
@@ -182,16 +208,26 @@ namespace CNCRouterCommand
         /// <param name="enqueue"></param>
         public void commPriorityQueueEnqueue(CNCRMessage enqueue)
         {
-            _commPriorityQLock.WaitOne();
-            _commPriorityQueue.Enqueue(enqueue);
-            _commPriorityQLock.Release();
+            bool threadLocked = _commPriorityQLock.WaitOne(100);
+            if (threadLocked)
+            {
+                _commPriorityQueue.Enqueue(enqueue);
+                _commPriorityQLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock thread");
         }
         public int commPriorityQueueCount()
         {
             int result;
-            _commPriorityQLock.WaitOne();
-            result = _commPriorityQueue.Count;
-            _commPriorityQLock.Release();
+            bool threadLocked = _commPriorityQLock.WaitOne(100);
+            if (threadLocked)
+            {
+                result = _commPriorityQueue.Count;
+                _commPriorityQLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock thread");
             return result;
         }
 
@@ -199,24 +235,39 @@ namespace CNCRouterCommand
         public int getNumCmdsToSend()
         {
             int result = 0;
-            _numCmdsToSendLock.WaitOne();
-            result = _numCmdsToSend;
-            _numCmdsToSendLock.Release();
+            bool threadLocked = _numCmdsToSendLock.WaitOne(100);
+            if (threadLocked)
+            {
+                result = _numCmdsToSend;
+                _numCmdsToSendLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock thread");
             return result;
         }
         public void setNumCmdsToSend(int numCmdsToSend)
         {
-            _numCmdsToSendLock.WaitOne();
-            _numCmdsToSend = numCmdsToSend;
-            _numCmdsToSendLock.Release();
+            bool threadLocked = _numCmdsToSendLock.WaitOne(100);
+            if (threadLocked)
+            {
+                _numCmdsToSend = numCmdsToSend;
+                _numCmdsToSendLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock thread");
         }
 
         private CNCRMSG_TYPE getCurType()
         {
-            CNCRMSG_TYPE result = CNCRMSG_TYPE.zNone;
-            _curTypeLock.WaitOne();
-            result = _curType;
-            _curTypeLock.Release();
+            CNCRMSG_TYPE result = CNCRMSG_TYPE.zMAX_TYPE;
+            bool threadLocked = _curTypeLock.WaitOne(100);
+            if (threadLocked)
+            {
+                result = _curType;
+                _curTypeLock.Release();
+            }
+            else
+                throw new Exception("Failed to lock thread");
             return result;
         }
         private void setCurType(CNCRMSG_TYPE curType)
@@ -351,13 +402,6 @@ namespace CNCRouterCommand
         #endregion
 
         #region Send Data
-        public void WriteString(string msg)
-        {
-            if (!(comPort.IsOpen == true)) comPort.Open();
-            //send the message to the port
-            comPort.Write(msg);
-        }
-
         public void SendMsg(CNCRMessage msg)
         {
             //TODO: SendMsg: Should this function really be doing this check?  Shouldnt the function errorhandler do this?
@@ -377,6 +421,7 @@ namespace CNCRouterCommand
                 setWaitingOnAck(true);
             }
             setLastMessage(msg);
+            DisplayData("Sending: " + msg.ToString() + "\n");
             SendBytes(msg.toSerial());
         }
 
@@ -389,8 +434,10 @@ namespace CNCRouterCommand
             }
             else
             {
-                //TODO: SendMsg: Log an error
+                DisplayData("Error: Failed to send bytes - [" +
+                    CNCRTools.BytesToHex(bytes) + "]\n");
             }
+            //comPort.Close();
         }
         #endregion
 
@@ -413,12 +460,16 @@ namespace CNCRouterCommand
             }
             catch (Exception ex)
             {
-                throw ex;
-                //TODO: OpenPort: Figure out what we are doing for error reporting
-                //return false;
+                DisplayData("Failed to open port " + comPort.PortName + ". Error:\t" +
+                    ex.ToString(), 2);
+                return false;
             }
         }
 
+        public bool isOpen()
+        {
+            return comPort.IsOpen;
+        }
         /// <summary>
         /// Closes an open Comm port.
         /// </summary>
@@ -434,9 +485,9 @@ namespace CNCRouterCommand
             }
             catch (Exception ex)
             {
-                throw ex;
-                //TODO: ClosePort: Figure out what we are doing for error reporting
-                //return false;
+                DisplayData("Failed to close port " + comPort.PortName + ". Error:\t" +
+                    ex.ToString(), 2);
+                return false;
             }
             return result;
         }
@@ -458,8 +509,9 @@ namespace CNCRouterCommand
                 setCurType((CNCRMSG_TYPE)Enum.ToObject(typeof(CNCRMSG_TYPE), (commBuffer[0] & 0xF0) >> 4));
             }
 
-            // TODO: handleData: this is a hack, figure out a better way to validate the type.
-            if (getCurType() <= CNCRMSG_TYPE.PING)
+            // Get the current type, if it is not between MIN and MAX_TYPE
+            CNCRMSG_TYPE currentType = getCurType();
+            if (CNCRMSG_TYPE.zMIN_TYPE < currentType && currentType < CNCRMSG_TYPE.zMAX_TYPE)
             {
                 // Drop all incoming bytes into the queue
                 for (int i = 0; i < commBuffer.Length; i++)
@@ -576,9 +628,8 @@ namespace CNCRouterCommand
                 case CNCRMSG_TYPE.START_QUEUE:
                 case CNCRMSG_TYPE.TOOL_CMD:
                     // We should not be receiving any of these messages.
-                    // TODO: ActOnMessage: The following is not really an error, look into how to throw "warnings"
-                    DisplayData("Reeived a valid message that shold not have been sent by the router. " + msg.ToString() + "\n");
-                    //throw new ArgumentException("Received a valid message that should not have been sent by router.");
+                    DisplayData("Received a valid message that should not have " +
+                        "been sent by the router. " + msg.ToString() + "\n");
                     break;
                 default:
                     throw new ArgumentException("CNCRMessage has an invalid type");
@@ -606,7 +657,7 @@ namespace CNCRouterCommand
 
             while (!getEStopActive() // While eStop is not active.
                  && ((commPriorityQueueCount() > 0) || (commCommandQueueCount() > 0 && getNumCmdsToSend() > 0))  // And this stuff
-                 /*&& ((DateTime.Now - lastMsg) < timeout)*/) // And we are not timed out.
+                 && ((DateTime.Now - lastMsg) < timeout)) // TODO; Log a timeout error.
             {
                 // If waiting for Ack or EStopped, exit thread, we cant send any commands.
                 if (!getWaitingOnAck() && !getEStopActive())
@@ -632,17 +683,30 @@ namespace CNCRouterCommand
                         // Grab the next router command in the queue.
                         SendMsg(commCommandQueueDequeue());
 
-                        // Decrement the command counter
-                        numCmdsToSend--;
+                        // Check if we are out of commands, if so set the numCmdsToSend to 0
+                        // and send StartQueue(true)
+                        if (commCommandQueueCount() == 0)
+                        {
+                            numCmdsToSend = 0;
+                            commPriorityQueueEnqueue(new CNCRMsgStartQueue(true));
+                        }
+                        else // Decrement the command counter
+                            numCmdsToSend--;
 
                         // Set the new numCmdsToSend safely.
                         setNumCmdsToSend(numCmdsToSend);
                     }
-                    //TODO: processQueues, should I send a "Queue Tapped out" message?
-                    // - Well currently I do not even reach this level if there 
-                    //   is a discrepency between commCommandQueueCount and 
-                    //   getNumCmdsToSend due to the while loop.  Figure this out.
                 }
+                // TODO: Check to see if we timed out, what do we do in this event?
+                // TODO: Check to see if the router is requesting more commands than we have.
+                //       if so, send them a "StartQueue(true)" message to stop them.
+                //      - Possibly do this when sending messages? what about when I receive this message?
+                //      - I should be able to check on receipt if requested is > than received.
+                //      - Or when emptying the queue, as soon as I hit 0 I can append a "stop message"
+                //   (following message saved for posterity, moved from above last }
+                //  - Well currently I do not even reach this level if there 
+                //   is a discrepency between commCommandQueueCount and 
+                //   getNumCmdsToSend due to the while loop.  Figure this out.
                 Thread.Sleep(10);
             }
 
@@ -696,7 +760,7 @@ namespace CNCRouterCommand
             }
             else
             {
-                DisplayData(CNCRTools.BytesToHex(comBuffer) + "\n");
+                DisplayData("Received: " + CNCRTools.BytesToHex(comBuffer) + "\n");
                 handleData(comBuffer);
                 DisplayDataQueue();
             }
@@ -729,6 +793,8 @@ namespace CNCRouterCommand
                     DisplayData_Auto(msg);
                     break;
                 default:
+                    DisplayData_Comm(msg);
+                    DisplayData_Auto(msg);
                 // Both
                     break;
             }
