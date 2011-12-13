@@ -1,0 +1,15 @@
+Legacy import of my Senior Design project: UCNCRouter
+
+The plan was to design and build a CNC router from the ground up, from the stepper drivers to the software that would drive it all.
+
+We wrote the software and built the frame.  In the end there were several physical and software design issues that prevented us from continuing with the project and it was abandonned shortly after we graduated.
+
+Recently I was digging through some old code and wanted to have this stuff available in a more easily accessible format, hence it is now on github.
+
+Our design files (Roughly 500 MB or so of files) was also part of the subversion repo, but that would have blown my limit on disk space.
+
+Group Members:
+- Tom Blauvelt
+- Elliot Long
+- Jeremy Shively
+- Paul Vincent
